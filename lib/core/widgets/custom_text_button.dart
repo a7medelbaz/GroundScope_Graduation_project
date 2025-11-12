@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ground_scope/core/themes/app_text_styles.dart';
+import '../themes/app_text_styles.dart';
 
 import '../themes/app_colors.dart';
 

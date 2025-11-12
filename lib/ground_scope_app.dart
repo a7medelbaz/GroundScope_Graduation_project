@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ground_scope/core/router/app_routers.dart';
-import 'package:ground_scope/core/router/routes.dart';
-import 'package:ground_scope/core/themes/app_colors.dart';
+import 'core/router/app_routers.dart';
+import 'core/router/routes.dart';
+import 'core/themes/app_colors.dart';
 
 class GroundScopeApp extends StatelessWidget {
   const GroundScopeApp({super.key, required this.appRouter});

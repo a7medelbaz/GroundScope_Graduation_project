@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/themes/app_font_weight.dart';
+import 'app_font_weight.dart';
 
 class AppTextStyles {
   static TextStyle font30WhiteBold = const TextStyle(

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:ground_scope/core/router/routes.dart';
-import 'package:ground_scope/core/themes/app_text_styles.dart';
-import 'package:ground_scope/core/utils/app_assets.dart';
-import 'package:ground_scope/core/utils/extensions.dart';
-import 'package:ground_scope/core/utils/spacing.dart';
-import 'package:ground_scope/core/widgets/custom_text_button.dart';
+import '../../router/routes.dart';
+import '../../themes/app_text_styles.dart';
+import '../../utils/app_assets.dart';
+import '../../utils/extensions.dart';
+import '../../utils/spacing.dart';
+import '../../widgets/custom_text_button.dart';
 
 class OnBoardingScreen extends StatelessWidget {
   const OnBoardingScreen({super.key});
