@@ -37,9 +37,8 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
-}
-flavorDimensions += "default"
-productFlavors {
+    flavorDimensions += "default"
+    productFlavors {
     create("development") {
         dimension = "default"
         resValue("string", "app_name", "GroundScop development")
@@ -51,7 +50,9 @@ productFlavors {
         resValue("string", "app_name", "GroundScop production")
         applicationIdSuffix = ".production"
     }
-} 
+}
+}
+ 
 flutter {
     source = "../.."
 }
