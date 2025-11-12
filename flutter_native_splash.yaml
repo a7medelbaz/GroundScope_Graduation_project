@@ -1,0 +1,21 @@
+flutter_native_splash:
+  #=============================================================
+  # Splash screen for iOS and Android (below Android 12)
+  #=============================================================
+  color: "#101922"                         # background color
+  image: assets/images/app_logo.png        # district logo (main app logo)
+  fullscreen: true                         # hide status bar for immersive splash
+  # Optional: dark mode versions
+  # color_dark: "#0B121A"
+  # image_dark: assets/images/app_logo_dark.png
+
+  #=============================================================
+  # Splash screen configuration for Android 12+
+  #=============================================================
+  android_12:
+    color: "#101922"                       # background color
+    image: assets/images/splash_screen_logo.png  # logo inside circular frame
+    icon_background_color: "#101922"       # background color for the circular icon
+    # Optional: dark mode versions
+    # color_dark: "#0B121A"
+    # image_dark: assets/images/splash_screen_logo_dark.png
