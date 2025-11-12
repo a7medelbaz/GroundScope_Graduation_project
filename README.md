@@ -86,71 +86,76 @@ This project was developed by a team of **9 students** from  **Zagazig National 
 > UI/UX screenshots or Figma links will be added in future updates.
 
 ---
+```mermaid
 
-## 🧱 Architecture Diagram (Mermaid)
-
-<pre class="overflow-visible!" data-start="2449" data-end="3834" data--h-bstatus="0OBSERVED"><div class="contain-inline-size rounded-2xl relative bg-token-sidebar-surface-primary" data--h-bstatus="0OBSERVED"><div class="sticky top-9" data--h-bstatus="0OBSERVED"><div class="absolute end-0 bottom-0 flex h-9 items-center pe-2" data--h-bstatus="0OBSERVED"><div class="bg-token-bg-elevated-secondary text-token-text-secondary flex items-center gap-4 rounded-sm px-2 font-sans text-xs" data--h-bstatus="0OBSERVED"></div></div></div><div class="overflow-y-auto p-4" dir="ltr" data--h-bstatus="0OBSERVED"><code class="whitespace-pre! language-mermaid" data--h-bstatus="0OBSERVED"><span data--h-bstatus="0OBSERVED">flowchart TD
+flowchart TD
 classDef core fill:#1e40af,stroke:#1e3a8a,color:#fff;
 classDef module fill:#065f46,stroke:#064e3b,color:#fff;
 classDef feature fill:#0f766e,stroke:#115e59,color:#fff;
 classDef main fill:#7c2d12,stroke:#652b11,color:#fff;
 classDef file fill:#475569,stroke:#1e293b,color:#fff;
 
+%% ===== LIB =====
 LIB[lib/]:::file
 
-CORE[core/]:::core
-LIB --> CORE
-AUTH[auth/]:::core
-CORE --> AUTH
-AUTH_DATA[data/]:::core
-AUTH --> AUTH_DATA
-AUTH_DOMAIN[domain/]:::core
-AUTH --> AUTH_DOMAIN
-AUTH_PRESENTATION[presentation/]:::core
-AUTH --> AUTH_PRESENTATION
-NETWORK[network/]:::core
-CORE --> NETWORK
-STORAGE[storage/]:::core
-CORE --> STORAGE
-UTILS[utils/]:::core
-CORE --> UTILS
+%% ===== CORE =====
+LIB --> CORE[core/]:::core
 
-MODULES[modules/]:::module
-LIB --> MODULES
+CORE --> AUTH[auth/]:::core
+AUTH --> AUTH_DATA[Data/]:::core
+AUTH_DATA --> AUTH_IMPL[auth_repository_impl.dart]:::file
+AUTH --> AUTH_LOGIC[Logic/]:::core
+AUTH_LOGIC --> USER_MODEL[user_model.dart]:::file
+AUTH_LOGIC --> AUTH_REPO[auth_repository.dart]:::file
+AUTH --> AUTH_UI[UI/]:::core
 
-WORKER[worker/]:::module
-MODULES --> WORKER
-WORKER_CORE[core/]:::module
-WORKER --> WORKER_CORE
-WORKER_FEATURES[features/]:::module
-WORKER --> WORKER_FEATURES
+CORE --> NETWORK[network/]:::core
+CORE --> STORAGE[storage/]:::core
+CORE --> UTILS[utils/]:::core
 
-SUPERVISOR[supervisor/]:::module
-MODULES --> SUPERVISOR
-SUPERVISOR_CORE[core/]:::module
-SUPERVISOR --> SUPERVISOR_CORE
-SUPERVISOR_FEATURES[features/]:::feature
-SUPERVISOR --> SUPERVISOR_FEATURES
+%% ===== MODULES =====
+LIB --> MODULES[modules/]:::module
 
-ADMIN[admin/]:::module
-MODULES --> ADMIN
-ADMIN_CORE[core/]:::module
-ADMIN --> ADMIN_CORE
-ADMIN_FEATURES[features/]:::feature
-ADMIN --> ADMIN_FEATURES
+%% Worker
+MODULES --> WORKER[worker/]:::module
+WORKER --> WORKER_CORE[core/]:::module
+WORKER --> WORKER_FEATURES[features/]:::module
 
-MAIN_APP[ground_scope_app.dart]:::main
-LIB --> MAIN_APP
-MAIN_DEV[main_development.dart]:::main
-LIB --> MAIN_DEV
-MAIN_PROD[main_production.dart]:::main
-LIB --> MAIN_PROD
-</span></code></div></div></pre>
+WORKER_FEATURES --> TASKS[tasks/]:::feature
+TASKS --> TASKS_DATA[Data/]:::feature
+TASKS --> TASKS_LOGIC[Logic/]:::feature
+TASKS --> TASKS_UI[UI/]:::feature
 
----
+WORKER_FEATURES --> PROFILE[profile/]:::feature
+PROFILE --> PROFILE_DATA[Data/]:::feature
+PROFILE --> PROFILE_LOGIC[Logic/]:::feature
+PROFILE --> PROFILE_UI[UI/]:::feature
 
+%% Supervisor
+MODULES --> SUPERVISOR[supervisor/]:::module
+SUPERVISOR --> SUPERVISOR_CORE[core/]:::module
+SUPERVISOR --> SUPERVISOR_FEATURES[features/]:::feature
+
+SUPERVISOR_FEATURES --> SUP_FEATURE[Feature/]:::feature
+SUP_FEATURE --> SUP_DATA[Data/]:::feature
+SUP_FEATURE --> SUP_LOGIC[Logic/]:::feature
+SUP_FEATURE --> SUP_UI[UI/]:::feature
+
+%% Admin
+MODULES --> ADMIN[admin/]:::module
+ADMIN --> ADMIN_CORE[core/]:::module
+ADMIN --> ADMIN_FEATURES[features/]:::feature
+
+ADMIN_FEATURES --> AD_FEATURE[Feature/]:::feature
+AD_FEATURE --> AD_DATA[Data/]:::feature
+AD_FEATURE --> AD_LOGIC[Logic/]:::feature
+AD_FEATURE --> AD_UI[UI/]:::feature
+
+%% ===== MAIN FILES =====
+LIB --> MAIN_DEV[main_development.dart]:::main
+LIB --> MAIN_PROD[main_production.dart]:::main
+LIB --> MAIN_APP[ground_scope_app.dart]:::main
+```
 ## 📄 License
 
 This project is **for academic purposes only** and may not be used for commercial purposes.
-
-<style>#mermaid-1762908976483{font-family:sans-serif;font-size:16px;fill:#333;}#mermaid-1762908976483 .error-icon{fill:#552222;}#mermaid-1762908976483 .error-text{fill:#552222;stroke:#552222;}#mermaid-1762908976483 .edge-thickness-normal{stroke-width:2px;}#mermaid-1762908976483 .edge-thickness-thick{stroke-width:3.5px;}#mermaid-1762908976483 .edge-pattern-solid{stroke-dasharray:0;}#mermaid-1762908976483 .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-1762908976483 .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-1762908976483 .marker{fill:#333333;}#mermaid-1762908976483 .marker.cross{stroke:#333333;}#mermaid-1762908976483 svg{font-family:sans-serif;font-size:16px;}#mermaid-1762908976483 .label{font-family:sans-serif;color:#333;}#mermaid-1762908976483 .label text{fill:#333;}#mermaid-1762908976483 .node rect,#mermaid-1762908976483 .node circle,#mermaid-1762908976483 .node ellipse,#mermaid-1762908976483 .node polygon,#mermaid-1762908976483 .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#mermaid-1762908976483 .node .label{text-align:center;}#mermaid-1762908976483 .node.clickable{cursor:pointer;}#mermaid-1762908976483 .arrowheadPath{fill:#333333;}#mermaid-1762908976483 .edgePath .path{stroke:#333333;stroke-width:1.5px;}#mermaid-1762908976483 .flowchart-link{stroke:#333333;fill:none;}#mermaid-1762908976483 .edgeLabel{background-color:#e8e8e8;text-align:center;}#mermaid-1762908976483 .edgeLabel rect{opacity:0.5;background-color:#e8e8e8;fill:#e8e8e8;}#mermaid-1762908976483 .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#mermaid-1762908976483 .cluster text{fill:#333;}#mermaid-1762908976483 div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:sans-serif;font-size:12px;background:hsl(80,100%,96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#mermaid-1762908976483:root{--mermaid-font-family:sans-serif;}#mermaid-1762908976483:root{--mermaid-alt-font-family:sans-serif;}#mermaid-1762908976483 flowchart-v2{fill:apa;}</style>
