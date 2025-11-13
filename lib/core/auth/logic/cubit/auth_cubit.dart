@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ground_scope/core/utils/secure_storage.dart';
 
 import '../../data/models/user_date.dart';
 import '../../data/repo/auth_repo.dart';
@@ -33,6 +34,7 @@ class AuthCubit extends Cubit<AuthState> {
 
       // 2️⃣ Fetch user data from Supabase table
       final userDataMap = await authRepo.getUserDataById(userId);
+      // 4️⃣ 🔥 Save userId and role to cache
 
       if (userDataMap == null) {
         emit(
@@ -45,9 +47,11 @@ class AuthCubit extends Cubit<AuthState> {
 
       // 3️⃣ Map to UserData model
       final userData = UserData.fromJson(userDataMap);
-
       // 4️⃣ Emit success state
       emit(AuthSuccess(userData: userData));
+      final storage = SecureStorage();
+      storage.saveString(key: 'user_id', value: userId);
+      storage.saveString(key: 'position', value: userData.position);
     } catch (e, stackTrace) {
       debugPrint('❌ AuthCubit login error: $e\n$stackTrace');
       emit(AuthFailure(errorMessage: e.toString()));

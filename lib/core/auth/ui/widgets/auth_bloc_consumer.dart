@@ -17,7 +17,6 @@ class AuthBlocConsumer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String route = '';
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) async {
         if (state is AuthLoading) {
@@ -48,6 +47,7 @@ class AuthBlocConsumer extends StatelessWidget {
 
             await Future.delayed(const Duration(milliseconds: 300));
             String role = state.userData.position;
+                String route = '';
             if (role == 'worker') {
               route = Routes.workerScreen;
             } else if (role == 'supervisor') {

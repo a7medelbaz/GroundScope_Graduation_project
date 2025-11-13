@@ -17,7 +17,7 @@ class AuthService {
       );
       final userId = response.user?.id;
       if (userId != null) {
-        await _secureStorage.saveUserId(userId);
+        _secureStorage.saveString(key: 'user_id', value: userId);
       }
 
       debugPrint(
