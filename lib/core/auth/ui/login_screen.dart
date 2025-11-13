@@ -1,15 +1,42 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+
+import 'widgets/auth_bloc_consumer.dart';
+
+
 
 import '../../themes/app_text_styles.dart';
 import '../../utils/app_assets.dart';
 import '../../utils/spacing.dart';
-import '../../widgets/custom_text_button.dart';
+
 import 'widgets/custom_text_form_.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  late final TextEditingController emailController;
+  late final TextEditingController passwordController;
+
+  @override
+  void initState() {
+    super.initState();
+    emailController = TextEditingController();
+    passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +53,10 @@ class LoginScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SvgPicture.asset(AppAssets.appLogoSVG, height: 100.h),
+                  SvgPicture.asset(
+                    AppAssets.appLogoSVG,
+                    height: 100.h,
+                  ),
                   verticalSpacing(16),
                   Text(
                     'GroundScope',
@@ -40,14 +70,21 @@ class LoginScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   verticalSpacing(95),
-                  const CustomTextFormField(hintText: 'Email'),
+                  CustomTextFormField(
+                    hintText: 'Email',
+                    controller: emailController,
+                  ),
                   verticalSpacing(16),
-                  const CustomTextFormField(
+                  CustomTextFormField(
                     hintText: 'Password',
+                    controller: passwordController,
                     isObscureText: true,
                   ),
                   verticalSpacing(60),
-                  CustomTextButton(buttonText: 'Login', onPressed: () {}),
+                  AuthBlocConsumer(
+                    emailController: emailController,
+                    passwordController: passwordController,
+                  ),
                 ],
               ),
             ),

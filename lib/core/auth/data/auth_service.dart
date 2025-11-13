@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/utils/secure_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../utils/secure_storage.dart';
 
 class AuthService {
   final _supabase = Supabase.instance.client;
@@ -38,7 +39,7 @@ class AuthService {
   ) async {
     try {
       final response = await _supabase
-          .from('users')
+          .from('userdata')
           .select()
           .eq('id', userId)
           .single();

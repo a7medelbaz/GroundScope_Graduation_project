@@ -1,17 +1,16 @@
 import 'package:get_it/get_it.dart';
+import '../auth/data/auth_service.dart';
+import '../auth/data/repo/auth_repo.dart';
+import '../auth/logic/cubit/auth_cubit.dart';
 
 final getIt = GetIt.instance;
 Future<void> setupGetIt() async {
-  /// Create a Dio instance using DioFactory
-  // Dio dio = DioFactory.getDio();
-  /// Register ApiService as a lazy singleton
-  // getIt.registerLazySingleton<ApiService>(() => ApiService(dio));
-
-  /// Login
-  // getIt.registerLazySingleton<LoginRepo>(() => LoginRepo(getIt()));
-  // getIt.registerFactory<LoginCubit>(() => LoginCubit(getIt()));
-
-  /// SigUp
-  // getIt.registerLazySingleton<SignUpRepo>(() => SignUpRepo(getIt()));
-  // getIt.registerFactory<SignUpCubit>(() => SignUpCubit(getIt()));
+  /// Auth DI
+  getIt.registerLazySingleton<AuthService>(() => AuthService());
+  getIt.registerLazySingleton<AuthRepo>(
+    () => AuthRepo(authService: getIt<AuthService>()),
+  );
+  getIt.registerFactory<AuthCubit>(
+    () => AuthCubit(getIt<AuthRepo>()),
+  );
 }

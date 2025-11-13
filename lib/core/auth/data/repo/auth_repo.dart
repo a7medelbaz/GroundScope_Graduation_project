@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/auth/data/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../auth_service.dart';
+
 class AuthRepo {
-  final AuthService _authService = AuthService();
+  final AuthService _authService;
+
+  AuthRepo({required AuthService authService})
+    : _authService = authService;
 
   Future<AuthResponse> login({
     required String email,
