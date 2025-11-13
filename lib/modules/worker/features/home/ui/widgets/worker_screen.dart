@@ -9,7 +9,7 @@ class WorkerScreen extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: Text(
-            'Home Screen',
+            'Worker Screen',
             style: TextStyle(color: Colors.white),
           ),
         ),

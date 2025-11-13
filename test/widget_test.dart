@@ -7,6 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ground_scope/core/onboarding/ui/on_boarding_screen.dart';
 import 'package:ground_scope/core/router/app_routers.dart';
 import 'package:ground_scope/ground_scope_app.dart';
 
@@ -15,7 +16,10 @@ void main() {
     WidgetTester tester,
   ) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(GroundScopeApp(appRouter: AppRouter()));
+    await tester.pumpWidget(GroundScopeApp(
+      appRouter: AppRouter(),
+      initialScreen:const OnBoardingScreen(),
+    ),);
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);
