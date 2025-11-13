@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../auth_service.dart';
+import '../service/auth_service.dart';
 
 class AuthRepo {
   final AuthService _authService;
