@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../utils/extensions.dart';
-
 import '../../../router/routes.dart';
 import '../../../widgets/custom_text_button.dart';
 import '../../logic/cubit/auth_cubit.dart';
@@ -18,6 +17,7 @@ class AuthBlocConsumer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String route = '';
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) async {
         if (state is AuthLoading) {
@@ -47,9 +47,16 @@ class AuthBlocConsumer extends StatelessWidget {
             );
 
             await Future.delayed(const Duration(milliseconds: 300));
-
+            String role = state.userData.position;
+            if (role == 'worker') {
+              route = Routes.workerScreen;
+            } else if (role == 'supervisor') {
+              route = Routes.supervisorScreen;
+            } else if (role == 'admin') {
+              route = Routes.adminScreen;
+            }
             if (context.mounted) {
-              context.pushReplacementNamed(Routes.homeScreen);
+              context.pushReplacementNamed(route);
             }
           }
         }
