@@ -41,7 +41,7 @@ class OnBoardingScreen extends StatelessWidget {
                 child: CustomTextButton(
                   buttonText: 'Get Started',
                   onPressed: () {
-                    context.pushNamed(Routes.loginScreen);
+                    context.pushReplacementNamed(Routes.loginScreen);
                   },
                   textStyle: AppTextStyles.font18WhiteBold,
                   buttonHeight: 52.h,
