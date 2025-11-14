@@ -14,7 +14,9 @@ platform :android do
       "Amrb3556@gmail.com",
       "shimaasoliman821@gmail.com",
       "mahiradwan2@gmail.com",
-      "karamwesam289@gmail.com"
+      "karamwesam289@gmail.com",
+      "nadagamal.ng33@gmail.com",
+      "walidaim2@gmail.com",
     ]
 
     # 🔹 Convert array to comma-separated string
