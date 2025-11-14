@@ -6,6 +6,7 @@ platform :android do
     sh "flutter clean"
     sh "flutter build apk --release --flavor production --target lib/main_production.dart --no-tree-shake-icons"
 
+    # ✅ Array of testers
     testers_list = [
       "aelbaz0189@gmail.com",
       "m9stafa05@gmail.com",
@@ -16,12 +17,15 @@ platform :android do
       "karamwesam289@gmail.com"
     ]
 
+    # 🔹 Convert array to comma-separated string
+    testers_string = testers_list.join(", ")
+
     firebase_app_distribution(
       app: "1:818314557158:android:d245cd4330120925842d27",
       firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"],
       android_artifact_type: "APK",
       android_artifact_path: "../build/app/outputs/flutter-apk/app-production-release.apk",
-      testers: testers_list,
+      testers: testers_string,
       release_notes: "test this version of the app"
     )
   end
