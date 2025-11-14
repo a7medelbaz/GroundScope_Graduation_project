@@ -1,35 +1,43 @@
+
 # GroundScope
 
-**GroundScope** هو مشروع تخرج لطلاب **جامعة الزقازيق الأهلية**، ويهدف إلى بناء نظام متكامل لإدارة وتنظيم خدمات العمليات الأرضية في المطارات — مثل توزيع المهام، متابعة العمال، الإشراف، وإعداد التقارير التشغيلية.
+**GroundScope** is a graduation project developed by students of  **Zagazig National University** , aiming to provide a comprehensive system for managing and organizing **airport ground operations** — including task allocation, workforce monitoring, supervision, and operational reporting.
 
-## 📌 مقدمة
+---
 
-يوفّر GroundScope ثلاث واجهات رئيسية حسب دور المستخدم:
+## 📌 Introduction
 
-* **العامل (Worker)**: تنفيذ المهام اليومية.
-* **المشرف (Supervisor)**: متابعة الفرق، توزيع المهام، مراجعة التقارير.
-* **المدير (Admin)**: تحكم كامل في النظام والمستخدمين والإعدادات.
+GroundScope offers  **three primary interfaces** , tailored to user roles:
 
-## 🎯 أهداف المشروع
+* **Worker** : Perform daily operational tasks efficiently.
+* **Supervisor** : Monitor teams, assign tasks, and review reports.
+* **Admin** : Full control over system settings, user management, and configuration.
 
-* تحسين تنظيم سير العمل على أرض المطار.
-* تعزيز التواصل بين العمال والمشرفين.
-* توفير لوحة تحكم مركزية للإدارة.
-* إنشاء تقارير لحظية تدعم اتخاذ القرار.
+---
 
-## 🏗️ المعمارية المستخدمة
+## 🎯 Project Objectives
 
-يعتمد المشروع على **Modular Architecture + MVVM** بهدف:
+* Improve workflow organization on airport grounds.
+* Enhance communication between workers and supervisors.
+* Provide a centralized administrative dashboard.
+* Generate real-time reports to support informed decision-making.
 
-* دعم التوسع بسهولة.
-* فصل واضح للمسؤوليات.
-* سهولة إعادة الاستخدام.
-* تنظيم الهيكلة بشكل احترافي.
+---
 
-## 📁 هيكل المشروع
+## 🏗️ Architecture
 
-```text
-lib/
+The project follows a  **Modular Architecture + MVVM pattern** , designed to:
+
+* Facilitate scalability and future enhancements.
+* Ensure clear separation of responsibilities.
+* Promote code reusability and maintainability.
+* Maintain a professional and organized project structure.
+
+---
+
+## 📁 Project Structure
+
+<pre class="overflow-visible!" data-start="1393" data-end="1859" data--h-bstatus="0OBSERVED"><div class="contain-inline-size rounded-2xl relative bg-token-sidebar-surface-primary" data--h-bstatus="0OBSERVED"><div class="sticky top-9" data--h-bstatus="0OBSERVED"><div class="absolute end-0 bottom-0 flex h-9 items-center pe-2" data--h-bstatus="0OBSERVED"><div class="bg-token-bg-elevated-secondary text-token-text-secondary flex items-center gap-4 rounded-sm px-2 font-sans text-xs" data--h-bstatus="0OBSERVED"></div></div></div><div class="overflow-y-auto p-4" dir="ltr" data--h-bstatus="0OBSERVED"><code class="whitespace-pre! language-text" data--h-bstatus="0OBSERVED"><span data--h-bstatus="0OBSERVED"><span data--h-bstatus="0OBSERVED">lib/
  ├── core/
  │    ├── auth/
  │    │    ├── data/
@@ -53,31 +61,33 @@ lib/
  ├── ground_scope_app.dart
  ├── main_development.dart
  └── main_production.dart
-```
-
-## 👥 الفريق
-
-هذا المشروع تم تطويره بواسطة فريق مكون من 9 طلاب من **جامعة الزقازيق الأهلية**:
-
-1. أحمد الباز طلبة الباز صبح
-2. محمد حسني محمد حسن
-3. عمرو محمد عبد الحميد بدر
-4. عبد الله محمد عبد الله نور الدين
-5. الشيماء محمد سليمان ابراهيم
-6. علياء فايز محمد محمود
-7. ماهيتاب عبد الواحد عبد المنعم
-8. وسام كرم شحاته احمد الزهيري
-9. ندي محمد جمال البيومي محمد
-
-## 🎨 التصميم
-
-> سيتم إضافة لقطات التصميم أو روابط Figma لاحقًا.
+</span></span></code></div></div></pre>
 
 ---
 
-## 🧱 المخطط المعماري (Mermaid Diagram)
+## 👥 Team Members
 
+This project was developed by a team of **9 students** from  **Zagazig National University** :
+
+1. Ahmed Elbaz Talba Elbaz Sobah
+2. Mohamed Hosni Mohamed Hassan
+3. Amr Mohamed Abdelhamid Badr
+4. Abdullah Mohamed Abdullah Nour El-Din
+5. Shaimaa Mohamed Suleiman Ibrahim
+6. Alyaa Fayez Mohamed Mahmoud
+7. Mahetab Abdelwahed Abdelmonem
+8. Wissam Karam Shahata Ahmed El-Zuhairy
+9. Nada Mohamed Gamal El-Bayoumi Mohamed
+
+---
+
+## 🎨 Design
+
+> UI/UX screenshots or Figma links will be added in future updates.
+
+---
 ```mermaid
+
 flowchart TD
 classDef core fill:#1e40af,stroke:#1e3a8a,color:#fff;
 classDef module fill:#065f46,stroke:#064e3b,color:#fff;
@@ -90,10 +100,15 @@ LIB[lib/]:::file
 
 %% ===== CORE =====
 LIB --> CORE[core/]:::core
+
 CORE --> AUTH[auth/]:::core
-AUTH --> AUTH_DATA[data/]:::core
-AUTH --> AUTH_DOMAIN[domain/]:::core
-AUTH --> AUTH_PRESENTATION[presentation/]:::core
+AUTH --> AUTH_DATA[Data/]:::core
+AUTH_DATA --> AUTH_IMPL[auth_repository_impl.dart]:::file
+AUTH --> AUTH_LOGIC[Logic/]:::core
+AUTH_LOGIC --> USER_MODEL[user_model.dart]:::file
+AUTH_LOGIC --> AUTH_REPO[auth_repository.dart]:::file
+AUTH --> AUTH_UI[UI/]:::core
+
 CORE --> NETWORK[network/]:::core
 CORE --> STORAGE[storage/]:::core
 CORE --> UTILS[utils/]:::core
@@ -106,22 +121,41 @@ MODULES --> WORKER[worker/]:::module
 WORKER --> WORKER_CORE[core/]:::module
 WORKER --> WORKER_FEATURES[features/]:::module
 
+WORKER_FEATURES --> TASKS[tasks/]:::feature
+TASKS --> TASKS_DATA[Data/]:::feature
+TASKS --> TASKS_LOGIC[Logic/]:::feature
+TASKS --> TASKS_UI[UI/]:::feature
+
+WORKER_FEATURES --> PROFILE[profile/]:::feature
+PROFILE --> PROFILE_DATA[Data/]:::feature
+PROFILE --> PROFILE_LOGIC[Logic/]:::feature
+PROFILE --> PROFILE_UI[UI/]:::feature
+
 %% Supervisor
 MODULES --> SUPERVISOR[supervisor/]:::module
 SUPERVISOR --> SUPERVISOR_CORE[core/]:::module
 SUPERVISOR --> SUPERVISOR_FEATURES[features/]:::feature
+
+SUPERVISOR_FEATURES --> SUP_FEATURE[Feature/]:::feature
+SUP_FEATURE --> SUP_DATA[Data/]:::feature
+SUP_FEATURE --> SUP_LOGIC[Logic/]:::feature
+SUP_FEATURE --> SUP_UI[UI/]:::feature
 
 %% Admin
 MODULES --> ADMIN[admin/]:::module
 ADMIN --> ADMIN_CORE[core/]:::module
 ADMIN --> ADMIN_FEATURES[features/]:::feature
 
+ADMIN_FEATURES --> AD_FEATURE[Feature/]:::feature
+AD_FEATURE --> AD_DATA[Data/]:::feature
+AD_FEATURE --> AD_LOGIC[Logic/]:::feature
+AD_FEATURE --> AD_UI[UI/]:::feature
+
 %% ===== MAIN FILES =====
-LIB --> MAIN_APP[ground_scope_app.dart]:::main
 LIB --> MAIN_DEV[main_development.dart]:::main
 LIB --> MAIN_PROD[main_production.dart]:::main
+LIB --> MAIN_APP[ground_scope_app.dart]:::main
 ```
+## 📄 License
 
-## 📄 الترخيص
-
-هذا المشروع مرخص للاستخدام الأكاديمي فقط ولا يُسمح باستخدامه لأغراض تجارية.
+This project is **for academic purposes only** and may not be used for commercial purposes.
