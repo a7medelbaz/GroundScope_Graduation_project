@@ -1,4 +1,3 @@
-
 default_platform(:android)
 
 platform :android do
@@ -7,12 +6,22 @@ platform :android do
     sh "flutter clean"
     sh "flutter build apk --release --flavor production --target lib/main_production.dart --no-tree-shake-icons"
 
+    testers_list = [
+      "aelbaz0189@gmail.com",
+      "m9stafa05@gmail.com",
+      "mohmmedhosni34@gmail.com",
+      "Amrb3556@gmail.com",
+      "shimaasoliman821@gmail.com",
+      "mahiradwan2@gmail.com",
+      "karamwesam289@gmail.com"
+    ]
+
     firebase_app_distribution(
       app: "1:818314557158:android:d245cd4330120925842d27",
       firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"],
       android_artifact_type: "APK",
       android_artifact_path: "../build/app/outputs/flutter-apk/app-production-release.apk",
-      testers: "aelbaz0189@gmail.com",
+      testers: testers_list,
       release_notes: "test this version of the app"
     )
   end
