@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "818314557158",
+    "project_id": "groundscope-graduation-project",
+    "storage_bucket": "groundscope-graduation-project.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:818314557158:android:caed191cae2c8759842d27",
+        "android_client_info": {
+          "package_name": "com.example.ground_scope"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_Ck2AgTETGyDFGgdqMyIX3s_Wwx5bWzQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:818314557158:android:d245cd4330120925842d27",
+        "android_client_info": {
+          "package_name": "com.example.ground_scope.production"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_Ck2AgTETGyDFGgdqMyIX3s_Wwx5bWzQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
