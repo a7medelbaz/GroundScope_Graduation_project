@@ -10,18 +10,12 @@ class WorkerScreen extends StatefulWidget {
 }
 
 class _WorkerScreenState extends State<WorkerScreen> {
-  int currentIndex = 0;
   int selectedIndex = 0;
-  navigateBottomBar(int index) {
-    setState(() {
-      selectedIndex = index;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.darkBlue,
       body: SafeArea(
         child: pagesOfWorkerBottomNaveBar[selectedIndex],
       ),
@@ -29,11 +23,11 @@ class _WorkerScreenState extends State<WorkerScreen> {
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: AppColors.lightBlue,
         unselectedItemColor: AppColors.grayColor,
-        currentIndex: currentIndex,
+        currentIndex: selectedIndex,
         type: BottomNavigationBarType.shifting,
         onTap: (index) {
           setState(() {
-            currentIndex = index;
+            selectedIndex = index;
           });
         },
         items: const [
