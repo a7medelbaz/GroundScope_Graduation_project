@@ -3,9 +3,8 @@ import 'package:ground_scope/core/onboarding/ui/on_boarding_screen.dart';
 import 'package:ground_scope/core/utils/secure_storage.dart';
 import 'package:ground_scope/modules/admin/features/home/admin_screen.dart';
 import 'package:ground_scope/modules/supervisor/features/home/supervisor_screen.dart';
-import 'package:ground_scope/modules/worker/features/home/ui/widgets/worker_screen.dart';
+import 'package:ground_scope/modules/worker/core/widgets/worker_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import 'core/di/dependency_injection.dart';
 import 'core/router/app_routers.dart';
 import 'ground_scope_app.dart';

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class ReportsScreen extends StatelessWidget {
+  const ReportsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const SafeArea(
       child: Center(
         child: Text(
-          'WorkerHome',
+          'Worker Report Screen',
           style: TextStyle(color: Colors.white),
         ),
       ),
