@@ -6,7 +6,7 @@ platform :android do
     sh "flutter clean"
     sh "flutter build apk --release --flavor production --target lib/main_production.dart --no-tree-shake-icons"
 
-    # ✅ Array of testers
+    # List of testers
     testers_list = [
       "aelbaz0189@gmail.com",
       "m9stafa05@gmail.com",
@@ -16,10 +16,10 @@ platform :android do
       "mahiradwan2@gmail.com",
       "karamwesam289@gmail.com",
       "nadagamal.ng33@gmail.com",
-      "walidaim2@gmail.com",
+      "walidaim2@gmail.com"
     ]
 
-    # 🔹 Convert array to comma-separated string
+    # Convert array to comma-separated string
     testers_string = testers_list.join(", ")
 
     firebase_app_distribution(
