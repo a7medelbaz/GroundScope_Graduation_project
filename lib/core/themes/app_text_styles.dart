@@ -23,4 +23,9 @@ class AppTextStyles {
     fontWeight: FontWeightHelper.regular,
     color: AppColors.grayColor,
   );
+  static TextStyle font36greyBold = const TextStyle(
+    fontSize: 36,
+    fontWeight: FontWeightHelper.bold,
+    color: AppColors.lightBlue,
+  );
 }
