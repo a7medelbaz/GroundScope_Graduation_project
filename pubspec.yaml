@@ -37,6 +37,7 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   flutter_svg: ^2.2.2
   get_it: ^9.0.5
+  google_fonts: ^6.2.1
   supabase_flutter: ^2.10.3
 
 dev_dependencies:
