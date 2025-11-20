@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/themes/app_colors.dart';
-import 'package:ground_scope/modules/worker/core/utils/pages_of_bottom_bar.dart';
+import '../../../../core/themes/app_colors.dart';
+import '../utils/pages_of_bottom_bar.dart';
 
 class WorkerScreen extends StatefulWidget {
   const WorkerScreen({super.key});

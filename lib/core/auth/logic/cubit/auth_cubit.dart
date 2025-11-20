@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ground_scope/core/utils/secure_storage.dart';
+import '../../../utils/secure_storage.dart';
 
 import '../../data/models/user_date.dart';
 import '../../data/repo/auth_repo.dart';
