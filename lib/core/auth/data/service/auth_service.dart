@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ground_scope/core/error/models/app_error.dart';
+import 'package:ground_scope/core/error/types/error_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../utils/secure_storage.dart';
@@ -20,23 +22,22 @@ class AuthService {
         _secureStorage.saveString(key: 'user_id', value: userId);
       }
 
-      debugPrint(
-        '✅ User logged in successfully: ${response.user?.id}',
-      );
+      debugPrint('✅ User logged in successfully: ${response.user?.id}');
       return response;
-    } on AuthException catch (e) {
-      debugPrint("❌ Login failed: ${e.message}");
-      throw Exception('Login failed: ${e.message}');
     } catch (e) {
-      debugPrint("❌ Unexpected error during login: $e");
-      throw Exception('Unexpected error during login: $e');
+      final appError = ErrorHandler.handle(e);
+      debugPrint('❌ Login failed: ${appError.message}');
+      throw AppError(
+        message: appError.message,
+        type: appError.type,
+        code: appError.code,
+        originalError: appError.originalError,
+      );
     }
   }
 
   /// Fetch USer By Id
-  Future<Map<String, dynamic>?> fetchUserProfileById(
-    String userId,
-  ) async {
+  Future<Map<String, dynamic>?> fetchUserProfileById(String userId) async {
     try {
       final response = await _supabase
           .from('userdata')
@@ -45,8 +46,14 @@ class AuthService {
           .single();
       return response;
     } catch (e) {
-      debugPrint("❌ Error fetching user session data: $e");
-      return null;
+      final appError = ErrorHandler.handle(e);
+      debugPrint('❌ Login failed: ${appError.message}');
+      throw AppError(
+        message: appError.message,
+        type: appError.type,
+        code: appError.code,
+        originalError: appError.originalError,
+      );
     }
   }
 }
