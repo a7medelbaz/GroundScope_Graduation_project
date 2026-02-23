@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
 
-class ReportsScreen extends StatelessWidget {
-  const ReportsScreen({super.key});
+class NotificationsScreen extends StatelessWidget {
+  const NotificationsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const SafeArea(
       child: Center(
         child: Text(
-          'Worker Report Screen',
+          'Worker Notifications Screen',
           style: TextStyle(color: Colors.white),
         ),
       ),
     );
   }
 }
+
+
+
+
+
+
+
+

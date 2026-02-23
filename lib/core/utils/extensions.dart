@@ -1,9 +1,30 @@
 import 'package:flutter/material.dart';
+import 'navigation_transitions.dart';
 
 extension Navigation on BuildContext {
-  /// Push a new route by widget
+  /// Push a new route by widget with default transition
   void push(Widget page) {
     Navigator.push(this, MaterialPageRoute(builder: (_) => page));
+  }
+
+  /// Push a new route with slide from right to left (Home → Profile)
+  void pushSlideRight(Widget page) {
+    Navigator.push(this, SlideRightRoute(page));
+  }
+
+  /// Push a new route with slide from left to right (Profile → Home)
+  void pushSlideLeft(Widget page) {
+    Navigator.push(this, SlideLeftRoute(page));
+  }
+
+  /// Push a new route with slide from bottom to top (Home → Task Details)
+  void pushSlideUp(Widget page) {
+    Navigator.push(this, SlideUpRoute(page));
+  }
+
+  /// Push a new route with slide from top to bottom (Task Details → Home)
+  void pushSlideDown(Widget page) {
+    Navigator.push(this, SlideDownRoute(page));
   }
 
   /// Replace current screen with a new one
