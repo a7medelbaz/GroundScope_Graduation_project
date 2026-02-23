@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ground_scope/core/utils/extensions.dart';
-import '../../../task_details_screen.dart';
+import '../task_details_screen.dart';
 import '../../data/models/task_model.dart';
 
 class TaskCardWidget extends StatelessWidget {
