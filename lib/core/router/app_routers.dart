@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ground_scope/modules/admin/features/home/admin_screen.dart';
-import 'package:ground_scope/modules/supervisor/features/home/supervisor_screen.dart';
-import '../auth/data/repo/auth_repo.dart';
-import '../di/dependency_injection.dart';
-import '../auth/logic/cubit/auth_cubit.dart';
+
+import '../../modules/admin/features/home/admin_screen.dart';
+import '../../modules/supervisor/features/home/supervisor_screen.dart';
 import '../../modules/worker/core/widgets/worker_screen.dart';
+import '../auth/data/repo/auth_repo.dart';
+import '../auth/logic/cubit/auth_cubit.dart';
 import '../auth/ui/login_screen.dart';
+import '../di/dependency_injection.dart';
 import '../onboarding/ui/on_boarding_screen.dart';
 import 'routes.dart';
 
