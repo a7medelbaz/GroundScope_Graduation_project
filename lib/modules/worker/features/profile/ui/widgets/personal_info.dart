@@ -8,11 +8,11 @@ class PersonalInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
       children: [
-        const ProfileHeader(),
-        const SizedBox(height: 40),
-        const ShiftStatistics(),
+        ProfileHeader(),
+        SizedBox(height: 40),
+        ShiftStatistics(),
       ],
     );
   }

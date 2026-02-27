@@ -37,8 +37,8 @@ class PhotoSection extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
             ),
             child: CustomPaint(
-              painter: DashedBorderPainter(
-                color: const Color(0xFF334155),
+              painter: const DashedBorderPainter(
+                color: Color(0xFF334155),
                 strokeWidth: 2,
                 dashWidth: 6,
                 dashSpace: 4,

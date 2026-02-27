@@ -8,17 +8,17 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF101922),
+    return const Scaffold(
+      backgroundColor: Color(0xFF101922),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: EdgeInsets.symmetric(horizontal: 20.0),
             child: Column(
               children: [
-                const SizedBox(height: 24),
+                SizedBox(height: 24),
                 // Profile Title
-                const Text(
+                Text(
                   'Profile',
                   style: TextStyle(
                     color: Colors.white,
@@ -26,16 +26,16 @@ class ProfileScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32),
                 // Profile Section
-                const ProfileHeader(),
-                const SizedBox(height: 40),
+                ProfileHeader(),
+                SizedBox(height: 40),
                 // Shift Statistics
-                const ShiftStatistics(),
-                const SizedBox(height: 32),
+                ShiftStatistics(),
+                SizedBox(height: 32),
                 // Shift Summary
-                const ShiftSummary(),
-                const SizedBox(height: 24),
+                ShiftSummary(),
+                SizedBox(height: 24),
               ],
             ),
           ),

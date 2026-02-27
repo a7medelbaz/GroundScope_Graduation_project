@@ -90,7 +90,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
               ),
               SizedBox(height: 24.h),
               // Task Timer Section
-              TimerDisplay(
+              const TimerDisplay(
                 hours: _hours,
                 minutes: _minutes,
                 seconds: _seconds,
