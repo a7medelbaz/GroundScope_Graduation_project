@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ground_scope/modules/worker/features/main_navigation/ui/main_scaffold.dart';
 
 import '../../modules/admin/features/home/admin_screen.dart';
 import '../../modules/supervisor/features/home/supervisor_screen.dart';
-import '../../modules/worker/core/widgets/worker_screen.dart';
 import '../auth/data/repo/auth_repo.dart';
 import '../auth/logic/cubit/auth_cubit.dart';
 import '../auth/ui/login_screen.dart';
@@ -18,9 +18,7 @@ class AppRouter {
 
     switch (settings.name) {
       case Routes.onBoardingScreen:
-        return MaterialPageRoute(
-          builder: (_) => const OnBoardingScreen(),
-        );
+        return MaterialPageRoute(builder: (_) => const OnBoardingScreen());
       case Routes.loginScreen:
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
@@ -28,22 +26,17 @@ class AppRouter {
             child: const LoginScreen(),
           ),
         );
-      case Routes.workerScreen:
-        return MaterialPageRoute(
-          builder: (_) => const WorkerScreen(),
-        );
+      case Routes.workerScaffold:
+        return MaterialPageRoute(builder: (_) => const WorkerScaffold());
       case Routes.supervisorScreen:
-        return MaterialPageRoute(
-          builder: (_) => const SupervisorScreen(),
-        );
+        return MaterialPageRoute(builder: (_) => const SupervisorScreen());
       case Routes.adminScreen:
         return MaterialPageRoute(builder: (_) => const AdminScreen());
 
       default:
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Page not found')),
-          ),
+          builder: (_) =>
+              const Scaffold(body: Center(child: Text('Page not found'))),
         );
     }
   }
