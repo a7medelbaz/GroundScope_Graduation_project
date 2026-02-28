@@ -1,5 +1,5 @@
 {
-  "app_title": "My App",
+  "app_title": "GroundScope",
   "welcome": "Welcome",
   "errors": {
     "error_screen_title": "Oops! Something went wrong",
@@ -49,5 +49,9 @@
     "profile_image_not_selected": "Profile Image Not Selected",
     "take_photo": "Take Photo",
     "choose_from_gallery": "Choose From Gallery"
+  },
+  "onBoarding": {
+    "hero_desc": "Manage and schedule all of your Flights Between Different Positions with GroundScope for a new and convenient experience.",
+    "get_started_button": "Get Started"
   }
 }
