@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../notifications/ui/notifications_screen.dart';
-import '../../reports/ui/reports_screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/themes/app_colors.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../../home/ui/home_screen.dart';
+import '../../notifications/ui/notifications_screen.dart';
 import '../../profile/ui/profile_screen.dart';
+import '../../reports/ui/reports_screen.dart';
 
 class WorkerScaffold extends StatefulWidget {
   const WorkerScaffold({super.key});
@@ -34,6 +34,7 @@ class _WorkerScaffoldState extends State<WorkerScaffold> {
 
   List<PersistentBottomNavBarItem> _navBarItems(final BuildContext context) {
     final activeColor = AppColors.primary300;
+    final inactiveColor = context.customColors.textSecondary;
 
     return [
       PersistentBottomNavBarItem(
@@ -42,20 +43,33 @@ class _WorkerScaffoldState extends State<WorkerScaffold> {
           size: responsiveRadius(28),
           color: activeColor,
         ),
+        inactiveIcon: Icon(
+          Icons.article,
+          size: responsiveRadius(28),
+          color: inactiveColor,
+        ),
       ),
       PersistentBottomNavBarItem(
         icon: Icon(
           Icons.search,
           size: responsiveRadius(28),
-          color: AppColors.grey0,
+          color: activeColor,
         ),
-        activeColorPrimary: activeColor,
-        activeColorSecondary: Colors.white,
+        inactiveIcon: Icon(
+          Icons.search_outlined,
+          size: responsiveRadius(28),
+          color: inactiveColor,
+        ),
       ),
       PersistentBottomNavBarItem(
         icon: Icon(
           Icons.notifications_outlined,
           color: activeColor,
+          size: responsiveRadius(24),
+        ),
+        inactiveIcon: Icon(
+          Icons.notifications,
+          color: inactiveColor,
           size: responsiveRadius(24),
         ),
       ),
@@ -64,6 +78,11 @@ class _WorkerScaffoldState extends State<WorkerScaffold> {
           Icons.person_outline,
           size: responsiveRadius(28),
           color: activeColor,
+        ),
+        inactiveIcon: Icon(
+          Icons.person,
+          size: responsiveRadius(28),
+          color: inactiveColor,
         ),
       ),
     ];
@@ -76,9 +95,9 @@ class _WorkerScaffoldState extends State<WorkerScaffold> {
       controller: _controller,
       screens: _screens,
       items: _navBarItems(context),
-      navBarStyle: NavBarStyle.style16,
+      navBarStyle: NavBarStyle.style9,
       backgroundColor: context.customColors.background,
-      navBarHeight: responsiveHeight(58),
+      navBarHeight: responsiveHeight(60),
       padding: const EdgeInsets.only(top: 2, bottom: 8),
       decoration: NavBarDecoration(
         colorBehindNavBar: context.customColors.background,
