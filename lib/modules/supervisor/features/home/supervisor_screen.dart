@@ -7,10 +7,7 @@ class SupervisorScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
-        child: Text(
-          'SuperVisor',
-          style: TextStyle(color: Colors.white),
-        ),
+        child: Text('SuperVisor', style: TextStyle(color: Colors.white)),
       ),
     );
   }

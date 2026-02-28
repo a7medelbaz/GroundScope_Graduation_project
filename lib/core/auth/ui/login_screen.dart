@@ -1,89 +1,63 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../extensions/context_extensions.dart';
 import '../../themes/app_text_styles.dart';
-import '../../utils/app_assets.dart';
 import '../../utils/spacing.dart';
-import 'widgets/auth_bloc_consumer.dart';
-import 'widgets/custom_text_form_.dart';
+import '../../widgets/ui/dialogs/app_dialogs.dart';
+import '../../widgets/ui/loaders/overlay_loader.dart';
+import '../logic/cubit/auth_cubit.dart';
+import 'widgets/login_form.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
-  late final TextEditingController emailController;
-  late final TextEditingController passwordController;
-
-  @override
-  void initState() {
-    super.initState();
-    emailController = TextEditingController();
-    passwordController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w),
-            child: SizedBox(
-              height:
-                  MediaQuery.of(context).size.height -
-                  MediaQuery.of(context).padding.top,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(
-                    AppAssets.appLogoSVG,
-                    height: 100.h,
+        child: BlocConsumer<AuthCubit, AuthState>(
+          listener: (final context, final state) {
+            if (state is AuthFailure) {
+              AppDialogs.showError(context, message: state.error.messageKey);
+            }
+          },
+          builder: (final context, final state) {
+            return OverlayLoader(
+              isLoading: state is AuthChecking,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: responsiveWidth(16),
+                  vertical: responsiveHeight(8),
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      verticalSpacing(40),
+                      Text(
+                        'auth.login_title'.tr(),
+                        style: AppTextStyles.font20Bold,
+                        textAlign: TextAlign.center,
+                      ),
+                      verticalSpacing(12),
+                      Text(
+                        'auth.login_desc'.tr(),
+                        style: AppTextStyles.font14Regular.copyWith(
+                          color: context.customColors.textSecondary,
+                          height: 1.8,
+                        ),
+                      ),
+                      verticalSpacing(80),
+                      const LoginForm(),
+                      verticalSpacing(60),
+                    ],
                   ),
-                  verticalSpacing(16),
-                  Text(
-                    'GroundScope',
-                    style: AppTextStyles.font30WhiteBold,
-                    textAlign: TextAlign.center,
-                  ),
-                  verticalSpacing(8),
-                  Text(
-                    'Intelligent Ground Operations.',
-                    style: AppTextStyles.font16greyRegular,
-                    textAlign: TextAlign.center,
-                  ),
-                  verticalSpacing(95),
-                  CustomTextFormField(
-                    hintText: 'Email',
-                    controller: emailController,
-                  ),
-                  verticalSpacing(16),
-                  CustomTextFormField(
-                    hintText: 'Password',
-                    controller: passwordController,
-                    isObscureText: true,
-                  ),
-                  verticalSpacing(60),
-                  AuthBlocConsumer(
-                    emailController: emailController,
-                    passwordController: passwordController,
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );

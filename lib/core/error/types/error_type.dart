@@ -1,41 +1,37 @@
 enum ErrorType {
-  // Network errors
+  /// Network/Internet related
   noInternet,
   timeout,
   connectionError,
-  
-  // HTTP errors
+
+  /// HTTP Client errors (4xx)
   badRequest,
   unauthorized,
   forbidden,
   notFound,
   conflict,
-  internalServer,
-  
-  // Auth errors
-  invalidCredentials,
-  userNotFound,
-  emailAlreadyExists,
-  weakPassword,
-  invalidEmail,
-  sessionExpired,
-  emailNotVerified,
-  
-  // Service specific
-  supabaseAuth,
-  supabaseDatabase,
-  supabaseStorage,
-  
-  // General
-  cancel,
-  unknown,
   validation,
+  tooManyRequests,
+
+  /// HTTP Server errors (5xx)
+  internalServer,
+  serviceUnavailable,
+
+  /// Operation errors
+  cancel,
+
+  /// Unknown/Unexpected
+  unknown,
 }
 
+/// Standard error codes
 class ErrorCode {
-  // HTTP Status Codes
-  static const int success = 200;
-  static const int created = 201;
+  // Network errors (using custom codes)
+  static const int noInternet = -1001;
+  static const int timeout = -1002;
+  static const int cancel = -1003;
+
+  // HTTP standard status codes
   static const int badRequest = 400;
   static const int unauthorized = 401;
   static const int forbidden = 403;
@@ -44,10 +40,8 @@ class ErrorCode {
   static const int unprocessableEntity = 422;
   static const int tooManyRequests = 429;
   static const int internalServer = 500;
-  
-  // Local Error Codes
-  static const int noInternet = -1;
-  static const int timeout = -2;
-  static const int cancel = -3;
-  static const int unknown = -4;
+  static const int serviceUnavailable = 503;
+
+  // Unknown
+  static const int unknown = -9999;
 }
