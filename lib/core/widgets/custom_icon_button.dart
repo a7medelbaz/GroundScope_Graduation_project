@@ -9,6 +9,7 @@ class CustomIconButton extends StatelessWidget {
   final String? label;
   final String? tooltip;
   final double? iconSize;
+  final Color? backgroundColor;
 
   const CustomIconButton({
     super.key,
@@ -17,6 +18,7 @@ class CustomIconButton extends StatelessWidget {
     this.label,
     this.tooltip,
     this.iconSize,
+    this.backgroundColor,
   });
 
   bool get _hasLabel => label != null;
@@ -24,7 +26,7 @@ class CustomIconButton extends StatelessWidget {
   @override
   Widget build(final BuildContext context) {
     final borderRadius = BorderRadius.circular(responsiveRadius(12));
-    final backgroundColor = context.customColors.divider.withValues(alpha: 0.5);
+    final backgroundColor = this.backgroundColor ?? Colors.transparent;
 
     final Widget button = Material(
       color: backgroundColor,
