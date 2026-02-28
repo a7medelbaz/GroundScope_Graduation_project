@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ground_scope/modules/worker/features/main_navigation/ui/main_scaffold.dart';
+import 'package:ground_scope/modules/worker/features/main_navigation/ui/worker_scaffold.dart';
 
 import '../../modules/admin/features/home/admin_screen.dart';
 import '../../modules/supervisor/features/home/supervisor_screen.dart';
-import '../auth/data/repo/auth_repo.dart';
-import '../auth/logic/cubit/auth_cubit.dart';
 import '../auth/ui/login_screen.dart';
-import '../di/dependency_injection.dart';
 import '../onboarding/ui/on_boarding_screen.dart';
 import 'routes.dart';
 
@@ -20,12 +16,7 @@ class AppRouter {
       case Routes.onBoardingScreen:
         return MaterialPageRoute(builder: (_) => const OnBoardingScreen());
       case Routes.loginScreen:
-        return MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (context) => AuthCubit(getIt<AuthRepo>()),
-            child: const LoginScreen(),
-          ),
-        );
+        return MaterialPageRoute(builder: (_) => const LoginScreen());
       case Routes.workerScaffold:
         return MaterialPageRoute(builder: (_) => const WorkerScaffold());
       case Routes.supervisorScreen:
