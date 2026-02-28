@@ -39,6 +39,7 @@ dependencies:
   flutter_svg: ^2.2.2
   get_it: ^9.0.5
   hydrated_bloc: ^10.1.1
+  path_provider: ^2.1.5
   persistent_bottom_nav_bar: ^6.2.1
   shared_preferences: ^2.5.4
   supabase_flutter: ^2.10.3

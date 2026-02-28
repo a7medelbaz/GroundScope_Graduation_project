@@ -1,3 +1,7 @@
+import 'package:flutter/foundation.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
+
 class AppConfig {
   AppConfig._();
   static const String supaBaseUr = 'https://bmfsoaduxasmlpkdyzji.supabase.co';
@@ -6,5 +10,12 @@ class AppConfig {
 
   // App Version
   static const String appVersion = '1.0.0';
-  
+}
+
+Future<void> setupHydratedStorage() async {
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: kIsWeb
+        ? HydratedStorageDirectory.web
+        : HydratedStorageDirectory((await getTemporaryDirectory()).path),
+  );
 }
