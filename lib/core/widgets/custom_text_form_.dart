@@ -114,7 +114,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
     // Resolve border colors
     final Color defaultBorderColor = widget.borderColor ?? colors.border;
     final Color focusedBorderColor =
-        widget.focusedBorderColor ?? colors.accentBlue;
+        widget.focusedBorderColor ?? AppColors.primary300;
 
     // Text styles
     final TextStyle baseInputStyle =
