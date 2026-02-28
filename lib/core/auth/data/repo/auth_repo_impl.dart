@@ -1,6 +1,6 @@
-import 'package:ground_scope/core/auth/data/models/user_date.dart';
-import 'package:ground_scope/core/auth/data/remote/auth_remote_ds.dart';
-import 'package:ground_scope/core/auth/data/repo/auth_repo.dart';
+import '../models/user_date.dart';
+import '../remote/auth_remote_ds.dart';
+import 'auth_repo.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthRepoImpl implements AuthRepo {

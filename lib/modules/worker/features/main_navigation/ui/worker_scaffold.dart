@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/modules/worker/features/notifications/ui/notifications_screen.dart';
-import 'package:ground_scope/modules/worker/features/reports/ui/reports_screen.dart';
+import '../../notifications/ui/notifications_screen.dart';
+import '../../reports/ui/reports_screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 import '../../../../../core/extensions/context_extensions.dart';

@@ -6,5 +6,5 @@ class AppConstants {
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
 
-static const String userDataKey = 'user_data';
+  static const String userDataKey = 'user_data';
 }

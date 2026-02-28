@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/extensions/context_extensions.dart';
-import 'package:ground_scope/core/widgets/custom_icon_button.dart';
+import '../../../extensions/context_extensions.dart';
+import '../../../widgets/custom_icon_button.dart';
 
 import '../../../../core/utils/functions/app_setting_method.dart';
 

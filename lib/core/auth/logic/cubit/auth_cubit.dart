@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ground_scope/core/error/models/app_error.dart';
 
+import '../../../error/models/app_error.dart';
 import '../../data/models/user_date.dart';
 import '../../data/repo/auth_repo.dart';
 

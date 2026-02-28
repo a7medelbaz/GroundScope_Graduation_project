@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:ground_scope/core/auth/data/models/user_date.dart';
-import 'package:ground_scope/core/config/app_constants.dart';
-import 'package:ground_scope/core/error/models/app_error.dart';
-import 'package:ground_scope/core/error/types/error_handler.dart';
-import 'package:ground_scope/core/networking/supabase_service.dart';
-import 'package:ground_scope/core/service/secure_storage.dart';
+import '../models/user_date.dart';
+import '../../../config/app_constants.dart';
+import '../../../error/models/app_error.dart';
+import '../../../error/types/error_handler.dart';
+import '../../../networking/supabase_service.dart';
+import '../../../service/secure_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthRemoteDs {

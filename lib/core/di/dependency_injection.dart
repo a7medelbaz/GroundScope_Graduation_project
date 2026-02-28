@@ -1,12 +1,12 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
-import 'package:ground_scope/core/auth/data/repo/auth_repo_impl.dart';
-import 'package:ground_scope/core/networking/supabase_service.dart';
-import 'package:ground_scope/core/service/secure_storage.dart';
 
 import '../auth/data/remote/auth_remote_ds.dart';
 import '../auth/data/repo/auth_repo.dart';
+import '../auth/data/repo/auth_repo_impl.dart';
 import '../auth/logic/cubit/auth_cubit.dart';
+import '../networking/supabase_service.dart';
+import '../service/secure_storage.dart';
 
 final getIt = GetIt.instance;
 Future<void> setUpDependencies() async {

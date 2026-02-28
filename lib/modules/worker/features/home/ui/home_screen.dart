@@ -7,10 +7,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const SafeArea(
       child: Center(
-        child: Text(
-          'WorkerHome',
-          style: TextStyle(color: Colors.white),
-        ),
+        child: Text('WorkerHome', style: TextStyle(color: Colors.white)),
       ),
     );
   }

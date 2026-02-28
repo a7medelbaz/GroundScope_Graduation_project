@@ -1,9 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/extensions/context_extensions.dart';
-import 'package:ground_scope/core/onboarding/ui/widgets/on_boarding_hero_image.dart';
-import 'package:ground_scope/core/onboarding/ui/widgets/on_boarding_top_bar.dart';
-import 'package:ground_scope/core/onboarding/ui/widgets/on_boarding_top_logo.dart';
+import '../../extensions/context_extensions.dart';
+import 'widgets/on_boarding_hero_image.dart';
+import 'widgets/on_boarding_top_bar.dart';
+import 'widgets/on_boarding_top_logo.dart';
 
 import '../../router/routes.dart';
 import '../../themes/app_text_styles.dart';

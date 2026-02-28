@@ -2,12 +2,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ground_scope/core/auth/logic/cubit/auth_cubit.dart';
-import 'package:ground_scope/core/auth/ui/user_authenticated_check.dart';
-import 'package:ground_scope/core/di/dependency_injection.dart';
-import 'package:ground_scope/core/themes/cubit/theme_cubit.dart';
-import 'package:ground_scope/core/themes/theme_data/theme_data_dark.dart';
-import 'package:ground_scope/core/themes/theme_data/theme_data_light.dart';
+import 'core/auth/logic/cubit/auth_cubit.dart';
+import 'core/auth/ui/user_authenticated_check.dart';
+import 'core/di/dependency_injection.dart';
+import 'core/themes/cubit/theme_cubit.dart';
+import 'core/themes/theme_data/theme_data_dark.dart';
+import 'core/themes/theme_data/theme_data_light.dart';
 
 import 'core/router/app_routers.dart';
 
