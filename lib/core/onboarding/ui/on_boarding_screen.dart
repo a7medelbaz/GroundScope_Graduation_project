@@ -1,11 +1,12 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:ground_scope/core/extensions/context_extensions.dart';
+import 'package:ground_scope/core/onboarding/ui/widgets/on_boarding_hero_image.dart';
+import 'package:ground_scope/core/onboarding/ui/widgets/on_boarding_top_bar.dart';
+import 'package:ground_scope/core/onboarding/ui/widgets/on_boarding_top_logo.dart';
 
 import '../../router/routes.dart';
 import '../../themes/app_text_styles.dart';
-import '../../utils/app_assets.dart';
-import '../../utils/extensions.dart';
 import '../../utils/spacing.dart';
 import '../../widgets/custom_text_button.dart';
 
@@ -13,42 +14,39 @@ class OnBoardingScreen extends StatelessWidget {
   const OnBoardingScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SvgPicture.asset(AppAssets.appLogoSVG, height: 120.h),
-              verticalSpacing(40),
-              Text(
-                'GroundScope',
-                style: AppTextStyles.font30WhiteBold,
-                textAlign: TextAlign.center,
-              ),
-              verticalSpacing(16),
-              Text(
-                'Organize, supervise, and manage airport ground operations efficiently.',
-                style: AppTextStyles.font16WhiteRegular,
-                textAlign: TextAlign.center,
-              ),
-              verticalSpacing(40),
-              SizedBox(
-                width: double.infinity,
-                child: CustomTextButton(
-                  buttonText: 'Get Started',
-                  onPressed: () {
-                    context.pushReplacementNamed(Routes.loginScreen);
-                  },
-                  textStyle: AppTextStyles.font18WhiteBold,
-                  buttonHeight: 52.h,
-                  verticalPadding: 12.h,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: responsiveWidth(16)),
+            child: Column(
+              children: [
+                const OnBoardingTopBar(),
+                verticalSpacing(24),
+                const Center(child: OnBoardingTopLogo()),
+                const OnBoardingHeroImage(),
+                Text(
+                  "onBoarding.hero_desc".tr(),
+                  style: AppTextStyles.font14Regular.copyWith(
+                    color: context.customColors.textSecondary,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-              ),
-            ],
+                verticalSpacing(24),
+                SizedBox(
+                  width: responsiveWidth(320),
+                  child: CustomTextButton(
+                    borderRadius: responsiveRadius(16),
+                    text: "onBoarding.get_started_button".tr(),
+                    textStyle: AppTextStyles.font18SemiBold,
+                    style: CustomButtonStyle.filled,
+                    size: CustomButtonSize.large,
+                    onPressed: () => context.pushNamed(Routes.loginScreen),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
