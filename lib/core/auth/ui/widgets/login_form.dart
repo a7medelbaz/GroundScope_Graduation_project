@@ -1,6 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ground_scope/core/extensions/context_extensions.dart';
+import 'package:ground_scope/core/themes/app_colors.dart';
+import 'package:ground_scope/core/themes/app_text_styles.dart';
 
 import '../../../utils/spacing.dart';
 import '../../../utils/validators.dart';
@@ -19,7 +22,7 @@ class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
+  bool _rememberMe = false;
   bool _isPasswordVisible = false;
 
   @override
@@ -70,8 +73,39 @@ class _LoginFormState extends State<LoginForm> {
                   setState(() => _isPasswordVisible = !_isPasswordVisible),
             ),
           ),
-          verticalSpacing(100),
+          Row(
+            children: [
+              Checkbox(
+                checkColor: AppColors.white,
+                activeColor: AppColors.primary300,
+                value: _rememberMe,
+                onChanged: (value) {
+                  setState(() {
+                    _rememberMe = value ?? false;
+                  });
+                },
+              ),
+              Text(
+                'auth.remember_me'.tr(),
+                style: AppTextStyles.font14Regular.copyWith(
+                  color: context.customColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+          verticalSpacing(60),
           CustomTextButton(text: 'auth.login'.tr(), onPressed: _submit),
+          verticalSpacing(60),
+          GestureDetector(
+            // onTap: () => context.router.pushNamed(Routes.forgotPassword),
+            child: Text(
+              'auth.forgot_password'.tr(),
+              textAlign: TextAlign.center,
+              style: AppTextStyles.font14Regular.copyWith(
+                color: AppColors.primary300,
+              ),
+            ),
+          ),
         ],
       ),
     );

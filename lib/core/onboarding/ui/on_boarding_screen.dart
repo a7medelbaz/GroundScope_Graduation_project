@@ -23,9 +23,11 @@ class OnBoardingScreen extends StatelessWidget {
             child: Column(
               children: [
                 const OnBoardingTopBar(),
-                verticalSpacing(24),
+                verticalSpacing(8),
                 const Center(child: OnBoardingTopLogo()),
+                verticalSpacing(24),
                 const OnBoardingHeroImage(),
+                verticalSpacing(32),
                 Text(
                   "onBoarding.hero_desc".tr(),
                   style: AppTextStyles.font14Regular.copyWith(
@@ -33,7 +35,7 @@ class OnBoardingScreen extends StatelessWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                verticalSpacing(24),
+                verticalSpacing(16),
                 SizedBox(
                   width: responsiveWidth(320),
                   child: CustomTextButton(
