@@ -53,5 +53,21 @@
   "onBoarding": {
     "hero_desc": "Manage and schedule all of your Flights Between Different Positions with GroundScope for a new and convenient experience.",
     "get_started_button": "Get Started"
+  },
+  "auth": {
+    "login_title": "Welcome",
+    "login_desc": "We're excited to have you back, can't wait to see what you've been up to since you last logged in.",
+    "email": "Email",
+    "password": "Password",
+    "login": "Login",
+    "forgot_password": "Forgot Password?",
+    "remember_me": "Remember Me",
+    "validation": {
+      "required": "This field is required.",
+      "name": "Invalid name Format",
+      "age": "Invalid age Format",
+      "phone": "Invalid phone Format",
+      "email": "Invalid email address."
+    }
   }
 }
