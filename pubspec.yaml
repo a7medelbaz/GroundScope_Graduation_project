@@ -28,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  cached_network_image: ^3.4.1
   cupertino_icons: ^1.0.8
   easy_localization: ^3.0.8
   firebase_core: ^4.2.1
@@ -90,6 +91,5 @@ flutter:
           weight: 500
         - asset: assets/fonts/tajawal/Tajawal-Bold.ttf
           weight: 700
-
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
