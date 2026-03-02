@@ -24,12 +24,6 @@ class _WorkerScaffoldState extends State<WorkerScaffold> {
   void initState() {
     super.initState();
     _controller = PersistentTabController(initialIndex: 0);
-    _screens = [
-      const HomeScreen(),
-      const ReportsScreen(),
-      const NotificationsScreen(),
-      const ProfileScreen(),
-    ];
   }
 
   List<PersistentBottomNavBarItem> _navBarItems(final BuildContext context) {
@@ -39,24 +33,24 @@ class _WorkerScaffoldState extends State<WorkerScaffold> {
     return [
       PersistentBottomNavBarItem(
         icon: Icon(
-          Icons.article_outlined,
+          Icons.home_outlined,
           size: responsiveRadius(28),
           color: activeColor,
         ),
         inactiveIcon: Icon(
-          Icons.article,
+          Icons.home,
           size: responsiveRadius(28),
           color: inactiveColor,
         ),
       ),
       PersistentBottomNavBarItem(
         icon: Icon(
-          Icons.search,
+          Icons.analytics_outlined,
           size: responsiveRadius(28),
           color: activeColor,
         ),
         inactiveIcon: Icon(
-          Icons.search_outlined,
+          Icons.analytics_outlined,
           size: responsiveRadius(28),
           color: inactiveColor,
         ),
@@ -90,6 +84,12 @@ class _WorkerScaffoldState extends State<WorkerScaffold> {
 
   @override
   Widget build(final BuildContext context) {
+    _screens = [
+      const HomeScreen(),
+      const ReportsScreen(),
+      const NotificationsScreen(),
+      const ProfileScreen(),
+    ];
     return PersistentTabView(
       context,
       controller: _controller,
