@@ -1,0 +1,80 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:ground_scope/core/auth/data/models/user_date.dart';
+import 'package:ground_scope/core/extensions/context_extensions.dart';
+import 'package:ground_scope/core/themes/app_colors.dart';
+import 'package:ground_scope/core/themes/app_text_styles.dart';
+import 'package:ground_scope/core/utils/spacing.dart';
+
+class HomeAppBar extends StatelessWidget {
+  const HomeAppBar({super.key, required this.userData});
+  final UserData userData;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: responsiveWidth(12),
+        vertical: responsiveHeight(24),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: responsiveWidth(55),
+            height: responsiveWidth(55),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: context.customColors.background,
+                width: 3,
+              ),
+              color: context.customColors.divider,
+            ),
+            child: ClipOval(
+              child: CachedNetworkImage(
+                imageUrl: userData.imageUrl,
+                fit: BoxFit.cover,
+                placeholder: (final context, final url) => Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: context.customColors.accentBlue,
+                  ),
+                ),
+                errorWidget: (final context, final url, final error) => Icon(
+                  Icons.person,
+                  color: context.customColors.textPrimary,
+                  size: responsiveFontSize(60),
+                ),
+              ),
+            ),
+          ),
+          horizontalSpacing(12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(userData.firstName, style: AppTextStyles.font18Bold),
+              Text(
+                userData.position,
+                style: AppTextStyles.font14Regular.copyWith(
+                  color: context.customColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          Text(
+            '07:00-15:00',
+            style: AppTextStyles.font14Regular.copyWith(
+              color: context.customColors.textSecondary,
+            ),
+          ),
+          horizontalSpacing(8),
+          CircleAvatar(
+            radius: responsiveRadius(8),
+            backgroundColor: AppColors.green100,
+          ),
+        ],
+      ),
+    );
+  }
+}
