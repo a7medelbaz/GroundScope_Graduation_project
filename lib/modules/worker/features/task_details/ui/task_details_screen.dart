@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/quick_report_bottom_sheet.dart';
+
 import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/themes/app_colors.dart';
 import '../../../../../core/themes/app_text_styles.dart';
@@ -25,6 +27,15 @@ class TaskDetailsScreen extends StatelessWidget {
     }
   }
 
+  void _openQuickReport(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => QuickReportBottomSheet(task: task),
+    );
+  }
+
   @override
   Widget build(final BuildContext context) {
     final statusColor = _statusColor(task.status);
@@ -35,7 +46,7 @@ class TaskDetailsScreen extends StatelessWidget {
         child: CustomTextButton(
           text: "Quick Report",
           textStyle: AppTextStyles.font14SemiBold,
-          onPressed: () {},
+          onPressed: () => _openQuickReport(context),
           size: CustomButtonSize.small,
           contentPadding: EdgeInsets.symmetric(
             horizontal: 0,
