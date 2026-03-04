@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ground_scope/core/extensions/context_extensions.dart';
+import 'package:ground_scope/core/router/routes.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
 import 'package:ground_scope/modules/worker/features/home/data/models/task_filter_model.dart';
@@ -73,9 +74,17 @@ class _WorkerTasksListViewState extends State<WorkerTasksListView> {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: filtered.length,
-              itemBuilder: (context, index) => TaskCard(
-                task: filtered[index],
-                isLast: index == filtered.length - 1,
+              itemBuilder: (context, index) => GestureDetector(
+                onTap: () {
+                  context.pushNamed(
+                    Routes.taskDetailsScreen,
+                    arguments: {'task': filtered[index]},
+                  );
+                },
+                child: TaskCard(
+                  task: filtered[index],
+                  isLast: index == filtered.length - 1,
+                ),
               ),
             ),
           ],
