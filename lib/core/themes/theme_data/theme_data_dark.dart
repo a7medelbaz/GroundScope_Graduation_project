@@ -11,6 +11,7 @@ ThemeData getDarkTheme({required final BuildContext context}) {
     colorScheme: ColorScheme.fromSeed(
       seedColor: AppColors.primary300,
       brightness: Brightness.dark,
+      surface: AppColors.grey900,
     ),
     textTheme: ThemeData.light().textTheme.apply(
       bodyColor: AppColors.grey0,

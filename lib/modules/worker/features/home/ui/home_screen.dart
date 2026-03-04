@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/auth/data/models/user_date.dart';
-import 'package:ground_scope/modules/worker/features/home/data/models/task_model.dart';
-import 'package:ground_scope/modules/worker/features/home/ui/widgets/home_app_bar.dart';
-import 'package:ground_scope/modules/worker/features/home/ui/widgets/worker_tasks_list_view.dart';
+import '../../../../../core/auth/data/models/user_date.dart';
+import '../data/models/task_model.dart';
+import 'widgets/home_app_bar.dart';
+import 'widgets/worker_tasks_list_view.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/themes/app_text_styles.dart';
+import '../../../../../core/themes/app_text_styles.dart';
 
 class ReportsScreen extends StatelessWidget {
   const ReportsScreen({super.key});

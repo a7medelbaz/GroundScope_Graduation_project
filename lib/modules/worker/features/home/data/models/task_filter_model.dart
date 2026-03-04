@@ -1,4 +1,4 @@
-import 'package:ground_scope/modules/worker/features/home/data/models/task_model.dart';
+import 'task_model.dart';
 
 class TaskFilter {
   final TaskStatus? status;

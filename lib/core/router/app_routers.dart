@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../modules/worker/features/task_details/ui/task_details_screen.dart';
 
 import '../../modules/admin/features/home/admin_screen.dart';
 import '../../modules/supervisor/features/home/supervisor_screen.dart';
@@ -9,16 +10,20 @@ import 'routes.dart';
 
 class AppRouter {
   Route<dynamic> generateRoute(RouteSettings settings) {
-    // ignore: unused_local_variable
-    final arguments = settings.arguments;
+    final args = settings.arguments as Map<String, dynamic>?;
 
     switch (settings.name) {
       case Routes.onBoardingScreen:
         return MaterialPageRoute(builder: (_) => const OnBoardingScreen());
       case Routes.loginScreen:
         return MaterialPageRoute(builder: (_) => const LoginScreen());
+      // Worker
       case Routes.workerScaffold:
         return MaterialPageRoute(builder: (_) => const WorkerScaffold());
+      case Routes.taskDetailsScreen:
+        return MaterialPageRoute(
+          builder: (_) => TaskDetailsScreen(task: args!['task']),
+        );
       case Routes.supervisorScreen:
         return MaterialPageRoute(builder: (_) => const SupervisorScreen());
       case Routes.adminScreen:
