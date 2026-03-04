@@ -96,16 +96,16 @@ class _WorkerScaffoldState extends State<WorkerScaffold> {
       screens: _screens,
       items: _navBarItems(context),
       navBarStyle: NavBarStyle.style9,
-      backgroundColor: context.customColors.background,
+      backgroundColor: context.customColors.background.withValues(alpha: 0.95),
       navBarHeight: responsiveHeight(60),
       padding: const EdgeInsets.only(top: 2, bottom: 8),
       decoration: NavBarDecoration(
         colorBehindNavBar: context.customColors.background,
         boxShadow: [
           BoxShadow(
-            color: context.customColors.border.withValues(alpha: 0.3),
-            blurRadius: 10,
-            offset: const Offset(0, -4),
+            color: context.customColors.textPrimary.withValues(alpha: 0.1),
+            blurRadius: 2,
+            offset: const Offset(0, -2),
           ),
         ],
       ),
