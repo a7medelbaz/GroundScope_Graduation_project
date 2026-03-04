@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/extensions/context_extensions.dart';
-import 'package:ground_scope/core/themes/app_colors.dart';
-import 'package:ground_scope/core/themes/app_text_styles.dart';
-import 'package:ground_scope/core/utils/spacing.dart';
-import 'package:ground_scope/core/widgets/custom_app_bar.dart';
-import 'package:ground_scope/core/widgets/custom_text_button.dart';
-import 'package:ground_scope/modules/worker/features/home/data/models/task_model.dart';
-import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/task_details_check_list.dart';
-import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/task_details_header.dart';
-import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/task_details_timer.dart';
+import '../../../../../core/extensions/context_extensions.dart';
+import '../../../../../core/themes/app_colors.dart';
+import '../../../../../core/themes/app_text_styles.dart';
+import '../../../../../core/utils/spacing.dart';
+import '../../../../../core/widgets/custom_app_bar.dart';
+import '../../../../../core/widgets/custom_text_button.dart';
+import '../../home/data/models/task_model.dart';
+import 'widgets/task_details_check_list.dart';
+import 'widgets/task_details_header.dart';
+import 'widgets/task_details_timer.dart';
 
 class TaskDetailsScreen extends StatelessWidget {
   const TaskDetailsScreen({super.key, required this.task});

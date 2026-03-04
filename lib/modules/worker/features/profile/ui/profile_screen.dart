@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/utils/functions/app_setting_method.dart';
-import 'package:ground_scope/core/utils/spacing.dart';
-import 'package:ground_scope/core/widgets/custom_text_button.dart';
+import '../../../../../core/utils/functions/app_setting_method.dart';
+import '../../../../../core/utils/spacing.dart';
+import '../../../../../core/widgets/custom_text_button.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});

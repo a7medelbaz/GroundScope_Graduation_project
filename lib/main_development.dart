@@ -1,8 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'core/config/app_config.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'core/config/app_config.dart';
 import 'core/di/dependency_injection.dart';
 import 'core/router/app_routers.dart';
 import 'ground_scope_app.dart';

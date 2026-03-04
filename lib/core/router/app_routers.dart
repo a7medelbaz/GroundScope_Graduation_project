@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/modules/worker/features/task_details/ui/task_details_screen.dart';
+import '../../modules/worker/features/task_details/ui/task_details_screen.dart';
 
 import '../../modules/admin/features/home/admin_screen.dart';
 import '../../modules/supervisor/features/home/supervisor_screen.dart';

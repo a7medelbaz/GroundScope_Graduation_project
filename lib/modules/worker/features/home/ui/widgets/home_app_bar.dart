@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/auth/data/models/user_date.dart';
-import 'package:ground_scope/core/extensions/context_extensions.dart';
-import 'package:ground_scope/core/themes/app_colors.dart';
-import 'package:ground_scope/core/themes/app_text_styles.dart';
-import 'package:ground_scope/core/utils/spacing.dart';
+import '../../../../../../core/auth/data/models/user_date.dart';
+import '../../../../../../core/extensions/context_extensions.dart';
+import '../../../../../../core/themes/app_colors.dart';
+import '../../../../../../core/themes/app_text_styles.dart';
+import '../../../../../../core/utils/spacing.dart';
 
 class HomeAppBar extends StatelessWidget {
   const HomeAppBar({super.key, required this.userData});

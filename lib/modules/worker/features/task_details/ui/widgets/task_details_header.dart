@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/extensions/context_extensions.dart';
-import 'package:ground_scope/core/themes/app_text_styles.dart';
-import 'package:ground_scope/core/utils/spacing.dart';
-import 'package:ground_scope/modules/worker/features/home/data/models/task_model.dart';
+import '../../../../../../core/extensions/context_extensions.dart';
+import '../../../../../../core/themes/app_text_styles.dart';
+import '../../../../../../core/utils/spacing.dart';
+import '../../../home/data/models/task_model.dart';
 
 class TaskDetailsHeader extends StatelessWidget {
   const TaskDetailsHeader({
