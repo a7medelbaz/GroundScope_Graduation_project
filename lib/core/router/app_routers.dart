@@ -3,7 +3,7 @@ import '../../modules/worker/features/task_details/ui/task_details_screen.dart';
 
 import '../../modules/admin/features/home/admin_screen.dart';
 import '../../modules/supervisor/features/home/supervisor_screen.dart';
-import '../../modules/worker/features/main_navigation/ui/worker_scaffold.dart';
+import '../../modules/worker/core/main_navigation/ui/worker_scaffold.dart';
 import '../auth/ui/login_screen.dart';
 import '../onboarding/ui/on_boarding_screen.dart';
 import 'routes.dart';

@@ -4,7 +4,7 @@ import '../logic/cubit/auth_cubit.dart';
 import '../../onboarding/ui/on_boarding_screen.dart';
 import '../../../modules/admin/features/home/admin_screen.dart';
 import '../../../modules/supervisor/features/home/supervisor_screen.dart';
-import '../../../modules/worker/features/main_navigation/ui/worker_scaffold.dart';
+import '../../../modules/worker/core/main_navigation/ui/worker_scaffold.dart';
 
 class UserAuthenticatedCheck extends StatelessWidget {
   const UserAuthenticatedCheck({super.key});

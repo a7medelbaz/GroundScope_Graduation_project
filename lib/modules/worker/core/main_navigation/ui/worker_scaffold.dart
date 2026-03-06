@@ -4,10 +4,10 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/themes/app_colors.dart';
 import '../../../../../core/utils/spacing.dart';
-import '../../home/ui/home_screen.dart';
-import '../../notifications/ui/notifications_screen.dart';
-import '../../profile/ui/profile_screen.dart';
-import '../../reports/ui/reports_screen.dart';
+import '../../../features/home/ui/home_screen.dart';
+import '../../../features/notifications/ui/notifications_screen.dart';
+import '../../../features/profile/ui/profile_screen.dart';
+import '../../../features/reports/ui/reports_screen.dart';
 
 class WorkerScaffold extends StatefulWidget {
   const WorkerScaffold({super.key});

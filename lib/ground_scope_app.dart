@@ -9,7 +9,7 @@ import 'core/router/app_routers.dart';
 import 'core/themes/cubit/theme_cubit.dart';
 import 'core/themes/theme_data/theme_data_dark.dart';
 import 'core/themes/theme_data/theme_data_light.dart';
-import 'modules/worker/features/main_navigation/ui/worker_scaffold.dart';
+import 'modules/worker/core/main_navigation/ui/worker_scaffold.dart';
 
 class GroundScopeApp extends StatelessWidget {
   const GroundScopeApp({super.key, required this.appRouter});
