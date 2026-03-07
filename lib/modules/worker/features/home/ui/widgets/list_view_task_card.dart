@@ -6,7 +6,11 @@ import '../../../../../../core/utils/spacing.dart';
 import '../../data/models/task_model.dart';
 
 class TaskCard extends StatelessWidget {
-  const TaskCard({super.key, required this.task, this.isLast = false});
+  const TaskCard({
+    super.key,
+    required this.task,
+    this.isLast = false,
+  });
 
   final TaskModel task;
   final bool isLast;
@@ -14,8 +18,10 @@ class TaskCard extends StatelessWidget {
   Color get _statusColor {
     return switch (task.status) {
       TaskStatus.inProgress => AppColors.primary300,
-      TaskStatus.done => AppColors.green100,
-      TaskStatus.pending => AppColors.yellow100.withValues(alpha: 0.8),
+      TaskStatus.done => AppColors.springGreen,
+      TaskStatus.pending => AppColors.yellow100.withValues(
+        alpha: 0.8,
+      ),
     };
   }
 
@@ -40,7 +46,7 @@ class TaskCard extends StatelessWidget {
               children: [
                 Container(
                   width: responsiveWidth(36),
-                  height: responsiveWidth(36),
+                  height: responsiveHeight(36),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: _statusColor.withValues(alpha: 0.1),
@@ -52,13 +58,13 @@ class TaskCard extends StatelessWidget {
                     size: responsiveFontSize(18),
                   ),
                 ),
-                if (!isLast)
-                  Expanded(
-                    child: Container(
-                      width: 2,
-                      color: _statusColor.withValues(alpha: 0.3),
-                    ),
+                // if (!isLast)
+                Expanded(
+                  child: Container(
+                    width: 2,
+                    color: _statusColor.withValues(alpha: 0.3),
                   ),
+                ),
               ],
             ),
           ),
@@ -83,7 +89,10 @@ class TaskCard extends StatelessWidget {
                           style: AppTextStyles.font16Bold,
                         ),
                       ),
-                      _StatusBadge(label: _statusLabel, color: _statusColor),
+                      _StatusBadge(
+                        label: _statusLabel,
+                        color: _statusColor,
+                      ),
                     ],
                   ),
                   verticalSpacing(6),
@@ -108,7 +117,9 @@ class TaskCard extends StatelessWidget {
                         value: task.progress,
                         minHeight: 6,
                         backgroundColor: context.customColors.divider,
-                        valueColor: AlwaysStoppedAnimation(_statusColor),
+                        valueColor: AlwaysStoppedAnimation(
+                          _statusColor,
+                        ),
                       ),
                     ),
                   ],

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import '../models/user_date.dart';
 import '../../../config/app_constants.dart';
 import '../../../error/models/app_error.dart';
@@ -12,7 +11,10 @@ class AuthRemoteDs {
   final SupabaseService supabaseService;
   final SecureStorage secureStorage;
 
-  AuthRemoteDs({required this.supabaseService, required this.secureStorage});
+  AuthRemoteDs({
+    required this.supabaseService,
+    required this.secureStorage,
+  });
 
   Future<AuthResponse> loginUser({
     required String email,
@@ -28,16 +30,19 @@ class AuthRemoteDs {
     }
   }
 
-  Future<UserData?> getCachedUserData() async {
-    final raw = await secureStorage.read(key: AppConstants.userDataKey);
+  Future<UserModel?> getCachedUserData() async {
+    final raw = await secureStorage.read(
+      key: AppConstants.userDataKey,
+    );
     if (raw == null) return null;
-    return UserData.fromJson(jsonDecode(raw));
+    return UserModel.fromJson(jsonDecode(raw));
   }
 
-  Future<UserData> fetchAndCacheUserData() async {
+  Future<UserModel> fetchAndCacheUserData() async {
     try {
       final userId = supabaseService.currentUser?.id;
-      if (userId == null || userId.isEmpty) throw AppError.unauthorized();
+      if (userId == null || userId.isEmpty)
+        throw AppError.unauthorized();
 
       final userDataMap = await supabaseService.client
           .from('userdata')
@@ -47,7 +52,7 @@ class AuthRemoteDs {
 
       if (userDataMap == null) throw AppError.unauthorized();
 
-      final userData = UserData.fromJson(userDataMap);
+      final userData = UserModel.fromJson(userDataMap);
       await secureStorage.write(
         key: AppConstants.userDataKey,
         value: jsonEncode(userData.toJson()),

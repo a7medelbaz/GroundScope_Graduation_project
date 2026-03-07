@@ -1,6 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
-
 import '../auth/data/remote/auth_remote_ds.dart';
 import '../auth/data/repo/auth_repo.dart';
 import '../auth/data/repo/auth_repo_impl.dart';

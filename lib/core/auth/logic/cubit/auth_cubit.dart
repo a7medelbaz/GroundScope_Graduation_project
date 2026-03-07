@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../error/models/app_error.dart';
 import '../../data/models/user_date.dart';
 import '../../data/repo/auth_repo.dart';
@@ -20,7 +19,7 @@ class AuthCubit extends Cubit<AuthState> {
         emit(AuthUnauthenticated());
         return;
       }
-      emit(AuthSuccess(userData: userData));
+      emit(AuthSuccess(userModel: userData));
     } catch (error) {
       emit(AuthFailure(error: error is AppError ? error : AppError.unknown()));
     }
@@ -34,7 +33,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       await authRepo.login(email: email, password: password);
       final userData = await authRepo.fetchAndCacheUserData();
-      emit(AuthSuccess(userData: userData));
+      emit(AuthSuccess(userModel: userData));
     } catch (error) {
       emit(AuthFailure(error: error is AppError ? error : AppError.unknown()));
     }
