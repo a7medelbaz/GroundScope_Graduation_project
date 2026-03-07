@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-
 import '../themes/app_font_family.dart';
 import '../themes/custom_colors.dart';
 import 'object_extension.dart';

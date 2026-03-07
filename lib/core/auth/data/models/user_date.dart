@@ -1,4 +1,4 @@
-class UserData {
+class UserModel {
   final String id;
   final String email;
   final String firstName;
@@ -6,7 +6,7 @@ class UserData {
   final String imageUrl;
   final String position;
 
-  UserData({
+  UserModel({
     required this.id,
     required this.email,
     required this.firstName,
@@ -16,8 +16,8 @@ class UserData {
   });
 
   /// Convert from Supabase JSON → Dart object
-  factory UserData.fromJson(Map<String, dynamic> json) {
-    return UserData(
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
       id: json['id'] as String,
       email: json['email'] as String? ?? '',
       firstName: json['first_name'] as String? ?? '',

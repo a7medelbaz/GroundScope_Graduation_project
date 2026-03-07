@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../logic/cubit/auth_cubit.dart';
-import '../../onboarding/ui/on_boarding_screen.dart';
 import '../../../modules/admin/features/home/admin_screen.dart';
 import '../../../modules/supervisor/features/home/supervisor_screen.dart';
 import '../../../modules/worker/core/main_navigation/ui/worker_scaffold.dart';
+import '../../onboarding/ui/on_boarding_screen.dart';
+import '../logic/cubit/auth_cubit.dart';
 
 class UserAuthenticatedCheck extends StatelessWidget {
   const UserAuthenticatedCheck({super.key});
@@ -18,7 +18,7 @@ class UserAuthenticatedCheck extends StatelessWidget {
     }
 
     if (authState is AuthSuccess) {
-      return switch (authState.userData.position) {
+      return switch (authState.userModel.position) {
         'worker' => const WorkerScaffold(),
         'supervisor' => const SupervisorScreen(),
         'admin' => const AdminScreen(),

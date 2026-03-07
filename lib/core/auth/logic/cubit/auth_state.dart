@@ -10,8 +10,8 @@ class AuthChecking extends AuthState {}
 class AuthUnauthenticated extends AuthState {}
 
 class AuthSuccess extends AuthState {
-  final UserData userData;
-  AuthSuccess({required this.userData});
+  final UserModel userModel;
+  AuthSuccess({required this.userModel});
 }
 
 class AuthFailure extends AuthState {

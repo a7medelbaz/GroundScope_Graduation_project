@@ -1,5 +1,4 @@
 import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 
 import '../extensions/context_extensions.dart';

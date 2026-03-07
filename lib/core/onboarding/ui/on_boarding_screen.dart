@@ -1,14 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../extensions/context_extensions.dart';
-import 'widgets/on_boarding_hero_image.dart';
-import 'widgets/on_boarding_top_bar.dart';
-import 'widgets/on_boarding_top_logo.dart';
-
 import '../../router/routes.dart';
 import '../../themes/app_text_styles.dart';
 import '../../utils/spacing.dart';
 import '../../widgets/custom_text_button.dart';
+import 'widgets/on_boarding_hero_image.dart';
+import 'widgets/on_boarding_top_bar.dart';
+import 'widgets/on_boarding_top_logo.dart';
 
 class OnBoardingScreen extends StatelessWidget {
   const OnBoardingScreen({super.key});
@@ -19,7 +18,9 @@ class OnBoardingScreen extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: responsiveWidth(16)),
+            padding: EdgeInsets.symmetric(
+              horizontal: responsiveWidth(16),
+            ),
             child: Column(
               children: [
                 const OnBoardingTopBar(),
@@ -44,7 +45,8 @@ class OnBoardingScreen extends StatelessWidget {
                     textStyle: AppTextStyles.font18SemiBold,
                     style: CustomButtonStyle.filled,
                     size: CustomButtonSize.large,
-                    onPressed: () => context.pushNamed(Routes.loginScreen),
+                    onPressed: () =>
+                        context.pushNamed(Routes.loginScreen),
                   ),
                 ),
               ],

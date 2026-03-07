@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/quick_report_bottom_sheet.dart';
-
+import 'widgets/quick_report_bottom_sheet.dart';
 import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/themes/app_colors.dart';
 import '../../../../../core/themes/app_text_styles.dart';
@@ -69,7 +68,10 @@ class TaskDetailsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TaskDetailsHeader(task: task, statusColor: statusColor),
+                    TaskDetailsHeader(
+                      task: task,
+                      statusColor: statusColor,
+                    ),
                     verticalSpacing(24),
                     Text('Progress', style: AppTextStyles.font16Bold),
                     verticalSpacing(10),
@@ -81,10 +83,12 @@ class TaskDetailsScreen extends StatelessWidget {
                             child: LinearProgressIndicator(
                               value: task.progress,
                               minHeight: 10,
-                              backgroundColor: context.customColors.divider,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                statusColor,
-                              ),
+                              backgroundColor:
+                                  context.customColors.divider,
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(
+                                    statusColor,
+                                  ),
                             ),
                           ),
                         ),

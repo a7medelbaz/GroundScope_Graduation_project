@@ -4,7 +4,7 @@ class Routes {
   // Worker
   static const String workerScaffold = '/workerScaffold';
   static const String taskDetailsScreen = '/taskDetailsScreen';
-  
+
   static const String supervisorScreen = '/supervisorScreen';
   static const String adminScreen = '/adminScreen';
 }

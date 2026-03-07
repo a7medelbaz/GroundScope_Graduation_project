@@ -7,8 +7,8 @@ import '../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../core/utils/spacing.dart';
 
 class HomeAppBar extends StatelessWidget {
-  const HomeAppBar({super.key, required this.userData});
-  final UserData userData;
+  const HomeAppBar({super.key, required this.userModel});
+  final UserModel userModel;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -21,7 +21,7 @@ class HomeAppBar extends StatelessWidget {
         children: [
           Container(
             width: responsiveWidth(55),
-            height: responsiveWidth(55),
+            height: responsiveHeight(55),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
@@ -32,7 +32,7 @@ class HomeAppBar extends StatelessWidget {
             ),
             child: ClipOval(
               child: CachedNetworkImage(
-                imageUrl: userData.imageUrl,
+                imageUrl: userModel.imageUrl,
                 fit: BoxFit.cover,
                 placeholder: (final context, final url) => Center(
                   child: CircularProgressIndicator(
@@ -52,9 +52,9 @@ class HomeAppBar extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(userData.firstName, style: AppTextStyles.font18Bold),
+              Text(userModel.firstName, style: AppTextStyles.font18Bold),
               Text(
-                userData.position,
+                userModel.position,
                 style: AppTextStyles.font14Regular.copyWith(
                   color: context.customColors.textSecondary,
                 ),

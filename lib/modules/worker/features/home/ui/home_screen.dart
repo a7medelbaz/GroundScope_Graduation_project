@@ -65,7 +65,7 @@ class HomeScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           HomeAppBar(
-            userData: UserData(
+            userModel: UserModel(
               firstName: 'Mustafa',
               id: '123',
               email: 'mustafa@example.com',

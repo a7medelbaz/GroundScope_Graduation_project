@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
-
 import '../../../../../core/extensions/context_extensions.dart';
 import '../../../../../core/themes/app_colors.dart';
 import '../../../../../core/utils/spacing.dart';

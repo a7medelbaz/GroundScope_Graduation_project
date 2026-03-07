@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'core/auth/logic/cubit/auth_cubit.dart';
 import 'core/di/dependency_injection.dart';
 import 'core/router/app_routers.dart';
@@ -25,7 +24,9 @@ class GroundScopeApp extends StatelessWidget {
         return MultiBlocProvider(
           providers: [
             BlocProvider(create: (_) => ThemeCubit()),
-            BlocProvider(create: (_) => getIt<AuthCubit>()..checkAuthStatus()),
+            BlocProvider(
+              create: (_) => getIt<AuthCubit>()..checkAuthStatus(),
+            ),
           ],
           child: BlocBuilder<ThemeCubit, ThemeMode>(
             builder: (final context, final mode) {
@@ -34,7 +35,8 @@ class GroundScopeApp extends StatelessWidget {
                 key: ValueKey(context.locale),
                 debugShowCheckedModeBanner: false,
                 title: 'GroundScope',
-                home: const WorkerScaffold(), // UserAuthenticatedCheck()
+                home:
+                    const WorkerScaffold(), // UserAuthenticatedCheck()
                 onGenerateRoute: appRouter.generateRoute,
                 localizationsDelegates: context.localizationDelegates,
                 supportedLocales: context.supportedLocales,
