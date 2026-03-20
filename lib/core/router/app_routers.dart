@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ground_scope/modules/admin/features/home/admin_screen.dart';
-import 'package:ground_scope/modules/supervisor/features/home/supervisor_screen.dart';
-import '../auth/data/repo/auth_repo.dart';
-import '../di/dependency_injection.dart';
-import '../auth/logic/cubit/auth_cubit.dart';
-import '../../modules/worker/core/widgets/worker_screen.dart';
+import '../../modules/worker/features/profile/ui/personal_info_settings.dart';
+import '../../modules/worker/features/reports/ui/report_details_screen.dart';
+import '../../modules/worker/features/task_details/ui/task_details_screen.dart';
+import '../../modules/admin/features/home/admin_screen.dart';
+import '../../modules/supervisor/features/home/supervisor_screen.dart';
+import '../../modules/worker/core/main_navigation/ui/worker_scaffold.dart';
 import '../auth/ui/login_screen.dart';
 import '../onboarding/ui/on_boarding_screen.dart';
 import 'routes.dart';
 
 class AppRouter {
   Route<dynamic> generateRoute(RouteSettings settings) {
-    // ignore: unused_local_variable
-    final arguments = settings.arguments;
+    final args = settings.arguments as Map<String, dynamic>?;
 
     switch (settings.name) {
       case Routes.onBoardingScreen:
@@ -21,15 +19,24 @@ class AppRouter {
           builder: (_) => const OnBoardingScreen(),
         );
       case Routes.loginScreen:
+        return MaterialPageRoute(builder: (_) => const LoginScreen());
+      // Worker
+      case Routes.workerScaffold:
         return MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (context) => AuthCubit(getIt<AuthRepo>()),
-            child: const LoginScreen(),
-          ),
+          builder: (_) => const WorkerScaffold(),
         );
-      case Routes.workerScreen:
+      case Routes.taskDetailsScreen:
         return MaterialPageRoute(
-          builder: (_) => const WorkerScreen(),
+          builder: (_) => TaskDetailsScreen(task: args!['task']),
+        );
+      case Routes.reportDetailsScreen:
+        return MaterialPageRoute(
+          builder: (_) =>
+              ReportDetailsScreen(report: args!['report']),
+        );
+      case Routes.personaInfoAndSettings:
+        return MaterialPageRoute(
+          builder: (_) => const PersonalInfoSettings(),
         );
       case Routes.supervisorScreen:
         return MaterialPageRoute(

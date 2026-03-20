@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ground_scope/core/utils/secure_storage.dart';
-
+import '../../../error/models/app_error.dart';
 import '../../data/models/user_date.dart';
 import '../../data/repo/auth_repo.dart';
 
@@ -12,49 +11,36 @@ class AuthCubit extends Cubit<AuthState> {
 
   final AuthRepo authRepo;
 
+  Future<void> checkAuthStatus() async {
+    emit(AuthChecking());
+    try {
+      final userData = await authRepo.getLoggedInUser();
+      if (userData == null) {
+        emit(AuthUnauthenticated());
+        return;
+      }
+      emit(AuthSuccess(userModel: userData));
+    } catch (error) {
+      emit(AuthFailure(error: error is AppError ? error : AppError.unknown()));
+    }
+  }
+
   Future<void> emitLogin({
     required String email,
     required String password,
   }) async {
-    emit(AuthLoading());
+    emit(AuthChecking());
     try {
-      // 1️⃣ Login using Supabase
-      final response = await authRepo.login(
-        email: email,
-        password: password,
-      );
-
-      final userId = response.user?.id;
-      if (userId == null) {
-        emit(
-          AuthFailure(errorMessage: 'User ID is null after login'),
-        );
-        return;
-      }
-
-      // 2️⃣ Fetch user data from Supabase table
-      final userDataMap = await authRepo.getUserDataById(userId);
-      // 4️⃣ 🔥 Save userId and role to cache
-
-      if (userDataMap == null) {
-        emit(
-          AuthFailure(
-            errorMessage: 'User data not found for this user',
-          ),
-        );
-        return;
-      }
-
-      // 3️⃣ Map to UserData model
-      final userData = UserData.fromJson(userDataMap);
-      // 4️⃣ Emit success state
-      emit(AuthSuccess(userData: userData));
-      final storage = SecureStorage();
-      storage.saveString(key: 'user_id', value: userId);
-      storage.saveString(key: 'position', value: userData.position);
-    } catch (e, stackTrace) {
-      debugPrint('❌ AuthCubit login error: $e\n$stackTrace');
-      emit(AuthFailure(errorMessage: e.toString()));
+      await authRepo.login(email: email, password: password);
+      final userData = await authRepo.fetchAndCacheUserData();
+      emit(AuthSuccess(userModel: userData));
+    } catch (error) {
+      emit(AuthFailure(error: error is AppError ? error : AppError.unknown()));
     }
+  }
+
+  Future<void> logout() async {
+    await authRepo.logout();
+    emit(AuthUnauthenticated());
   }
 }
