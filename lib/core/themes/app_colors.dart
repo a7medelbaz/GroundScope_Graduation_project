@@ -10,7 +10,21 @@ class AppColors {
   static const Color primary200 = Color(0xff5096ff);
   static const Color primary300 = Color(0xff247cff);
   static const Color lightBlue = Color(0xFF1585F4);
+  // New Modern Blue Shades for Gradients
+  static const Color blue = Color(0xff121822); // Very Deep Navy
+  static const Color blue900 = Color(0xff092c5c); // Very Deep Navy
+  static const Color blue800 = Color(0xff0e438c);
+  static const Color blue700 = Color(0xff1559bc);
+  static const Color blue600 = Color(0xff1b70eb);
+  // Premium Dark Navy Shades
+  static const Color navy900 = Color(0xff0a0c14); // Deepest Midnight
+  static const Color navy800 = Color(0xff121625);
+  static const Color navy700 = Color(0xff1a2138);
 
+  // High-Contrast Accent
+  static const Color electricBlue = Color(0xff2d64ff);
+
+  // gray
   static const Color grey900 = Color(0xFF000000);
   static const Color grey800 = Color(0xff1a1b25);
   static const Color grey700 = Color(0xff272835);
@@ -23,6 +37,13 @@ class AppColors {
   static const Color grey50 = Color(0xffeceff3);
   static const Color grey25 = Color(0xfff6f8fa);
   static const Color grey0 = Color(0xFFFFFFFF);
+
+  // Named Opacity Colors (Added these for you)
+  static const Color white70 = Color(0xB3FFFFFF); // 70% Opacity
+  static const Color white60 = Color(0x99FFFFFF); // 60% Opacity
+  static const Color white24 = Color(0x3DFFFFFF); // 24% Opacity
+  static const Color white05 = Color(0x0DFFFFFF); // 5% Opacity
+  static const Color black = Color(0x00000000); // 0% Opacity
 
   // Aliases (for easier naming in UI)
   static const Color white = grey0;

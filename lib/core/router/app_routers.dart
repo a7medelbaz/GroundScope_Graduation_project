@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../modules/worker/features/profile/ui/personal_info_settings.dart';
+import '../../modules/worker/features/reports/ui/report_details_screen.dart';
 import '../../modules/worker/features/task_details/ui/task_details_screen.dart';
 import '../../modules/admin/features/home/admin_screen.dart';
 import '../../modules/supervisor/features/home/supervisor_screen.dart';
@@ -26,6 +28,15 @@ class AppRouter {
       case Routes.taskDetailsScreen:
         return MaterialPageRoute(
           builder: (_) => TaskDetailsScreen(task: args!['task']),
+        );
+      case Routes.reportDetailsScreen:
+        return MaterialPageRoute(
+          builder: (_) =>
+              ReportDetailsScreen(report: args!['report']),
+        );
+      case Routes.personaInfoAndSettings:
+        return MaterialPageRoute(
+          builder: (_) => const PersonalInfoSettings(),
         );
       case Routes.supervisorScreen:
         return MaterialPageRoute(

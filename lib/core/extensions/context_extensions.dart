@@ -8,7 +8,10 @@ import 'object_extension.dart';
 extension NavigationExt on BuildContext {
   /// Push a new screen (Widget)
   Future<T?> push<T extends Object?>(final Widget page) {
-    return Navigator.push(this, MaterialPageRoute(builder: (_) => page));
+    return Navigator.push(
+      this,
+      MaterialPageRoute(builder: (_) => page),
+    );
   }
 
   /// Replace current screen
@@ -51,7 +54,8 @@ extension NavigationExt on BuildContext {
   }
 
   /// Replace by route name
-  Future<T?> pushReplacementNamed<T extends Object?, TO extends Object?>(
+  Future<T?>
+  pushReplacementNamed<T extends Object?, TO extends Object?>(
     final String routeName, {
     final Object? arguments,
     final TO? result,
@@ -59,7 +63,11 @@ extension NavigationExt on BuildContext {
     return Navigator.of(
       this,
       rootNavigator: true,
-    ).pushReplacementNamed(routeName, arguments: arguments, result: result);
+    ).pushReplacementNamed(
+      routeName,
+      arguments: arguments,
+      result: result,
+    );
   }
 
   /// Push named route and clear previous navigation stack
@@ -97,7 +105,8 @@ extension ThemeExt on BuildContext {
 /// Locale Extensions
 extension LocaleExt on BuildContext {
   /// Check if current locale is Arabic
-  bool get isArabic => EasyLocalization.of(this)!.locale.languageCode == 'ar';
+  bool get isArabic =>
+      EasyLocalization.of(this)!.locale.languageCode == 'ar';
 
   /// Get current locale
   Locale get localeLanguage => EasyLocalization.of(this)!.locale;
@@ -109,6 +118,6 @@ extension LocaleExt on BuildContext {
 extension AppFontsExtension on BuildContext {
   String get currentFont {
     // If Arabic, use Tajawal; otherwise, Inter
-    return isArabic ? AppFontFamily.tajawal : AppFontFamily.inter;
+    return isArabic ? AppFontFamily.tajawal : AppFontFamily.manrope;
   }
 }

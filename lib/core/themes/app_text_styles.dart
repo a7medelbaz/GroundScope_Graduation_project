@@ -5,7 +5,9 @@ import 'app_font_weight.dart';
 class AppTextStyles {
   const AppTextStyles._();
 
-  static const TextStyle fontBold = TextStyle(fontWeight: AppFontWeight.bold);
+  static const TextStyle fontBold = TextStyle(
+    fontWeight: AppFontWeight.bold,
+  );
   static const TextStyle fontSemiBold = TextStyle(
     fontWeight: AppFontWeight.semiBold,
   );
@@ -13,6 +15,11 @@ class AppTextStyles {
     fontWeight: AppFontWeight.medium,
   );
 
+  // Font Size 24
+  static TextStyle font24Bold = TextStyle(
+    fontSize: responsiveFontSize(24),
+    fontWeight: AppFontWeight.bold,
+  );
   // Font Size 20
   static TextStyle font20Bold = TextStyle(
     fontSize: responsiveFontSize(20),

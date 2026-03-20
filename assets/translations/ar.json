@@ -57,7 +57,6 @@
   "auth": {
     "login_title": "مرحبًا ",
     "login_desc": "سعداء بعودتك مرة أخرى، ونتطلع لرؤية ما قمت به منذ آخر تسجيل دخول.",
-
     "email": "البريد الإلكتروني",
     "password": "كلمة المرور",
     "confirm_password": "تأكيد كلمة المرور",
@@ -69,6 +68,33 @@
       "name": "صيغة الاسم غير صحيحة",
       "age": "صيغة العمر غير صحيحة",
       "phone": "صيغة رقم الهاتف غير صحيحة"
+    }
+  },
+  "worker_profile": {
+    "profile": "الملف الشخصي ",
+    "id": "الرقم التعريفي",
+    "shift": "الوردية",
+    "unit": "الوحدة",
+    "duration": "المدة",
+    "on_time": "في الوقت المحدد",
+    "tasks": "المهام",
+    "Shift_Summary": "ملخص الوردية",
+    "personal_information": {
+      "personal_information": "المعلومات الشخصية",
+      "full_name": "الاسم الكامل",
+      "email": " البريد الإلكتروني",
+      "worker_id": "رقم العامل",
+      "phone_number": "رقم الهاتف",
+      "national_id": "الرقم القومي"
+    },
+    "settings": {
+      "settings": "الإعدادات",
+      "language": "اللغة",
+      "language_subtitle": "تغيير لغة التطبيق",
+      "select_language": "اختر لغة التطبيق",
+      "dark_mode": "الوضع الداكن",
+      "currently_using_dark_theme": "أنت تستخدم الوضع الداكن حالياً",
+      "currently_using_light_theme": "أنت تستخدم الوضع الفاتح حالياً"
     }
   }
 }
