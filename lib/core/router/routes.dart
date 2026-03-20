@@ -8,4 +8,5 @@ class Routes {
 
   static const String supervisorScreen = '/supervisorScreen';
   static const String adminScreen = '/adminScreen';
+  static const String personaInfoAndSettings = '/personaInfoAndSettings';
 }
