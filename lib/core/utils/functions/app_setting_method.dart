@@ -17,6 +17,17 @@ void switchLanguage(final BuildContext context) {
   (context as Element).markNeedsBuild();
 }
 
+/// Set a specific language (Arabic or English)
+void setLanguage(BuildContext context, String langCode) {
+  final Locale target = Locale(langCode);
+  
+  // Only change if the target is different from current to save performance
+  if (context.locale.languageCode != langCode) {
+    context.setLocale(target);
+    (context as Element).markNeedsBuild();
+  }
+}
+
 /// Switch Theme between Light and Dark
 void switchTheme(final BuildContext context) {
   // Switch theme
