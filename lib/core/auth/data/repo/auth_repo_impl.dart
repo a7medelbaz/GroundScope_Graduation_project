@@ -1,5 +1,5 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../models/user_date.dart';
+import 'package:ground_scope/core/auth/data/models/user_date.dart';
+
 import '../remote/auth_remote_ds.dart';
 import 'auth_repo.dart';
 
@@ -9,16 +9,20 @@ class AuthRepoImpl implements AuthRepo {
   AuthRepoImpl({required this.authRemoteDs});
 
   @override
-  Future<AuthResponse> login({
+  Future<UserModel> login({
     required String email,
     required String password,
   }) async {
-    return await authRemoteDs.loginUser(email: email, password: password);
+    final userModel = await authRemoteDs.loginUser(
+      email: email,
+      password: password,
+    );
+    return userModel;
   }
 
   @override
-  Future<UserModel> fetchAndCacheUserData() async {
-    return await authRemoteDs.fetchAndCacheUserData();
+  Future<UserModel> fetchAndCacheUserData({required String email}) async {
+    return await authRemoteDs.fetchFreshUserData(email);
   }
 
   @override
@@ -27,5 +31,7 @@ class AuthRepoImpl implements AuthRepo {
   }
 
   @override
-  Future<void> logout() => authRemoteDs.logout();
+  Future<void> logout() async {
+    await authRemoteDs.logout();
+  }
 }
