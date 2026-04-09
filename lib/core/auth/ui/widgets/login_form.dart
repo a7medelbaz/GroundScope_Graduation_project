@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../extensions/context_extensions.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
@@ -33,7 +34,7 @@ class _LoginFormState extends State<LoginForm> {
 
   void _submit() {
     if (_formKey.currentState?.validate() ?? false) {
-      context.read<AuthCubit>().emitLogin(
+      context.read<AuthCubit>().login(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
@@ -47,7 +48,6 @@ class _LoginFormState extends State<LoginForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          /// --- Email Field ---
           CustomTextFormField(
             controller: _emailController,
             hintText: 'auth.email'.tr(),
@@ -55,14 +55,12 @@ class _LoginFormState extends State<LoginForm> {
             validator: Validators.email,
           ),
           verticalSpacing(24),
-
-          /// --- Password Field ---
           CustomTextFormField(
             controller: _passwordController,
             hintText: 'auth.password'.tr(),
             keyboardType: TextInputType.visiblePassword,
             isPassword: !_isPasswordVisible,
-            validator: Validators.password,
+            // validator: Validators.password,
             suffixIcon: IconButton(
               icon: Icon(
                 _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
@@ -96,7 +94,6 @@ class _LoginFormState extends State<LoginForm> {
           CustomTextButton(text: 'auth.login'.tr(), onPressed: _submit),
           verticalSpacing(60),
           GestureDetector(
-            // onTap: () => context.router.pushNamed(Routes.forgotPassword),
             child: Text(
               'auth.forgot_password'.tr(),
               textAlign: TextAlign.center,
