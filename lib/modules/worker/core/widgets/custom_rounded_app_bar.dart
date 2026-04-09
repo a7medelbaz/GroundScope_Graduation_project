@@ -23,11 +23,9 @@ class CustomRoundedAppBar extends StatelessWidget
     return AppBar(
       backgroundColor: theme.scaffoldBackgroundColor,
       elevation: 2,
-      shadowColor: AppColors.lightBlue,
+      shadowColor: AppColors.grey100,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(responsiveRadius(30)),
-        ),
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(rr(30))),
       ),
       iconTheme: IconThemeData(color: theme.iconTheme.color),
       titleTextStyle: AppTextStyles.font18SemiBold.copyWith(
@@ -36,9 +34,7 @@ class CustomRoundedAppBar extends StatelessWidget
       centerTitle: true,
       title: Text(
         title,
-        style: AppTextStyles.font20Bold.copyWith(
-          fontFamily: 'tajawal',
-        ),
+        style: AppTextStyles.font20ExtraBold.copyWith(fontFamily: 'tajawal'),
       ),
       // If leading is null, it won't appear. If provided, it shows your icon.
       leading: leading,
@@ -46,5 +42,5 @@ class CustomRoundedAppBar extends StatelessWidget
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(responsiveHeight(70));
+  Size get preferredSize => Size.fromHeight(rh(70));
 }

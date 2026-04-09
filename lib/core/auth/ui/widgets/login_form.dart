@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../extensions/context_extensions.dart';
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../../utils/spacing.dart';
@@ -22,7 +21,6 @@ class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _rememberMe = false;
   bool _isPasswordVisible = false;
 
   @override
@@ -48,14 +46,14 @@ class _LoginFormState extends State<LoginForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CustomTextFormField(
+          CustomTextForm(
             controller: _emailController,
             hintText: 'auth.email'.tr(),
             keyboardType: TextInputType.emailAddress,
             validator: Validators.email,
           ),
           verticalSpacing(24),
-          CustomTextFormField(
+          CustomTextForm(
             controller: _passwordController,
             hintText: 'auth.password'.tr(),
             keyboardType: TextInputType.visiblePassword,
@@ -70,26 +68,7 @@ class _LoginFormState extends State<LoginForm> {
                   setState(() => _isPasswordVisible = !_isPasswordVisible),
             ),
           ),
-          Row(
-            children: [
-              Checkbox(
-                checkColor: AppColors.white,
-                activeColor: AppColors.primary300,
-                value: _rememberMe,
-                onChanged: (value) {
-                  setState(() {
-                    _rememberMe = value ?? false;
-                  });
-                },
-              ),
-              Text(
-                'auth.remember_me'.tr(),
-                style: AppTextStyles.font14Regular.copyWith(
-                  color: context.customColors.textSecondary,
-                ),
-              ),
-            ],
-          ),
+
           verticalSpacing(60),
           CustomTextButton(text: 'auth.login'.tr(), onPressed: _submit),
           verticalSpacing(60),
@@ -97,7 +76,7 @@ class _LoginFormState extends State<LoginForm> {
             child: Text(
               'auth.forgot_password'.tr(),
               textAlign: TextAlign.center,
-              style: AppTextStyles.font14Regular.copyWith(
+              style: AppTextStyles.font14Light.copyWith(
                 color: AppColors.primary300,
               ),
             ),

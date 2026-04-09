@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../../../../core/extensions/context_extensions.dart';
+import 'package:ground_scope/core/utils/extensions/context_ext.dart';
+
 import '../../../../../../../core/themes/app_colors.dart';
 import '../../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../../core/utils/spacing.dart';
@@ -21,15 +22,12 @@ class CustomFilterChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: responsiveWidth(16),
-          vertical: responsiveHeight(8),
-        ),
+        padding: EdgeInsets.symmetric(horizontal: rw(16), vertical: rh(8)),
         decoration: BoxDecoration(
           color: isSelected
               ? AppColors.primary300
               : context.customColors.divider.withValues(alpha: 0.3),
-          borderRadius: BorderRadius.circular(responsiveRadius(20)),
+          borderRadius: BorderRadius.circular(rr(20)),
           border: Border.all(
             color: isSelected
                 ? AppColors.primary300
@@ -38,9 +36,9 @@ class CustomFilterChip extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: AppTextStyles.font14Regular.copyWith(
+          style: AppTextStyles.font14Light.copyWith(
             color: isSelected
-                ? AppColors.grey0
+                ? AppColors.white
                 : context.customColors.textSecondary,
           ),
         ),
