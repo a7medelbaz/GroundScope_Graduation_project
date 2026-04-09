@@ -1,46 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ground_scope/core/auth/data/models/user_date.dart';
+
 import '../../../error/models/app_error.dart';
-import '../../data/models/user_date.dart';
 import '../../data/repo/auth_repo.dart';
 
 part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit(this.authRepo) : super(AuthInitial());
-
   final AuthRepo authRepo;
 
+  AuthCubit(this.authRepo) : super(AuthInitial());
+
+  /// Check if user is already logged in from cache
   Future<void> checkAuthStatus() async {
     emit(AuthChecking());
     try {
-      final userData = await authRepo.getLoggedInUser();
-      if (userData == null) {
+      final cachedUser = await authRepo.getLoggedInUser();
+      if (cachedUser == null) {
         emit(AuthUnauthenticated());
         return;
       }
-      emit(AuthSuccess(userModel: userData));
-    } catch (error) {
-      emit(AuthFailure(error: error is AppError ? error : AppError.unknown()));
+      emit(AuthSuccess(userModel: cachedUser));
+    } catch (e) {
+      emit(AuthFailure(error: e is AppError ? e : AppError.unknown()));
     }
   }
 
-  Future<void> emitLogin({
-    required String email,
-    required String password,
-  }) async {
+  /// Perform login and emit success/failure
+  Future<void> login({required String email, required String password}) async {
     emit(AuthChecking());
     try {
-      await authRepo.login(email: email, password: password);
-      final userData = await authRepo.fetchAndCacheUserData();
-      emit(AuthSuccess(userModel: userData));
+      final userModel = await authRepo.login(email: email, password: password);
+      if (!userModel.isActive) {
+        throw AppError.unauthorized();
+      }
+      emit(AuthSuccess(userModel: userModel));
     } catch (error) {
       emit(AuthFailure(error: error is AppError ? error : AppError.unknown()));
     }
   }
 
+  /// Logout and clear state
   Future<void> logout() async {
-    await authRepo.logout();
-    emit(AuthUnauthenticated());
+    try {
+      await authRepo.logout();
+      emit(AuthUnauthenticated());
+    } catch (e) {
+      emit(AuthFailure(error: e is AppError ? e : AppError.unknown()));
+    }
   }
 }

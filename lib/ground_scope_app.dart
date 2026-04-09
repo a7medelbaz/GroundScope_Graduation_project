@@ -2,13 +2,14 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:ground_scope/core/auth/ui/user_authenticated_check.dart';
+
 import 'core/auth/logic/cubit/auth_cubit.dart';
 import 'core/di/dependency_injection.dart';
 import 'core/router/app_routers.dart';
 import 'core/themes/cubit/theme_cubit.dart';
 import 'core/themes/theme_data/theme_data_dark.dart';
 import 'core/themes/theme_data/theme_data_light.dart';
-import 'modules/worker/core/main_navigation/ui/worker_scaffold.dart';
 
 class GroundScopeApp extends StatelessWidget {
   const GroundScopeApp({super.key, required this.appRouter});
@@ -24,9 +25,7 @@ class GroundScopeApp extends StatelessWidget {
         return MultiBlocProvider(
           providers: [
             BlocProvider(create: (_) => ThemeCubit()),
-            BlocProvider(
-              create: (_) => getIt<AuthCubit>()..checkAuthStatus(),
-            ),
+            BlocProvider(create: (_) => getIt<AuthCubit>()..checkAuthStatus()),
           ],
           child: BlocBuilder<ThemeCubit, ThemeMode>(
             builder: (final context, final mode) {
@@ -35,8 +34,7 @@ class GroundScopeApp extends StatelessWidget {
                 key: ValueKey(context.locale),
                 debugShowCheckedModeBanner: false,
                 title: 'GroundScope',
-                home:
-                    const WorkerScaffold(), // UserAuthenticatedCheck()
+                home: const UserAuthenticatedCheck(), // WorkerScaffold()
                 onGenerateRoute: appRouter.generateRoute,
                 localizationsDelegates: context.localizationDelegates,
                 supportedLocales: context.supportedLocales,
