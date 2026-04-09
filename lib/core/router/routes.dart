@@ -1,12 +1,14 @@
 class Routes {
   static const String onBoardingScreen = '/onBoardingScreen';
   static const String loginScreen = '/loginScreen';
-  // Worker
+
+  // ########## Worker
   static const String workerScaffold = '/workerScaffold';
   static const String taskDetailsScreen = '/taskDetailsScreen';
-  static const String reportDetailsScreen = '/reportDetailsScreen';
 
+  // ########## Supervisor
   static const String supervisorScreen = '/supervisorScreen';
+
+  // ########## Admin
   static const String adminScreen = '/adminScreen';
-  static const String personaInfoAndSettings = '/personaInfoAndSettings';
 }
