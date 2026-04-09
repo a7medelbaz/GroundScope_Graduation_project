@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../../core/themes/app_text_styles.dart';
 
 class NotificationsScreen extends StatelessWidget {
@@ -6,11 +7,11 @@ class NotificationsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return const SafeArea(
       child: Center(
         child: Text(
           'Worker Notifications Screen',
-          style: AppTextStyles.font20Bold,
+          style: AppTextStyles.font20ExtraBold,
         ),
       ),
     );

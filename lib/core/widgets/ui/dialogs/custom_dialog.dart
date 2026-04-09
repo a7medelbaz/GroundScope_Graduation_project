@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../../extensions/context_extensions.dart';
+import 'package:ground_scope/core/utils/spacing.dart';
+
+import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
-import '../../../utils/spacing.dart';
+import '../../../utils/extensions/context_ext.dart';
 import '../../custom_text_button.dart';
 
-class CustomDialog extends StatelessWidget {
-  final String? title;
-  final String message;
-  final String primaryButtonText;
-  final VoidCallback? onPrimaryPressed;
-  final String? secondaryButtonText;
-  final VoidCallback? onSecondaryPressed;
-  final IconData? icon;
-  final Color? iconColor;
-
-  const CustomDialog({
+class CustomAppDialog extends StatelessWidget {
+  const CustomAppDialog({
     super.key,
     this.title,
     required this.message,
@@ -24,87 +17,117 @@ class CustomDialog extends StatelessWidget {
     this.onSecondaryPressed,
     this.icon,
     this.iconColor,
+    this.iconBackgroundColor,
+    this.barrierDismissible = true,
   });
+
+  final String? title;
+  final String message;
+
+  final String primaryButtonText;
+  final VoidCallback? onPrimaryPressed;
+
+  final String? secondaryButtonText;
+  final VoidCallback? onSecondaryPressed;
+
+  final IconData? icon;
+  final Color? iconColor;
+  final Color? iconBackgroundColor;
+
+  final bool barrierDismissible;
 
   @override
   Widget build(final BuildContext context) {
+    final colors = context.customColors;
+
     return Dialog(
-      insetPadding: EdgeInsets.symmetric(horizontal: responsiveWidth(32)),
+      insetPadding: EdgeInsets.symmetric(horizontal: rw(32)),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(responsiveRadius(16)),
+        borderRadius: BorderRadius.circular(rr(16)),
       ),
+      backgroundColor: colors.surface,
       child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: responsiveWidth(24),
-          vertical: responsiveHeight(16),
-        ),
+        padding: EdgeInsets.all(rw(24)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // ─── Icon ───────────────────────────────────
             if (icon != null) ...[
               Container(
-                padding: EdgeInsets.all(responsiveRadius(24)),
+                padding: EdgeInsets.all(rw(16)),
                 decoration: BoxDecoration(
-                  color: (iconColor ?? context.customColors.surfaceVariant)
-                      .withValues(alpha: 0.1),
+                  color:
+                      (iconBackgroundColor ?? iconColor ?? AppColors.primary200)
+                          .withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   icon,
-                  size: responsiveFontSize(32),
-                  color: iconColor ?? context.customColors.surfaceVariant,
+                  size: rf(32),
+                  color: iconColor ?? AppColors.primary200,
                 ),
               ),
-              verticalSpacing(8),
+              verticalSpacing(16),
             ],
+
+            // ─── Title ──────────────────────────────────
             if (title != null) ...[
               Text(
                 title!,
                 textAlign: TextAlign.center,
-                style: AppTextStyles.fontBold.copyWith(
-                  fontSize: responsiveFontSize(20),
-                  color: context.customColors.textPrimary,
+                style: AppTextStyles.font18ExtraBold.copyWith(
+                  color: colors.textPrimary,
                 ),
               ),
               verticalSpacing(8),
             ],
+
+            // ─── Message ────────────────────────────────
             Text(
               message,
               textAlign: TextAlign.center,
-              style: AppTextStyles.font14Regular.copyWith(
-                color: context.customColors.textSecondary,
+              style: AppTextStyles.font16Light.copyWith(
+                color: colors.textSecondary,
               ),
             ),
             verticalSpacing(16),
-            Row(
-              children: [
-                if (secondaryButtonText != null)
+
+            // ─── Buttons ────────────────────────────────
+            if (secondaryButtonText != null)
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomTextButton.outlined(
+                      text: secondaryButtonText!,
+                      size: CustomButtonSize.small,
+                      onPressed: () {
+                        context.pop();
+                        onSecondaryPressed?.call();
+                      },
+                    ),
+                  ),
+                  horizontalSpacing(8),
                   Expanded(
                     child: CustomTextButton(
-                      text: secondaryButtonText!,
-                      textStyle: AppTextStyles.font14SemiBold,
+                      text: primaryButtonText,
                       size: CustomButtonSize.small,
-                      style: CustomButtonStyle.outlined,
                       onPressed: () {
                         context.pop();
                         onPrimaryPressed?.call();
                       },
                     ),
                   ),
-                if (secondaryButtonText != null) horizontalSpacing(8),
-                Expanded(
-                  child: CustomTextButton(
-                    text: primaryButtonText,
-                    textStyle: AppTextStyles.font14SemiBold,
-                    size: CustomButtonSize.small,
-                    onPressed: () {
-                      context.pop();
-                      onSecondaryPressed?.call();
-                    },
-                  ),
-                ),
-              ],
-            ),
+                ],
+              )
+            else
+              CustomTextButton(
+                text: primaryButtonText,
+                size: CustomButtonSize.small,
+                onPressed: () {
+                  context.pop();
+                  onPrimaryPressed?.call();
+                },
+              ),
           ],
         ),
       ),

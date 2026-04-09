@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../../../core/extensions/context_extensions.dart';
+import 'package:ground_scope/core/utils/extensions/context_ext.dart';
+
 import '../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../core/utils/spacing.dart';
 import '../../../home/data/models/task_model.dart';
@@ -27,10 +28,7 @@ class TaskDetailsHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: responsiveWidth(20),
-        vertical: responsiveHeight(32),
-      ),
+      padding: EdgeInsets.symmetric(horizontal: rw(20), vertical: rh(32)),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -51,30 +49,26 @@ class TaskDetailsHeader extends StatelessWidget {
               color: statusColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(
-              task.icon,
-              color: statusColor,
-              size: responsiveFontSize(24),
-            ),
+            child: Icon(task.icon, color: statusColor, size: rf(24)),
           ),
           horizontalSpacing(16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(task.title, style: AppTextStyles.font16Bold),
+                Text(task.title, style: AppTextStyles.font16ExtraBold),
                 verticalSpacing(4),
                 Row(
                   children: [
                     Icon(
                       Icons.location_on_outlined,
-                      size: responsiveFontSize(14),
+                      size: rf(14),
                       color: context.customColors.textSecondary,
                     ),
                     horizontalSpacing(4),
                     Text(
                       task.location,
-                      style: AppTextStyles.font12Regular.copyWith(
+                      style: AppTextStyles.font12Light.copyWith(
                         color: context.customColors.textSecondary,
                       ),
                     ),
@@ -85,13 +79,13 @@ class TaskDetailsHeader extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.access_time,
-                      size: responsiveFontSize(14),
+                      size: rf(14),
                       color: context.customColors.textSecondary,
                     ),
                     horizontalSpacing(4),
                     Text(
                       task.timeRange,
-                      style: AppTextStyles.font12Regular.copyWith(
+                      style: AppTextStyles.font12Light.copyWith(
                         color: context.customColors.textSecondary,
                       ),
                     ),
@@ -102,11 +96,8 @@ class TaskDetailsHeader extends StatelessWidget {
           ),
 
           Container(
-            margin: EdgeInsets.only(top: responsiveWidth(32)),
-            padding: EdgeInsets.symmetric(
-              horizontal: responsiveWidth(12),
-              vertical: responsiveHeight(6),
-            ),
+            margin: EdgeInsets.only(top: rw(32)),
+            padding: EdgeInsets.symmetric(horizontal: rw(12), vertical: rh(6)),
             decoration: BoxDecoration(
               color: statusColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(20),

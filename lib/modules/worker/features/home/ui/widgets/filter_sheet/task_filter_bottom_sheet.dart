@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../../../../core/extensions/context_extensions.dart';
+import 'package:ground_scope/core/utils/extensions/context_ext.dart';
+
 import '../../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../../core/utils/spacing.dart';
 import '../../../../../../../core/widgets/custom_text_button.dart';
@@ -18,9 +19,7 @@ class TaskFilterBottomSheet extends StatefulWidget {
       isScrollControlled: true,
       backgroundColor: context.customColors.background,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(responsiveRadius(24)),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(rr(24))),
       ),
       builder: (_) => TaskFilterBottomSheet(initial: current),
     );
@@ -50,12 +49,7 @@ class _TaskFilterBottomSheetState extends State<TaskFilterBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(
-        responsiveWidth(20),
-        responsiveHeight(20),
-        responsiveWidth(20),
-        responsiveHeight(32),
-      ),
+      padding: EdgeInsets.fromLTRB(rw(20), rh(20), rw(20), rh(32)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,7 +58,7 @@ class _TaskFilterBottomSheetState extends State<TaskFilterBottomSheet> {
           verticalSpacing(20),
           Row(
             children: [
-              Text('Filter Tasks', style: AppTextStyles.font16Bold),
+              const Text('Filter Tasks', style: AppTextStyles.font16ExtraBold),
               const Spacer(),
               if (_filter.isActive)
                 GestureDetector(
@@ -72,18 +66,18 @@ class _TaskFilterBottomSheetState extends State<TaskFilterBottomSheet> {
 
                   child: Text(
                     'Reset',
-                    style: AppTextStyles.font16Regular.copyWith(
-                      color: context.customColors.accentBlue,
+                    style: AppTextStyles.font16Light.copyWith(
+                      color: context.customColors.background,
                     ),
                   ),
                 ),
             ],
           ),
           verticalSpacing(20),
-          Text('Status', style: AppTextStyles.font14Regular),
+          const Text('Status', style: AppTextStyles.font14Light),
           verticalSpacing(10),
           Wrap(
-            spacing: responsiveWidth(8),
+            spacing: rw(8),
             children: _statusOptions
                 .map(
                   (status) => CustomFilterChip(
@@ -100,11 +94,11 @@ class _TaskFilterBottomSheetState extends State<TaskFilterBottomSheet> {
                 .toList(),
           ),
           verticalSpacing(20),
-          Text('Time Range', style: AppTextStyles.font14Regular),
+          const Text('Time Range', style: AppTextStyles.font14Light),
           verticalSpacing(10),
           Wrap(
-            spacing: responsiveWidth(8),
-            runSpacing: responsiveHeight(8),
+            spacing: rw(8),
+            runSpacing: rh(8),
             children: _timeOptions
                 .map(
                   (hours) => CustomFilterChip(
@@ -137,11 +131,11 @@ class _TaskFilterBottomSheetState extends State<TaskFilterBottomSheet> {
   Widget _buildHandle(BuildContext context) {
     return Center(
       child: Container(
-        width: responsiveWidth(40),
-        height: responsiveHeight(4),
+        width: rw(40),
+        height: rh(4),
         decoration: BoxDecoration(
           color: context.customColors.divider,
-          borderRadius: BorderRadius.circular(responsiveRadius(8)),
+          borderRadius: BorderRadius.circular(rr(8)),
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../../../core/extensions/context_extensions.dart';
+import 'package:ground_scope/core/utils/extensions/context_ext.dart';
+
 import '../../../../../../core/themes/app_colors.dart';
 import '../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../core/utils/spacing.dart';
@@ -39,9 +40,7 @@ class _QuickReportBottomSheetState extends State<QuickReportBottomSheet> {
         child: Container(
           decoration: BoxDecoration(
             color: context.customColors.background,
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(responsiveRadius(28)),
-            ),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(rr(28))),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -54,7 +53,7 @@ class _QuickReportBottomSheetState extends State<QuickReportBottomSheet> {
               /// Scrollable Body
               Flexible(
                 child: SingleChildScrollView(
-                  padding: EdgeInsets.all(responsiveWidth(20)),
+                  padding: EdgeInsets.all(rw(20)),
                   child: _buildBody(context),
                 ),
               ),
@@ -68,12 +67,12 @@ class _QuickReportBottomSheetState extends State<QuickReportBottomSheet> {
   Widget _buildHandle(BuildContext context) {
     return Center(
       child: Container(
-        margin: EdgeInsets.only(top: responsiveHeight(12)),
-        width: responsiveWidth(40),
-        height: responsiveHeight(4),
+        margin: EdgeInsets.only(top: rh(12)),
+        width: rw(40),
+        height: rh(4),
         decoration: BoxDecoration(
           color: context.customColors.divider,
-          borderRadius: BorderRadius.circular(responsiveRadius(8)),
+          borderRadius: BorderRadius.circular(rr(8)),
         ),
       ),
     );
@@ -81,10 +80,7 @@ class _QuickReportBottomSheetState extends State<QuickReportBottomSheet> {
 
   Widget _buildHeader(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: responsiveWidth(20),
-        vertical: responsiveHeight(16),
-      ),
+      padding: EdgeInsets.symmetric(horizontal: rw(20), vertical: rh(16)),
       child: Row(
         children: [
           _buildIconBadge(),
@@ -95,10 +91,10 @@ class _QuickReportBottomSheetState extends State<QuickReportBottomSheet> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Quick Report', style: AppTextStyles.font18Bold),
+                Text('Quick Report', style: AppTextStyles.font18ExtraBold),
                 Text(
                   widget.task.title,
-                  style: AppTextStyles.font12Regular.copyWith(
+                  style: AppTextStyles.font12Light.copyWith(
                     color: context.customColors.textSecondary,
                   ),
                 ),
@@ -114,15 +110,15 @@ class _QuickReportBottomSheetState extends State<QuickReportBottomSheet> {
 
   Widget _buildIconBadge() {
     return Container(
-      padding: EdgeInsets.all(responsiveWidth(8)),
+      padding: EdgeInsets.all(rw(8)),
       decoration: BoxDecoration(
         color: AppColors.primary300.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(responsiveRadius(10)),
+        borderRadius: BorderRadius.circular(rr(10)),
       ),
       child: Icon(
         Icons.flag_outlined,
         color: AppColors.primary300,
-        size: responsiveWidth(18),
+        size: rw(18),
       ),
     );
   }
@@ -131,14 +127,14 @@ class _QuickReportBottomSheetState extends State<QuickReportBottomSheet> {
     return GestureDetector(
       onTap: () => Navigator.pop(context),
       child: Container(
-        padding: EdgeInsets.all(responsiveWidth(8)),
+        padding: EdgeInsets.all(rw(8)),
         decoration: BoxDecoration(
           color: context.customColors.divider.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(responsiveRadius(10)),
+          borderRadius: BorderRadius.circular(rr(10)),
         ),
         child: Icon(
           Icons.close,
-          size: responsiveWidth(16),
+          size: rw(16),
           color: context.customColors.textSecondary,
         ),
       ),
@@ -188,10 +184,10 @@ class _QuickReportBottomSheetState extends State<QuickReportBottomSheet> {
           },
           child: Container(
             width: double.infinity,
-            height: responsiveHeight(130),
+            height: rh(130),
             decoration: BoxDecoration(
               color: context.customColors.divider.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(responsiveRadius(16)),
+              borderRadius: BorderRadius.circular(rr(16)),
               border: Border.all(
                 color: _selectedImage != null
                     ? AppColors.primary300
@@ -222,18 +218,15 @@ class _QuickReportBottomSheetState extends State<QuickReportBottomSheet> {
         ),
         verticalSpacing(8),
         Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: responsiveWidth(16),
-            vertical: responsiveHeight(14),
-          ),
+          padding: EdgeInsets.symmetric(horizontal: rw(16), vertical: rh(14)),
           decoration: BoxDecoration(
             color: context.customColors.divider.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(responsiveRadius(12)),
+            borderRadius: BorderRadius.circular(rr(12)),
             border: Border.all(color: context.customColors.divider),
           ),
           child: Text(
             widget.task.title,
-            style: AppTextStyles.font14Regular.copyWith(
+            style: AppTextStyles.font14Light.copyWith(
               color: context.customColors.textSecondary,
             ),
           ),
@@ -252,7 +245,7 @@ class _QuickReportBottomSheetState extends State<QuickReportBottomSheet> {
           labelColor: context.customColors.textSecondary,
         ),
         verticalSpacing(8),
-        CustomTextFormField(
+        CustomTextForm(
           hintText: 'e.g., Minor dent on cargo loader',
           controller: _descriptionController,
           maxLines: 3,
@@ -274,7 +267,7 @@ class _QuickReportBottomSheetState extends State<QuickReportBottomSheet> {
         Container(
           decoration: BoxDecoration(
             color: context.customColors.divider.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(responsiveRadius(12)),
+            borderRadius: BorderRadius.circular(rr(12)),
             border: Border.all(color: context.customColors.divider),
           ),
           child: Column(
@@ -337,15 +330,15 @@ class _MetadataRow extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.max,
         children: [
-          Icon(icon, size: responsiveWidth(18)),
+          Icon(icon, size: rw(18)),
           horizontalSpacing(12),
 
           Text(
             label,
-            style: AppTextStyles.font12Regular.copyWith(color: labelColor),
+            style: AppTextStyles.font12Light.copyWith(color: labelColor),
           ),
           const Spacer(),
-          Text(value, style: AppTextStyles.font12Regular),
+          Text(value, style: AppTextStyles.font12Light),
         ],
       ),
     );
@@ -371,7 +364,7 @@ class _SectionLabel extends StatelessWidget {
         if (optional)
           Text(
             ' (Optional)',
-            style: AppTextStyles.font12Regular.copyWith(color: labelColor),
+            style: AppTextStyles.font12Light.copyWith(color: labelColor),
           ),
       ],
     );
