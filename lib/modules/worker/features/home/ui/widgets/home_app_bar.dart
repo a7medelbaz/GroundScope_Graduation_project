@@ -1,5 +1,5 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
 import '../../../../../../core/auth/data/models/user_date.dart';
 import '../../../../../../core/extensions/context_extensions.dart';
 import '../../../../../../core/themes/app_colors.dart';
@@ -19,42 +19,13 @@ class HomeAppBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: responsiveWidth(55),
-            height: responsiveHeight(55),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: context.customColors.background,
-                width: 3,
-              ),
-              color: context.customColors.divider,
-            ),
-            child: ClipOval(
-              child: CachedNetworkImage(
-                imageUrl: userModel.imageUrl,
-                fit: BoxFit.cover,
-                placeholder: (final context, final url) => Center(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: context.customColors.accentBlue,
-                  ),
-                ),
-                errorWidget: (final context, final url, final error) => Icon(
-                  Icons.person,
-                  color: context.customColors.textPrimary,
-                  size: responsiveFontSize(60),
-                ),
-              ),
-            ),
-          ),
           horizontalSpacing(12),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(userModel.firstName, style: AppTextStyles.font18Bold),
+              Text(userModel.fullName, style: AppTextStyles.font18Bold),
               Text(
-                userModel.position,
+                userModel.fullName,
                 style: AppTextStyles.font14Regular.copyWith(
                   color: context.customColors.textSecondary,
                 ),

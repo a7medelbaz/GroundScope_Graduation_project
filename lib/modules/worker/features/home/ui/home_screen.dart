@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../../core/auth/data/models/user_date.dart';
 import '../data/models/task_model.dart';
 import 'widgets/home_app_bar.dart';
@@ -66,13 +67,12 @@ class HomeScreen extends StatelessWidget {
         children: [
           HomeAppBar(
             userModel: UserModel(
-              firstName: 'Mustafa',
+              fullName: 'Mustafa',
               id: '123',
               email: 'mustafa@example.com',
-              lastName: 'Elbaz',
-              imageUrl:
-                  'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=60',
-              position: 'Ramp Agent, Unit 3',
+              role: 'unit_manager',
+              isActive: true,
+              createdAt: DateTime.now(),
             ),
           ),
 
