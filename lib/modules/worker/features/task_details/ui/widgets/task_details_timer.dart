@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
+
 import '../../../../../../core/themes/app_colors.dart';
 import '../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../core/utils/spacing.dart';
@@ -68,11 +70,11 @@ class _TaskDetailsTimerState extends State<TaskDetailsTimer> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Time Remaining', style: AppTextStyles.font16Bold),
+        const Text('Time Remaining', style: AppTextStyles.font16ExtraBold),
         verticalSpacing(12),
         Container(
           width: double.infinity,
-          padding: EdgeInsets.symmetric(vertical: responsiveHeight(12)),
+          padding: EdgeInsets.symmetric(vertical: rh(12)),
 
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -94,16 +96,10 @@ class _Colon extends StatelessWidget {
   @override
   Widget build(final BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(
-        left: responsiveWidth(6),
-        right: responsiveWidth(6),
-        bottom: responsiveHeight(20),
-      ),
+      padding: EdgeInsets.only(left: rw(6), right: rw(6), bottom: rh(20)),
       child: Text(
         ':',
-        style: AppTextStyles.fontBold.copyWith(
-          fontSize: responsiveFontSize(24),
-        ),
+        style: AppTextStyles.font18ExtraBold.copyWith(fontSize: rf(24)),
       ),
     );
   }
@@ -121,7 +117,7 @@ class _TimerUnit extends StatelessWidget {
       children: [
         Row(children: digits.map((digit) => _DigitBox(digit: digit)).toList()),
         verticalSpacing(6),
-        Text(label, style: AppTextStyles.font12Regular.copyWith()),
+        Text(label, style: AppTextStyles.font12Light.copyWith()),
       ],
     );
   }
@@ -134,19 +130,17 @@ class _DigitBox extends StatelessWidget {
   @override
   Widget build(final BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: responsiveWidth(4)),
-      width: responsiveWidth(42),
-      height: responsiveHeight(62),
+      margin: EdgeInsets.symmetric(horizontal: rw(4)),
+      width: rw(42),
+      height: rh(62),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(responsiveRadius(10)),
-        border: Border.all(color: AppColors.green25.withValues(alpha: 0.3)),
+        borderRadius: BorderRadius.circular(rr(10)),
+        border: Border.all(color: AppColors.green200.withValues(alpha: 0.3)),
       ),
       alignment: Alignment.center,
       child: Text(
         digit,
-        style: AppTextStyles.fontBold.copyWith(
-          fontSize: responsiveFontSize(36),
-        ),
+        style: AppTextStyles.font18ExtraBold.copyWith(fontSize: rf(36)),
       ),
     );
   }

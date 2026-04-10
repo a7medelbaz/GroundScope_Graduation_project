@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/utils/app_assets.dart';
 import '../../../../core/utils/spacing.dart';
 
@@ -8,7 +9,7 @@ class OnBoardingHeroImage extends StatelessWidget {
   @override
   Widget build(final BuildContext context) {
     // Give a fixed height based on screen
-    final double imageHeight = responsiveHeight(500);
+    final double imageHeight = rh(500);
 
     return Stack(
       children: [
