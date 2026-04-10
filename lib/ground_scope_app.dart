@@ -31,26 +31,31 @@ class GroundScopeApp extends StatelessWidget {
           child: BlocBuilder<AppSettingsCubit, AppSettingsState>(
             builder:
                 (final BuildContext context, final AppSettingsState settings) {
-                  return MaterialApp(
-                    localizationsDelegates: context.localizationDelegates,
-                    supportedLocales: context.supportedLocales,
-                    locale: settings.locale,
-                    debugShowCheckedModeBanner: false,
-                    onGenerateRoute: AppRouter.generateRoute,
-                    title: AppConfig.appName,
-                    // font family injected into both themes
-                    theme: getLightTheme().copyWith(
-                      textTheme: getLightTheme().textTheme.apply(
-                        fontFamily: settings.fontFamily,
-                      ),
-                    ),
-                    darkTheme: getDarkTheme().copyWith(
-                      textTheme: getDarkTheme().textTheme.apply(
-                        fontFamily: settings.fontFamily,
-                      ),
-                    ),
-                    themeMode: settings.themeMode,
-                    home: const UserAuthenticatedCheck(),
+                  return BlocBuilder<AuthCubit, AuthState>(
+                    builder: (context, state) {
+                      return MaterialApp(
+                        key: ValueKey(state is AuthSuccess),
+                        localizationsDelegates: context.localizationDelegates,
+                        supportedLocales: context.supportedLocales,
+                        locale: settings.locale,
+                        debugShowCheckedModeBanner: false,
+                        onGenerateRoute: AppRouter.generateRoute,
+                        title: AppConfig.appName,
+                        
+                        theme: getLightTheme().copyWith(
+                          textTheme: getLightTheme().textTheme.apply(
+                            fontFamily: settings.fontFamily,
+                          ),
+                        ),
+                        darkTheme: getDarkTheme().copyWith(
+                          textTheme: getDarkTheme().textTheme.apply(
+                            fontFamily: settings.fontFamily,
+                          ),
+                        ),
+                        themeMode: settings.themeMode,
+                        home: const UserAuthenticatedCheck(),
+                      );
+                    },
                   );
                 },
           ),
