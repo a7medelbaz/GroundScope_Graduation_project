@@ -31,6 +31,7 @@ dependencies:
   cached_network_image: ^3.4.1
   cupertino_icons: ^1.0.8
   easy_localization: ^3.0.8
+  equatable: ^2.0.8
   firebase_core: ^4.2.1
   flutter:
     sdk: flutter
@@ -62,7 +63,7 @@ flutter:
   assets:
     - assets/images/
     - assets/svgs/
-    - assets/translations/
+    - assets/lang/
     # - shorebird.yaml # Localization assets
 
   # An image asset can refer to one or more resolution-specific "variants", see

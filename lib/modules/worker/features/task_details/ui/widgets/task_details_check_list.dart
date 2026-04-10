@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../../../core/extensions/context_extensions.dart';
+import 'package:ground_scope/core/utils/extensions/context_ext.dart';
+
 import '../../../../../../core/themes/app_colors.dart';
 import '../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../core/utils/spacing.dart';
@@ -31,10 +32,10 @@ class _TaskDetailsCheckListState extends State<TaskDetailsCheckList> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Checklist', style: AppTextStyles.font16Bold),
+            const Text('Checklist', style: AppTextStyles.font16ExtraBold),
             Text(
               '$completedCount/${checklist.length}',
-              style: AppTextStyles.font14Regular.copyWith(
+              style: AppTextStyles.font14Light.copyWith(
                 color: widget.statusColor,
                 fontWeight: FontWeight.w600,
               ),
@@ -60,17 +61,17 @@ class _TaskDetailsCheckListState extends State<TaskDetailsCheckList> {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 padding: EdgeInsets.symmetric(
-                  horizontal: responsiveWidth(16),
-                  vertical: responsiveHeight(14),
+                  horizontal: rw(16),
+                  vertical: rh(14),
                 ),
                 decoration: BoxDecoration(
                   color: isDone
-                      ? context.customColors.successContainer
+                      ? context.customColors.successBackground
                       : context.customColors.divider.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
                     color: isDone
-                        ? context.customColors.successContainer.withValues(
+                        ? context.customColors.successBackground.withValues(
                             alpha: 0.4,
                           )
                         : context.customColors.divider.withValues(alpha: 0.3),
@@ -81,14 +82,14 @@ class _TaskDetailsCheckListState extends State<TaskDetailsCheckList> {
                     /// Circle indicator
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
-                      width: responsiveWidth(22),
-                      height: responsiveHeight(22),
+                      width: rw(22),
+                      height: rh(22),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: isDone ? AppColors.green100 : Colors.transparent,
                         border: Border.all(
                           color: isDone
-                              ? context.customColors.successContainer
+                              ? context.customColors.successBackground
                               : context.customColors.divider,
                           width: 2,
                         ),
@@ -105,7 +106,7 @@ class _TaskDetailsCheckListState extends State<TaskDetailsCheckList> {
                     Expanded(
                       child: Text(
                         item['title'] as String,
-                        style: AppTextStyles.font14Regular.copyWith(
+                        style: AppTextStyles.font14Light.copyWith(
                           decoration: isDone
                               ? TextDecoration.lineThrough
                               : null,

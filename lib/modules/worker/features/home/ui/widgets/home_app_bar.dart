@@ -1,7 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:ground_scope/core/utils/extensions/context_ext.dart';
+
 import '../../../../../../core/auth/data/models/user_date.dart';
-import '../../../../../../core/extensions/context_extensions.dart';
 import '../../../../../../core/themes/app_colors.dart';
 import '../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../core/utils/spacing.dart';
@@ -12,50 +12,18 @@ class HomeAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: responsiveWidth(12),
-        vertical: responsiveHeight(24),
-      ),
+      padding: EdgeInsets.symmetric(horizontal: rw(12), vertical: rh(24)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: responsiveWidth(55),
-            height: responsiveHeight(55),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: context.customColors.background,
-                width: 3,
-              ),
-              color: context.customColors.divider,
-            ),
-            child: ClipOval(
-              child: CachedNetworkImage(
-                imageUrl: userModel.imageUrl,
-                fit: BoxFit.cover,
-                placeholder: (final context, final url) => Center(
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: context.customColors.accentBlue,
-                  ),
-                ),
-                errorWidget: (final context, final url, final error) => Icon(
-                  Icons.person,
-                  color: context.customColors.textPrimary,
-                  size: responsiveFontSize(60),
-                ),
-              ),
-            ),
-          ),
           horizontalSpacing(12),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(userModel.firstName, style: AppTextStyles.font18Bold),
+              Text(userModel.fullName, style: AppTextStyles.font18ExtraBold),
               Text(
-                userModel.position,
-                style: AppTextStyles.font14Regular.copyWith(
+                userModel.fullName,
+                style: AppTextStyles.font14Light.copyWith(
                   color: context.customColors.textSecondary,
                 ),
               ),
@@ -64,15 +32,12 @@ class HomeAppBar extends StatelessWidget {
           const Spacer(),
           Text(
             '07:00-15:00',
-            style: AppTextStyles.font14Regular.copyWith(
+            style: AppTextStyles.font14Light.copyWith(
               color: context.customColors.textSecondary,
             ),
           ),
           horizontalSpacing(8),
-          CircleAvatar(
-            radius: responsiveRadius(8),
-            backgroundColor: AppColors.green100,
-          ),
+          CircleAvatar(radius: rr(8), backgroundColor: AppColors.green100),
         ],
       ),
     );

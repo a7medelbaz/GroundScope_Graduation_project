@@ -12,20 +12,17 @@ class UserAuthenticatedCheck extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authState = context.watch<AuthCubit>().state;
-
     if (authState is AuthInitial || authState is AuthChecking) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-
     if (authState is AuthSuccess) {
-      return switch (authState.userModel.position) {
-        'worker' => const WorkerScaffold(),
+      return switch (authState.userModel.role) {
+        'unit_manager' => const WorkerScaffold(),
         'supervisor' => const SupervisorScreen(),
         'admin' => const AdminScreen(),
         _ => const OnBoardingScreen(),
       };
     }
-
     return const OnBoardingScreen();
   }
 }

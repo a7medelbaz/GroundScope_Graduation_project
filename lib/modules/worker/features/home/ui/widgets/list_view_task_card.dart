@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../../../../../core/extensions/context_extensions.dart';
+import 'package:ground_scope/core/utils/extensions/context_ext.dart';
+
 import '../../../../../../core/themes/app_colors.dart';
 import '../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../core/utils/spacing.dart';
 import '../../data/models/task_model.dart';
 
 class TaskCard extends StatelessWidget {
-  const TaskCard({
-    super.key,
-    required this.task,
-    this.isLast = false,
-  });
+  const TaskCard({super.key, required this.task, this.isLast = false});
 
   final TaskModel task;
   final bool isLast;
@@ -18,10 +15,8 @@ class TaskCard extends StatelessWidget {
   Color get _statusColor {
     return switch (task.status) {
       TaskStatus.inProgress => AppColors.primary300,
-      TaskStatus.done => AppColors.springGreen,
-      TaskStatus.pending => AppColors.yellow100.withValues(
-        alpha: 0.8,
-      ),
+      TaskStatus.done => AppColors.green200,
+      TaskStatus.pending => AppColors.amber100.withValues(alpha: 0.8),
     };
   }
 
@@ -41,22 +36,18 @@ class TaskCard extends StatelessWidget {
         children: [
           // Timeline column
           SizedBox(
-            width: responsiveWidth(40),
+            width: rw(40),
             child: Column(
               children: [
                 Container(
-                  width: responsiveWidth(36),
-                  height: responsiveHeight(36),
+                  width: rw(36),
+                  height: rh(36),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: _statusColor.withValues(alpha: 0.1),
                     border: Border.all(color: _statusColor, width: 2),
                   ),
-                  child: Icon(
-                    task.icon,
-                    color: _statusColor,
-                    size: responsiveFontSize(18),
-                  ),
+                  child: Icon(task.icon, color: _statusColor, size: rf(18)),
                 ),
                 // if (!isLast)
                 Expanded(
@@ -72,8 +63,8 @@ class TaskCard extends StatelessWidget {
           // Card
           Expanded(
             child: Container(
-              margin: EdgeInsets.only(bottom: responsiveHeight(16)),
-              padding: EdgeInsets.all(responsiveWidth(14)),
+              margin: EdgeInsets.only(bottom: rh(16)),
+              padding: EdgeInsets.all(rw(14)),
               decoration: BoxDecoration(
                 color: context.customColors.background,
                 borderRadius: BorderRadius.circular(12),
@@ -86,19 +77,16 @@ class TaskCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           task.title,
-                          style: AppTextStyles.font16Bold,
+                          style: AppTextStyles.font16ExtraBold,
                         ),
                       ),
-                      _StatusBadge(
-                        label: _statusLabel,
-                        color: _statusColor,
-                      ),
+                      _StatusBadge(label: _statusLabel, color: _statusColor),
                     ],
                   ),
                   verticalSpacing(6),
                   Text(
                     '${task.timeRange} | ${task.location}',
-                    style: AppTextStyles.font12Regular.copyWith(
+                    style: AppTextStyles.font12Light.copyWith(
                       color: context.customColors.textSecondary,
                     ),
                   ),
@@ -106,7 +94,7 @@ class TaskCard extends StatelessWidget {
                     verticalSpacing(10),
                     Text(
                       '${(task.progress * 100).toInt()} %',
-                      style: AppTextStyles.font12Regular.copyWith(
+                      style: AppTextStyles.font12Light.copyWith(
                         color: context.customColors.textSecondary,
                       ),
                     ),
@@ -117,9 +105,7 @@ class TaskCard extends StatelessWidget {
                         value: task.progress,
                         minHeight: 6,
                         backgroundColor: context.customColors.divider,
-                        valueColor: AlwaysStoppedAnimation(
-                          _statusColor,
-                        ),
+                        valueColor: AlwaysStoppedAnimation(_statusColor),
                       ),
                     ),
                   ],
@@ -141,10 +127,7 @@ class _StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: responsiveWidth(10),
-        vertical: responsiveHeight(4),
-      ),
+      padding: EdgeInsets.symmetric(horizontal: rw(10), vertical: rh(4)),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
@@ -152,7 +135,7 @@ class _StatusBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: AppTextStyles.font12Regular.copyWith(color: color),
+        style: AppTextStyles.font12Light.copyWith(color: color),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../../../core/extensions/context_extensions.dart';
+import 'package:ground_scope/core/utils/extensions/context_ext.dart';
+
 import '../../../../../../core/router/routes.dart';
 import '../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../core/utils/spacing.dart';
@@ -50,17 +51,20 @@ class _WorkerTasksListViewState extends State<WorkerTasksListView> {
 
     return Expanded(
       child: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: responsiveWidth(16)),
+        padding: EdgeInsets.symmetric(horizontal: rw(16)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Text("Today's Tasks", style: AppTextStyles.font18Bold),
+                const Text(
+                  "Today's Tasks",
+                  style: AppTextStyles.font18ExtraBold,
+                ),
                 horizontalSpacing(4),
                 Text(
                   '[${filtered.length}]',
-                  style: AppTextStyles.font14Regular.copyWith(
+                  style: AppTextStyles.font14Light.copyWith(
                     color: context.customColors.textSecondary,
                   ),
                 ),
@@ -96,27 +100,24 @@ class _WorkerTasksListViewState extends State<WorkerTasksListView> {
     return GestureDetector(
       onTap: _openFilter,
       child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: responsiveWidth(10),
-          vertical: responsiveHeight(6),
-        ),
+        padding: EdgeInsets.symmetric(horizontal: rw(10), vertical: rh(6)),
         decoration: BoxDecoration(
           color: _filter.isActive
-              ? context.customColors.accentBlue.withValues(alpha: 0.15)
+              ? context.customColors.info.withValues(alpha: 0.15)
               : context.customColors.divider.withValues(alpha: 0.3),
-          borderRadius: BorderRadius.circular(responsiveRadius(12)),
+          borderRadius: BorderRadius.circular(rr(12)),
           border: Border.all(
             color: _filter.isActive
-                ? context.customColors.accentBlue
+                ? context.customColors.info
                 : context.customColors.divider,
           ),
         ),
         child: Icon(
           Icons.tune_rounded,
           color: _filter.isActive
-              ? context.customColors.accentBlue
+              ? context.customColors.info
               : context.customColors.textSecondary.withValues(alpha: 0.8),
-          size: responsiveWidth(22),
+          size: rw(22),
         ),
       ),
     );
