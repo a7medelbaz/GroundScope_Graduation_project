@@ -16,7 +16,7 @@ ThemeData getLightTheme() {
       onPrimary: AppColors.white,
       secondary: AppColors.secondary200,
       onSecondary: AppColors.white,
-      surface: AppColors.white,
+      surface: AppColors.backgroundLight,
       onSurface: AppColors.black,
       error: AppColors.red200,
       onError: AppColors.white,

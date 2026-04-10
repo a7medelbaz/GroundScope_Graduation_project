@@ -17,7 +17,7 @@ ThemeData getDarkTheme() {
       onPrimary: AppColors.white,
       secondary: AppColors.secondary200,
       onSecondary: AppColors.white,
-      surface: AppColors.grey800,
+      surface: AppColors.backgroundDark,
       onSurface: AppColors.white,
       error: AppColors.red200,
       onError: AppColors.white,
