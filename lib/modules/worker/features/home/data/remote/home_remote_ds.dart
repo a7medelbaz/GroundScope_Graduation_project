@@ -9,17 +9,19 @@ class HomeRemoteDs {
 
   Future<List<TaskModel>> fetchWorkerTasks(String unitId) async {
     try {
-      
       final response = await supabaseService.client
           .from('tasks')
-          .select()
+          .select('''
+            *,
+            flights (*),
+            service_types (*)
+          ''')
           .eq('unit_id', unitId)
-          .order('created_at', ascending: false);
-      final dataList =
-          response as List<dynamic>;
+          .order('scheduled_start', ascending: true);
+      final dataList = response as List<dynamic>;
       return dataList.map((json) => TaskModel.fromMap(json)).toList();
     } catch (e) {
-      ErrorHandler.handle(e);
+      throw ErrorHandler.handle(e);
     }
   }
 }
