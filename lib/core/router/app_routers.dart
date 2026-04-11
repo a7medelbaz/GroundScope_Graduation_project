@@ -1,4 +1,7 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart'; // Add this import
 import 'package:ground_scope/core/auth/ui/login_screen.dart';
 import 'package:ground_scope/core/onboarding/ui/on_boarding_screen.dart';
 import 'package:ground_scope/core/router/routes.dart';
@@ -11,7 +14,7 @@ class AppRouter {
   AppRouter._();
 
   static Route<dynamic> generateRoute(final RouteSettings settings) {
-    final args = settings.arguments as Map<String, dynamic>?;
+    final arguments = settings.arguments as Map<String, dynamic>?;
     switch (settings.name) {
       case Routes.onBoardingScreen:
         return _buildRoute(const OnBoardingScreen(), settings);
@@ -20,7 +23,7 @@ class AppRouter {
       case Routes.workerScaffold:
         return _buildRoute(const WorkerScaffold(), settings);
       case Routes.taskDetailsScreen:
-        return _buildRoute(TaskDetailsScreen(task: args!['task']), settings);
+        return _buildRoute(const TaskDetailsScreen(), settings);
       case Routes.supervisorScreen:
         return _buildRoute(const SupervisorScreen(), settings);
       case Routes.adminScreen:
@@ -50,21 +53,22 @@ class AppRouter {
             final secondaryAnimation,
             final child,
           ) {
-            const begin = Offset(1.0, 0.0);
-            const end = Offset.zero;
-            const curve = Curves.easeInOutCubic;
-
-            final tween = Tween(
-              begin: begin,
-              end: end,
-            ).chain(CurveTween(curve: curve));
-
-            return SlideTransition(
-              position: animation.drive(tween),
-              child: child,
-            );
+            return child
+                .animate(adapter: ValueAdapter(animation.value))
+                .fade(duration: 400.ms, curve: Curves.easeOut)
+                .scale(
+                  begin: const Offset(0.9, 0.9),
+                  end: const Offset(1.0, 1.0),
+                  curve: Curves.easeOutCubic,
+                )
+                .slideY(
+                  begin: 0.1,
+                  end: 0,
+                  duration: 400.ms,
+                  curve: Curves.easeOutCubic,
+                );
           },
-      transitionDuration: const Duration(milliseconds: 300),
+      transitionDuration: const Duration(milliseconds: 400),
     );
   }
 }

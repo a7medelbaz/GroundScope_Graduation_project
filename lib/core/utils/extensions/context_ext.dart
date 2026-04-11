@@ -74,50 +74,104 @@ extension SnackBarExt on BuildContext {
 // ─── Navigation ───────────────────────────────────────────────────────────────
 
 extension NavigationExt on BuildContext {
-  Future<T?> push<T>(final Widget page) =>
-      Navigator.push(this, MaterialPageRoute(builder: (final _) => page));
-
-  Future<T?> pushReplacement<T, TO>(final Widget page, {final TO? result}) =>
-      Navigator.pushReplacement(
-        this,
-        MaterialPageRoute(builder: (final _) => page),
-        result: result,
-      );
-
-  Future<T?> pushAndRemoveAll<T>(final Widget page) =>
-      Navigator.pushAndRemoveUntil(
-        this,
-        MaterialPageRoute(builder: (final _) => page),
-        (final _) => false,
-      );
-
-  void pop<T>([final T? result]) {
-    if (mounted) Navigator.pop(this, result);
+  // Push a Widget
+  Future<T?> push<T>(final Widget page, {bool rootNavigator = false}) {
+    final route = MaterialPageRoute<T>(builder: (final _) => page);
+    return rootNavigator
+        ? Navigator.of(this, rootNavigator: true).push(route)
+        : Navigator.push(this, route);
   }
 
-  Future<T?> pushNamed<T>(final String routeName, {final Object? arguments}) =>
-      Navigator.pushNamed(this, routeName, arguments: arguments);
+  // Push Replacement Widget
+  Future<T?> pushReplacement<T, TO>(
+    final Widget page, {
+    final TO? result,
+    bool rootNavigator = false,
+  }) {
+    final route = MaterialPageRoute<T>(builder: (final _) => page);
+    return rootNavigator
+        ? Navigator.of(
+            this,
+            rootNavigator: true,
+          ).pushReplacement(route, result: result)
+        : Navigator.pushReplacement(this, route, result: result);
+  }
 
+  // Push Widget and Remove All
+  Future<T?> pushAndRemoveAll<T>(
+    final Widget page, {
+    bool rootNavigator = false,
+  }) {
+    final route = MaterialPageRoute<T>(builder: (final _) => page);
+    return rootNavigator
+        ? Navigator.of(
+            this,
+            rootNavigator: true,
+          ).pushAndRemoveUntil(route, (final _) => false)
+        : Navigator.pushAndRemoveUntil(this, route, (final _) => false);
+  }
+
+  // Pop
+  void pop<T>([final T? result, bool rootNavigator = false]) {
+    if (mounted) {
+      rootNavigator
+          ? Navigator.of(this, rootNavigator: true).pop(result)
+          : Navigator.pop(this, result);
+    }
+  }
+
+  // Push Named Route
+  Future<T?> pushNamed<T>(
+    final String routeName, {
+    final Object? arguments,
+    bool rootNavigator = false,
+  }) {
+    return rootNavigator
+        ? Navigator.of(
+            this,
+            rootNavigator: true,
+          ).pushNamed<T>(routeName, arguments: arguments)
+        : Navigator.pushNamed<T>(this, routeName, arguments: arguments);
+  }
+
+  // Push Replacement Named Route
   Future<T?> pushReplacementNamed<T, TO>(
     final String routeName, {
     final Object? arguments,
     final TO? result,
-  }) =>
-      Navigator.pushReplacementNamed(
-        this,
-        routeName,
-        arguments: arguments,
-        result: result,
-      );
+    bool rootNavigator = false,
+  }) {
+    return rootNavigator
+        ? Navigator.of(this, rootNavigator: true).pushReplacementNamed(
+            routeName,
+            arguments: arguments,
+            result: result,
+          )
+        : Navigator.pushReplacementNamed(
+            this,
+            routeName,
+            arguments: arguments,
+            result: result,
+          );
+  }
 
+  // Push Named Route and Remove All
   Future<T?> pushNamedAndRemoveAll<T>(
     final String routeName, {
     final Object? arguments,
-  }) =>
-      Navigator.pushNamedAndRemoveUntil(
-        this,
-        routeName,
-        (final _) => false,
-        arguments: arguments,
-      );
+    bool rootNavigator = false,
+  }) {
+    return rootNavigator
+        ? Navigator.of(this, rootNavigator: true).pushNamedAndRemoveUntil(
+            routeName,
+            (final _) => false,
+            arguments: arguments,
+          )
+        : Navigator.pushNamedAndRemoveUntil(
+            this,
+            routeName,
+            (final _) => false,
+            arguments: arguments,
+          );
+  }
 }
