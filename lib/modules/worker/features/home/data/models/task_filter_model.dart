@@ -1,4 +1,4 @@
-import 'task_model.dart';
+import '../../../../../../core/data/models/task_model.dart';
 
 class TaskFilter {
   final TaskStatus? status;
