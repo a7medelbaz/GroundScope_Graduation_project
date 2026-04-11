@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ground_scope/core/di/dependency_injection.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
+import 'package:ground_scope/modules/worker/features/home/logic/cubit/home_cubit.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
+
 import '../../../../../core/themes/app_colors.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../../../features/home/ui/home_screen.dart';
@@ -69,26 +73,35 @@ class _WorkerScaffoldState extends State<WorkerScaffold> {
       const NotificationsScreen(),
       const ProfileScreen(),
     ];
-    return PersistentTabView(
-      context,
-      controller: _controller,
-      screens: _screens,
-      items: _navBarItems(context),
-      navBarStyle: NavBarStyle.style9,
-      backgroundColor: context.customColors.background.withValues(alpha: 0.95),
-      navBarHeight: rh(60),
-      padding: const EdgeInsets.only(top: 2, bottom: 8),
-      decoration: NavBarDecoration(
-        colorBehindNavBar: context.customColors.background,
-        boxShadow: [
-          BoxShadow(
-            color: context.customColors.textPrimary.withValues(alpha: 0.1),
-            blurRadius: 2,
-            offset: const Offset(0, -2),
-          ),
-        ],
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<HomeCubit>(
+          create: (context) => getIt<HomeCubit>()..fetchHomeData(),
+        ),
+      ],
+      child: PersistentTabView(
+        context,
+        controller: _controller,
+        screens: _screens,
+        items: _navBarItems(context),
+        navBarStyle: NavBarStyle.style9,
+        backgroundColor: context.customColors.background.withValues(
+          alpha: 0.95,
+        ),
+        navBarHeight: rh(60),
+        padding: const EdgeInsets.only(top: 2, bottom: 8),
+        decoration: NavBarDecoration(
+          colorBehindNavBar: context.customColors.background,
+          boxShadow: [
+            BoxShadow(
+              color: context.customColors.textPrimary.withValues(alpha: 0.1),
+              blurRadius: 2,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        confineToSafeArea: true,
       ),
-      confineToSafeArea: true,
     );
   }
 }
