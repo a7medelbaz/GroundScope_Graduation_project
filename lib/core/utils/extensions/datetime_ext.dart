@@ -31,4 +31,24 @@ extension DateTimeExt on DateTime {
 
   String _plural(final int value, final String unit) =>
       '$value $unit${value == 1 ? '' : 's'} ago';
+
+  String get formattedDateTimeWithWeekday {
+    final now = DateTime.now();
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    return '${days[now.weekday - 1]}, ${now.day} ${months[now.month - 1]}';
+  }
 }
