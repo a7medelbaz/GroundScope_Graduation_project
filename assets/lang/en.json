@@ -63,6 +63,11 @@
     "forgot_password": "Forgot Password?",
     "remember_me": "Remember Me",
     "validation": {
+      "password_validation_1": "Password must contain at least one lowercase letter.",
+      "password_validation_2": "Password must contain at least one uppercase letter.",
+      "password_validation_3": "Password must contain at least one number.",
+      "password_validation_4": "Password must contain at least one special character.",
+      "password_validation_5": "Password must be at least 8 characters long.",
       "required": "This field is required.",
       "name": "Invalid name Format",
       "age": "Invalid age Format",
