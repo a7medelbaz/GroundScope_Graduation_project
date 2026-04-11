@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/data/models/task_model.dart';
+import 'package:ground_scope/core/data/models/unit_model.dart';
 import 'package:ground_scope/core/error/models/app_error.dart';
 import 'package:ground_scope/modules/worker/features/home/data/repo/home_repo.dart';
 
@@ -11,11 +12,20 @@ class HomeCubit extends Cubit<HomeState> {
 
   HomeCubit({required this.homeRepo}) : super(HomeInitial());
 
-  Future<void> fetchWorkerTasks() async {
+  Future<void> fetchHomeData() async {
     emit(HomeLoading());
+
     try {
-      final tasks = await homeRepo.fetchWorkerTasks();
-      emit(HomeLoaded(tasks: tasks));
+      final results = await Future.wait([
+        homeRepo.fetchWorkerTasks(),
+        homeRepo.getUnitData(),
+      ]);
+      emit(
+        HomeLoaded(
+          tasks: results[0] as List<TaskModel>,
+          unit: results[1] as UnitModel,
+        ),
+      );
     } catch (error) {
       emit(HomeFailure(error: error is AppError ? error : AppError.unknown()));
     }
