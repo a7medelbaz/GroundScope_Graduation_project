@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../extensions/context_extensions.dart';
+
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
+import '../../../utils/extensions/context_ext.dart';
 import '../../../utils/spacing.dart';
 
 class OverlayLoader extends StatelessWidget {
@@ -38,7 +39,7 @@ class OverlayLoader extends StatelessWidget {
                         verticalSpacing(16),
                         Text(
                           message!,
-                          style: AppTextStyles.font16Regular.copyWith(
+                          style: AppTextStyles.font16Light.copyWith(
                             color: context.customColors.textSecondary,
                           ),
                         ),

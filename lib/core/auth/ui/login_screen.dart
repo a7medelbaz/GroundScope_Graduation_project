@@ -1,8 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../extensions/context_extensions.dart';
+
 import '../../themes/app_text_styles.dart';
+import '../../utils/extensions/context_ext.dart';
 import '../../utils/spacing.dart';
 import '../../widgets/ui/dialogs/app_dialogs.dart';
 import '../../widgets/ui/loaders/overlay_loader.dart';
@@ -27,8 +28,8 @@ class LoginScreen extends StatelessWidget {
               isLoading: state is AuthChecking,
               child: Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: responsiveWidth(16),
-                  vertical: responsiveHeight(8),
+                  horizontal: rw(16),
+                  vertical: rh(8),
                 ),
                 child: SingleChildScrollView(
                   child: Column(
@@ -37,13 +38,13 @@ class LoginScreen extends StatelessWidget {
                       verticalSpacing(40),
                       Text(
                         'auth.login_title'.tr(),
-                        style: AppTextStyles.font20Bold,
+                        style: AppTextStyles.font20ExtraBold,
                         textAlign: TextAlign.center,
                       ),
                       verticalSpacing(12),
                       Text(
                         'auth.login_desc'.tr(),
-                        style: AppTextStyles.font14Regular.copyWith(
+                        style: AppTextStyles.font14Light.copyWith(
                           color: context.customColors.textSecondary,
                           height: 1.8,
                         ),

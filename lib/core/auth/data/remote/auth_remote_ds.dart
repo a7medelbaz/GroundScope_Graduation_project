@@ -1,74 +1,50 @@
-import 'dart:convert';
-import '../models/user_date.dart';
-import '../../../config/app_constants.dart';
-import '../../../error/models/app_error.dart';
-import '../../../error/types/error_handler.dart';
-import '../../../networking/supabase_service.dart';
-import '../../../service/secure_storage.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:ground_scope/core/auth/data/models/user_date.dart';
+import 'package:ground_scope/core/error/models/app_error.dart';
+import 'package:ground_scope/core/networking/supabase_service.dart';
 
 class AuthRemoteDs {
   final SupabaseService supabaseService;
-  final SecureStorage secureStorage;
 
-  AuthRemoteDs({
-    required this.supabaseService,
-    required this.secureStorage,
-  });
-
-  Future<AuthResponse> loginUser({
+  AuthRemoteDs({required this.supabaseService});
+  Future<UserModel> loginUser({
     required String email,
     required String password,
   }) async {
-    try {
-      return await supabaseService.client.auth.signInWithPassword(
-        email: email,
-        password: password,
-      );
-    } catch (e) {
-      ErrorHandler.handle(e);
-    }
-  }
-
-  Future<UserModel?> getCachedUserData() async {
-    final raw = await secureStorage.read(
-      key: AppConstants.userDataKey,
+    final authResponse = await supabaseService.client.auth.signInWithPassword(
+      email: email.trim(),
+      password: password,
     );
-    if (raw == null) return null;
-    return UserModel.fromJson(jsonDecode(raw));
+    if (authResponse.user == null) {
+      throw AppError.unauthorized();
+    }
+
+    final userDataMap = await supabaseService.client
+        .from('users')
+        .select()
+        .eq('auth_id', authResponse.user!.id)
+        .maybeSingle();
+
+    if (userDataMap == null) {
+      throw AppError.unauthorized("Profile not found.");
+    }
+    return UserModel.fromJson(userDataMap);
   }
 
-  Future<UserModel> fetchAndCacheUserData() async {
-    try {
-      final userId = supabaseService.currentUser?.id;
-      if (userId == null || userId.isEmpty)
-        throw AppError.unauthorized();
+  Future<UserModel> fetchFreshUserData(String email) async {
+    final userDataMap = await supabaseService.client
+        .from('users')
+        .select()
+        .eq('email', email.trim())
+        .maybeSingle();
 
-      final userDataMap = await supabaseService.client
-          .from('userdata')
-          .select()
-          .eq('id', userId)
-          .maybeSingle();
-
-      if (userDataMap == null) throw AppError.unauthorized();
-
-      final userData = UserModel.fromJson(userDataMap);
-      await secureStorage.write(
-        key: AppConstants.userDataKey,
-        value: jsonEncode(userData.toJson()),
-      ); // saves everything
-      return userData;
-    } catch (e) {
-      ErrorHandler.handle(e);
+    if (userDataMap == null) {
+      throw AppError.unauthorized();
     }
+
+    return UserModel.fromJson(userDataMap);
   }
 
-  Future<void> logout() async {
-    try {
-      await supabaseService.signOut();
-      await secureStorage.delete(key: AppConstants.userDataKey);
-    } catch (e) {
-      ErrorHandler.handle(e);
-    }
+  Future<void> signOut() async {
+    await supabaseService.client.auth.signOut();
   }
 }

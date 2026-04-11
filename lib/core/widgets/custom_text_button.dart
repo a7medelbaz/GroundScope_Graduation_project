@@ -1,201 +1,227 @@
 import 'package:flutter/material.dart';
-import '../extensions/context_extensions.dart';
+
 import '../themes/app_colors.dart';
 import '../themes/app_text_styles.dart';
 import '../utils/spacing.dart';
+
+/// AppButton — reusable button widget
+/// ─────────────────────────────────────
+/// Usage:
+///   AppButton(text: 'Submit', onPressed: () {})
+///   AppButton.outlined(text: 'Cancel', onPressed: () {})
+///   AppButton.text(text: 'Skip', onPressed: () {})
+///
+/// Customize:
+///   AppButton(
+///     text: 'Login',
+///     onPressed: () {},
+///     size: AppButtonSize.large,
+///     isFullWidth: false,
+///     prefixIcon: Icon(Icons.login),
+///     isLoading: _loading,
+///   )
 
 class CustomTextButton extends StatelessWidget {
   const CustomTextButton({
     super.key,
     required this.text,
-    this.onPressed,
+    required this.onPressed,
     this.style = CustomButtonStyle.filled,
     this.size = CustomButtonSize.medium,
-    this.textStyle,
-    this.foregroundColor,
-    this.backgroundColor,
-    this.borderColor,
-    this.prefixIcon,
-    this.suffixIcon,
+    this.isFullWidth = true,
     this.isLoading = false,
     this.isDisabled = false,
+    this.textStyle,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.borderColor,
     this.borderRadius,
+    this.prefixIcon,
+    this.suffixIcon,
     this.contentPadding,
   });
 
+  /// Outlined style constructor
+  const CustomTextButton.outlined({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    this.size = CustomButtonSize.medium,
+    this.isFullWidth = true,
+    this.isLoading = false,
+    this.isDisabled = false,
+    this.textStyle,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.borderColor,
+    this.borderRadius,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.contentPadding,
+  }) : style = CustomButtonStyle.outlined;
+
+  /// Text only style constructor
+  const CustomTextButton.text({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    this.size = CustomButtonSize.medium,
+    this.isFullWidth = false,
+    this.isLoading = false,
+    this.isDisabled = false,
+    this.textStyle,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.borderColor,
+    this.borderRadius,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.contentPadding,
+  }) : style = CustomButtonStyle.textOnly;
+
   final String text;
   final VoidCallback? onPressed;
-
   final CustomButtonStyle style;
   final CustomButtonSize size;
-
-  final TextStyle? textStyle;
-  final Color? foregroundColor;
-  final Color? backgroundColor;
-  final Color? borderColor;
-
-  final Widget? prefixIcon;
-  final Widget? suffixIcon;
-
+  final bool isFullWidth;
   final bool isLoading;
   final bool isDisabled;
-
+  final TextStyle? textStyle;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
+  final Color? borderColor;
   final double? borderRadius;
+  final Widget? prefixIcon;
+  final Widget? suffixIcon;
   final EdgeInsetsGeometry? contentPadding;
 
-  bool get _enabled => onPressed != null && !isLoading && !isDisabled;
+  bool get _isEnabled => onPressed != null && !isLoading && !isDisabled;
+
+  // ─── Resolved sizes ───────────────────────────────────────────────────
+  double get _height => switch (size) {
+    CustomButtonSize.small => 40,
+    CustomButtonSize.medium => 52,
+    CustomButtonSize.large => 56,
+  };
+
+  double get _iconSize => size == CustomButtonSize.small ? 18 : 20;
+
+  TextStyle get _defaultTextStyle => size == CustomButtonSize.small
+      ? AppTextStyles.font14ExtraBold
+      : AppTextStyles.font16ExtraBold;
+
+  // ─── Resolved colors by style ─────────────────────────────────────────
+  Color _resolveBackground(final BuildContext context) {
+    if (!_isEnabled) return AppColors.grey100;
+    return switch (style) {
+      CustomButtonStyle.filled => backgroundColor ?? AppColors.primary200,
+      CustomButtonStyle.outlined => Colors.transparent,
+      CustomButtonStyle.textOnly => Colors.transparent,
+    };
+  }
+
+  Color _resolveForeground(final BuildContext context) {
+    if (!_isEnabled) return AppColors.grey400;
+    return switch (style) {
+      CustomButtonStyle.filled => foregroundColor ?? AppColors.white,
+      CustomButtonStyle.outlined => foregroundColor ?? AppColors.primary200,
+      CustomButtonStyle.textOnly => foregroundColor ?? AppColors.primary200,
+    };
+  }
+
+  BorderSide _resolveBorder(final Color foreground) {
+    if (style != CustomButtonStyle.outlined) return BorderSide.none;
+    return BorderSide(
+      color: _isEnabled
+          ? (borderColor ?? AppColors.primary200)
+          : AppColors.grey200,
+      width: 1.5,
+    );
+  }
 
   @override
   Widget build(final BuildContext context) {
-    final colors = context.customColors;
+    final Color bg = _resolveBackground(context);
+    final Color fg = _resolveForeground(context);
+    final BorderSide border = _resolveBorder(fg);
+    final double radius = borderRadius ?? 12;
+    final TextStyle effectiveTextStyle = (textStyle ?? _defaultTextStyle)
+        .copyWith(color: fg);
 
-    // Resolve base colors based on style
-    late Color baseBackground;
-    late Color baseForeground;
-    late Color baseBorder;
-
-    switch (style) {
-      case CustomButtonStyle.filled:
-        baseBackground = backgroundColor ?? AppColors.primary300;
-        baseForeground = foregroundColor ?? Colors.white;
-        baseBorder = Colors.transparent;
-        break;
-      case CustomButtonStyle.outlined:
-        baseBackground = Colors.transparent;
-        baseForeground = foregroundColor ?? AppColors.primary300;
-        baseBorder = borderColor ?? AppColors.primary300;
-        break;
-      case CustomButtonStyle.soft:
-        baseBackground = backgroundColor ?? colors.surfaceVariant;
-        baseForeground = foregroundColor ?? colors.textPrimary;
-        baseBorder = Colors.transparent;
-        break;
-    }
-
-    // Apply disabled opacity
-    final Color resolvedBackground = _enabled
-        ? baseBackground
-        : baseBackground.withValues(alpha: 0.3);
-
-    final Color resolvedForeground = _enabled
-        ? baseForeground
-        : baseForeground.withValues(alpha: 0.6);
-
-    final Color resolvedBorder = _enabled
-        ? baseBorder
-        : baseBorder.withValues(alpha: 0.4);
-
-    // Button height by size
-    final double height = switch (size) {
-      CustomButtonSize.large => responsiveHeight(56),
-      CustomButtonSize.small => responsiveHeight(40),
-      CustomButtonSize.medium => responsiveHeight(52),
-    };
-
-    // Base text style (from app theme)
-    final TextStyle baseTextStyle =
-        textStyle ??
-        (size == CustomButtonSize.small
-            ? AppTextStyles.font14Bold
-            : AppTextStyles.font16Bold);
-
-    // Only override color if user didn't explicitly set one
-    final TextStyle effectiveTextStyle = baseTextStyle.color == null
-        ? baseTextStyle.copyWith(color: resolvedForeground)
-        : baseTextStyle;
-
-    // Icon size
-    final double iconSize = size == CustomButtonSize.small
-        ? responsiveRadius(18)
-        : responsiveRadius(20);
+    final Widget child = isLoading
+        ? SizedBox(
+            width: 22,
+            height: 22,
+            child: CircularProgressIndicator(
+              strokeWidth: 2.5,
+              valueColor: AlwaysStoppedAnimation<Color>(fg),
+            ),
+          )
+        : Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (prefixIcon != null) ...[
+                IconTheme(
+                  data: IconThemeData(size: _iconSize, color: fg),
+                  child: prefixIcon!,
+                ),
+                horizontalSpacing(8),
+              ],
+              Flexible(
+                child: Text(
+                  text,
+                  style: effectiveTextStyle,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+              if (suffixIcon != null) ...[
+                horizontalSpacing(8),
+                IconTheme(
+                  data: IconThemeData(size: _iconSize, color: fg),
+                  child: suffixIcon!,
+                ),
+              ],
+            ],
+          );
 
     return SizedBox(
-      height: height,
-      width: double.infinity,
+      height: _height,
+      width: isFullWidth ? double.infinity : null,
       child: ElevatedButton(
-        onPressed: _enabled ? onPressed : null,
+        onPressed: _isEnabled ? onPressed : null,
         style:
             ElevatedButton.styleFrom(
-              backgroundColor: resolvedBackground,
-              foregroundColor: resolvedForeground,
-              disabledBackgroundColor: colors.surfaceVariant,
-              disabledForegroundColor: colors.textSecondary,
+              backgroundColor: bg,
+              foregroundColor: fg,
+              disabledBackgroundColor: AppColors.grey100,
+              disabledForegroundColor: AppColors.grey400,
               elevation: 0,
               shadowColor: Colors.transparent,
               surfaceTintColor: Colors.transparent,
               padding:
                   contentPadding ??
                   EdgeInsets.symmetric(
-                    horizontal: responsiveWidth(24),
-                    vertical: responsiveHeight(12),
+                    horizontal: size == CustomButtonSize.small ? 16 : 24,
+                    vertical: 12,
                   ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-                  borderRadius ?? responsiveRadius(12),
-                ),
-                side: style == CustomButtonStyle.outlined
-                    ? BorderSide(
-                        color: resolvedBorder,
-                        width: responsiveWidth(1.5),
-                      )
-                    : BorderSide.none,
+                borderRadius: BorderRadius.circular(radius),
+                side: border,
               ),
             ).copyWith(
-              overlayColor: WidgetStateProperty.all(
-                resolvedForeground.withValues(alpha: 0.12),
-              ),
+              overlayColor: WidgetStateProperty.all(fg.withValues(alpha: 0.08)),
             ),
-        child: isLoading
-            ? SizedBox(
-                width: responsiveWidth(24),
-                height: responsiveHeight(24),
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    effectiveTextStyle.color ?? resolvedForeground,
-                  ),
-                ),
-              )
-            : Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (prefixIcon != null) ...[
-                    IconTheme(
-                      data: IconThemeData(
-                        size: iconSize,
-                        color: effectiveTextStyle.color ?? resolvedForeground,
-                      ),
-                      child: prefixIcon!,
-                    ),
-                    horizontalSpacing(8),
-                  ],
-                  Flexible(
-                    child: Text(
-                      text,
-                      style: effectiveTextStyle,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                  ),
-                  if (suffixIcon != null) ...[
-                    horizontalSpacing(8),
-                    IconTheme(
-                      data: IconThemeData(
-                        size: iconSize,
-                        color: effectiveTextStyle.color ?? resolvedForeground,
-                      ),
-                      child: suffixIcon!,
-                    ),
-                  ],
-                ],
-              ),
+        child: child,
       ),
     );
   }
 }
 
-enum CustomButtonStyle { filled, outlined, soft }
+// ─── Enums ────────────────────────────────────────────────────────────────────
 
 enum CustomButtonSize { small, medium, large }
+
+enum CustomButtonStyle { filled, outlined, textOnly }

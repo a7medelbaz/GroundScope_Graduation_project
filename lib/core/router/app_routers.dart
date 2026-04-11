@@ -1,56 +1,74 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:flutter/material.dart';
-import '../../modules/worker/features/profile/ui/personal_info_settings.dart';
-import '../../modules/worker/features/reports/ui/report_details_screen.dart';
-import '../../modules/worker/features/task_details/ui/task_details_screen.dart';
-import '../../modules/admin/features/home/admin_screen.dart';
-import '../../modules/supervisor/features/home/supervisor_screen.dart';
-import '../../modules/worker/core/main_navigation/ui/worker_scaffold.dart';
-import '../auth/ui/login_screen.dart';
-import '../onboarding/ui/on_boarding_screen.dart';
-import 'routes.dart';
+import 'package:flutter_animate/flutter_animate.dart'; // Add this import
+import 'package:ground_scope/core/auth/ui/login_screen.dart';
+import 'package:ground_scope/core/onboarding/ui/on_boarding_screen.dart';
+import 'package:ground_scope/core/router/routes.dart';
+import 'package:ground_scope/modules/admin/features/home/admin_screen.dart';
+import 'package:ground_scope/modules/supervisor/features/home/supervisor_screen.dart';
+import 'package:ground_scope/modules/worker/core/main_navigation/ui/worker_scaffold.dart';
+import 'package:ground_scope/modules/worker/features/task_details/ui/task_details_screen.dart';
 
 class AppRouter {
-  Route<dynamic> generateRoute(RouteSettings settings) {
-    final args = settings.arguments as Map<String, dynamic>?;
+  AppRouter._();
 
+  static Route<dynamic> generateRoute(final RouteSettings settings) {
+    final arguments = settings.arguments as Map<String, dynamic>?;
     switch (settings.name) {
       case Routes.onBoardingScreen:
-        return MaterialPageRoute(
-          builder: (_) => const OnBoardingScreen(),
-        );
+        return _buildRoute(const OnBoardingScreen(), settings);
       case Routes.loginScreen:
-        return MaterialPageRoute(builder: (_) => const LoginScreen());
-      // Worker
+        return _buildRoute(const LoginScreen(), settings);
       case Routes.workerScaffold:
-        return MaterialPageRoute(
-          builder: (_) => const WorkerScaffold(),
-        );
+        return _buildRoute(const WorkerScaffold(), settings);
       case Routes.taskDetailsScreen:
-        return MaterialPageRoute(
-          builder: (_) => TaskDetailsScreen(task: args!['task']),
-        );
-      case Routes.reportDetailsScreen:
-        return MaterialPageRoute(
-          builder: (_) =>
-              ReportDetailsScreen(report: args!['report']),
-        );
-      case Routes.personaInfoAndSettings:
-        return MaterialPageRoute(
-          builder: (_) => const PersonalInfoSettings(),
-        );
+        return _buildRoute(const TaskDetailsScreen(), settings);
       case Routes.supervisorScreen:
-        return MaterialPageRoute(
-          builder: (_) => const SupervisorScreen(),
-        );
+        return _buildRoute(const SupervisorScreen(), settings);
       case Routes.adminScreen:
-        return MaterialPageRoute(builder: (_) => const AdminScreen());
-
+        return _buildRoute(const AdminScreen(), settings);
       default:
-        return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Page not found')),
+        return _buildRoute(
+          Scaffold(
+            body: Center(child: Text('No route defined for ${settings.name}')),
           ),
+          settings,
         );
     }
+  }
+
+  static PageRouteBuilder _buildRoute(
+    final Widget page,
+    final RouteSettings settings,
+  ) {
+    return PageRouteBuilder(
+      settings: settings,
+      pageBuilder: (final context, final animation, final secondaryAnimation) =>
+          page,
+      transitionsBuilder:
+          (
+            final context,
+            final animation,
+            final secondaryAnimation,
+            final child,
+          ) {
+            return child
+                .animate(adapter: ValueAdapter(animation.value))
+                .fade(duration: 400.ms, curve: Curves.easeOut)
+                .scale(
+                  begin: const Offset(0.9, 0.9),
+                  end: const Offset(1.0, 1.0),
+                  curve: Curves.easeOutCubic,
+                )
+                .slideY(
+                  begin: 0.1,
+                  end: 0,
+                  duration: 400.ms,
+                  curve: Curves.easeOutCubic,
+                );
+          },
+      transitionDuration: const Duration(milliseconds: 400),
+    );
   }
 }

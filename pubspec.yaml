@@ -31,24 +31,27 @@ dependencies:
   cached_network_image: ^3.4.1
   cupertino_icons: ^1.0.8
   easy_localization: ^3.0.8
+  equatable: ^2.0.8
   firebase_core: ^4.2.1
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
   flutter_screenutil: ^5.9.3
-  flutter_secure_storage: ^9.2.4
+  flutter_secure_storage: ^10.0.0
   flutter_svg: ^2.2.2
   get_it: ^9.0.5
-  hydrated_bloc: ^10.1.1
+  hydrated_bloc: ^11.0.0
   path_provider: ^2.1.5
   persistent_bottom_nav_bar: ^6.2.1
   shared_preferences: ^2.5.4
   supabase_flutter: ^2.10.3
+  flutter_animate: ^4.5.2
 
 dev_dependencies:
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
+  flutter_native_splash: ^2.4.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -62,7 +65,7 @@ flutter:
   assets:
     - assets/images/
     - assets/svgs/
-    - assets/translations/
+    - assets/lang/
     # - shorebird.yaml # Localization assets
 
   # An image asset can refer to one or more resolution-specific "variants", see

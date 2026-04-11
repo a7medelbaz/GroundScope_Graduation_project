@@ -1,12 +1,11 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../models/app_error.dart';
 import '../models/error_details.dart';
 import '../types/error_type.dart';
 
 /// Supabase Error Handler
-///
-/// Converts Supabase exceptions to AppError
-/// Works with: Supabase Auth, Database, Storage, etc.
 class SupabaseErrorHandler {
   /// Main entry point for handling Supabase errors
   static AppError handle(final dynamic error) {
@@ -25,10 +24,6 @@ class SupabaseErrorHandler {
     return AppError.unknown(error.toString());
   }
 
-  // ============================================
-  // Supabase Auth Exceptions
-  // ============================================
-
   static AppError _handleAuthException(final AuthException error) {
     final serverMessage = error.message;
     final code = int.tryParse(error.statusCode ?? '');
@@ -42,7 +37,7 @@ class SupabaseErrorHandler {
             messageLower.contains('email') ||
             messageLower.contains('password'))) {
       return AppError(
-        messageKey: 'errors.invalid_credentials',
+        messageKey: 'errors.invalid_credentials'.tr(),
         serverMessage: serverMessage,
         type: ErrorType.unauthorized,
         code: code ?? ErrorCode.unauthorized,
@@ -56,7 +51,7 @@ class SupabaseErrorHandler {
         (messageLower.contains('not found') ||
             messageLower.contains('does not exist'))) {
       return AppError(
-        messageKey: 'errors.user_not_found',
+        messageKey: 'errors.user_not_found'.tr(),
         serverMessage: serverMessage,
         type: ErrorType.notFound,
         code: code ?? ErrorCode.notFound,
@@ -71,7 +66,7 @@ class SupabaseErrorHandler {
             messageLower.contains('exists') ||
             messageLower.contains('registered'))) {
       return AppError(
-        messageKey: 'errors.email_already_exists',
+        messageKey: 'errors.email_already_exists'.tr(),
         serverMessage: serverMessage,
         type: ErrorType.conflict,
         code: code ?? ErrorCode.conflict,
@@ -86,7 +81,7 @@ class SupabaseErrorHandler {
             messageLower.contains('short') ||
             messageLower.contains('must be'))) {
       return AppError(
-        messageKey: 'errors.weak_password',
+        messageKey: 'errors.weak_password'.tr(),
         serverMessage: serverMessage,
         type: ErrorType.validation,
         code: code ?? ErrorCode.badRequest,
@@ -98,7 +93,7 @@ class SupabaseErrorHandler {
     // Invalid email format
     if (messageLower.contains('email') && messageLower.contains('invalid')) {
       return AppError(
-        messageKey: 'errors.invalid_email',
+        messageKey: 'errors.invalid_email'.tr(),
         serverMessage: serverMessage,
         type: ErrorType.validation,
         code: code ?? ErrorCode.badRequest,
@@ -112,7 +107,7 @@ class SupabaseErrorHandler {
         (messageLower.contains('not verified') ||
             messageLower.contains('verify'))) {
       return AppError(
-        messageKey: 'errors.email_not_verified',
+        messageKey: 'errors.email_not_verified'.tr(),
         serverMessage: serverMessage,
         type: ErrorType.unauthorized,
         code: code ?? ErrorCode.unauthorized,
@@ -126,7 +121,7 @@ class SupabaseErrorHandler {
         messageLower.contains('token') ||
         messageLower.contains('expired')) {
       return AppError(
-        messageKey: 'errors.session_expired',
+        messageKey: 'errors.session_expired'.tr(),
         serverMessage: serverMessage,
         type: ErrorType.unauthorized,
         code: code ?? ErrorCode.unauthorized,
@@ -139,7 +134,7 @@ class SupabaseErrorHandler {
     if (messageLower.contains('too many') ||
         messageLower.contains('rate limit')) {
       return AppError(
-        messageKey: 'errors.too_many_requests',
+        messageKey: 'errors.too_many_requests'.tr(),
         serverMessage: serverMessage,
         type: ErrorType.tooManyRequests,
         code: code ?? ErrorCode.tooManyRequests,
@@ -167,7 +162,6 @@ class SupabaseErrorHandler {
     final hint = error.hint;
     final details = error.details;
 
-    // Build technical message with all available info
     final technicalParts = <String>[
       'Code: ${error.code}',
       if (hint != null) 'Hint: $hint',
@@ -176,12 +170,10 @@ class SupabaseErrorHandler {
 
     final technicalMessage = technicalParts.join(' | ');
 
-    // Check for specific PostgreSQL error codes
     switch (error.code) {
-      // Unique violation (duplicate key)
       case '23505':
         return AppError(
-          messageKey: 'errors.conflict',
+          messageKey: 'errors.conflict'.tr(),
           serverMessage: serverMessage,
           type: ErrorType.conflict,
           code: ErrorCode.conflict,
@@ -192,10 +184,9 @@ class SupabaseErrorHandler {
           originalError: error,
         );
 
-      // Foreign key violation
       case '23503':
         return AppError(
-          messageKey: 'errors.bad_request',
+          messageKey: 'errors.bad_request'.tr(),
           serverMessage: serverMessage,
           type: ErrorType.badRequest,
           code: ErrorCode.badRequest,
@@ -203,21 +194,10 @@ class SupabaseErrorHandler {
           originalError: error,
         );
 
-      // Not null violation
       case '23502':
-        return AppError(
-          messageKey: 'errors.validation',
-          serverMessage: serverMessage,
-          type: ErrorType.validation,
-          code: ErrorCode.badRequest,
-          technicalMessage: technicalMessage,
-          originalError: error,
-        );
-
-      // Check violation
       case '23514':
         return AppError(
-          messageKey: 'errors.validation',
+          messageKey: 'errors.validation'.tr(),
           serverMessage: serverMessage,
           type: ErrorType.validation,
           code: ErrorCode.badRequest,
@@ -225,10 +205,9 @@ class SupabaseErrorHandler {
           originalError: error,
         );
 
-      // Permission denied (insufficient privilege)
       case '42501':
         return AppError(
-          messageKey: 'errors.permission_denied',
+          messageKey: 'errors.permission_denied'.tr(),
           serverMessage: serverMessage,
           type: ErrorType.forbidden,
           code: ErrorCode.forbidden,
@@ -236,10 +215,9 @@ class SupabaseErrorHandler {
           originalError: error,
         );
 
-      // Default
       default:
         return AppError(
-          messageKey: 'errors.server_error',
+          messageKey: 'errors.server_error'.tr(),
           serverMessage: serverMessage,
           type: ErrorType.internalServer,
           code: code ?? ErrorCode.internalServer,
@@ -260,10 +238,9 @@ class SupabaseErrorHandler {
     final serverMessage = error.message;
     final statusCode = error.statusCode;
 
-    // Check for specific storage errors
     if (serverMessage.toLowerCase().contains('not found')) {
       return AppError(
-        messageKey: 'errors.not_found',
+        messageKey: 'errors.not_found'.tr(),
         serverMessage: serverMessage,
         type: ErrorType.notFound,
         code: statusCode != null ? int.parse(statusCode) : ErrorCode.notFound,
@@ -275,7 +252,7 @@ class SupabaseErrorHandler {
     if (serverMessage.toLowerCase().contains('too large') ||
         serverMessage.toLowerCase().contains('size')) {
       return AppError(
-        messageKey: 'errors.file_too_large',
+        messageKey: 'errors.file_too_large'.tr(),
         serverMessage: serverMessage,
         type: ErrorType.badRequest,
         code: statusCode != null ? int.parse(statusCode) : ErrorCode.badRequest,
@@ -287,7 +264,7 @@ class SupabaseErrorHandler {
     if (serverMessage.toLowerCase().contains('permission') ||
         serverMessage.toLowerCase().contains('unauthorized')) {
       return AppError(
-        messageKey: 'errors.permission_denied',
+        messageKey: 'errors.permission_denied'.tr(),
         serverMessage: serverMessage,
         type: ErrorType.forbidden,
         code: statusCode != null ? int.parse(statusCode) : ErrorCode.forbidden,
@@ -308,7 +285,6 @@ class SupabaseErrorHandler {
   // Helper Methods
   // ============================================
 
-  /// Map errors by HTTP status code when specific patterns don't match
   static AppError _mapByStatusCode({
     required final int? code,
     required final String serverMessage,
@@ -318,7 +294,7 @@ class SupabaseErrorHandler {
     switch (code) {
       case 400:
         return AppError(
-          messageKey: 'errors.bad_request',
+          messageKey: 'errors.bad_request'.tr(),
           serverMessage: serverMessage,
           type: ErrorType.badRequest,
           code: code,
@@ -328,7 +304,7 @@ class SupabaseErrorHandler {
 
       case 401:
         return AppError(
-          messageKey: 'errors.unauthorized',
+          messageKey: 'errors.unauthorized'.tr(),
           serverMessage: serverMessage,
           type: ErrorType.unauthorized,
           code: code,
@@ -338,7 +314,7 @@ class SupabaseErrorHandler {
 
       case 403:
         return AppError(
-          messageKey: 'errors.forbidden',
+          messageKey: 'errors.forbidden'.tr(),
           serverMessage: serverMessage,
           type: ErrorType.forbidden,
           code: code,
@@ -348,7 +324,7 @@ class SupabaseErrorHandler {
 
       case 404:
         return AppError(
-          messageKey: 'errors.not_found',
+          messageKey: 'errors.not_found'.tr(),
           serverMessage: serverMessage,
           type: ErrorType.notFound,
           code: code,
@@ -358,7 +334,7 @@ class SupabaseErrorHandler {
 
       case 409:
         return AppError(
-          messageKey: 'errors.conflict',
+          messageKey: 'errors.conflict'.tr(),
           serverMessage: serverMessage,
           type: ErrorType.conflict,
           code: code,
@@ -368,7 +344,7 @@ class SupabaseErrorHandler {
 
       case 422:
         return AppError(
-          messageKey: 'errors.validation',
+          messageKey: 'errors.validation'.tr(),
           serverMessage: serverMessage,
           type: ErrorType.validation,
           code: code,
@@ -378,7 +354,7 @@ class SupabaseErrorHandler {
 
       case 429:
         return AppError(
-          messageKey: 'errors.too_many_requests',
+          messageKey: 'errors.too_many_requests'.tr(),
           serverMessage: serverMessage,
           type: ErrorType.tooManyRequests,
           code: code,
@@ -390,7 +366,7 @@ class SupabaseErrorHandler {
       case 502:
       case 503:
         return AppError(
-          messageKey: 'errors.server_error',
+          messageKey: 'errors.server_error'.tr(),
           serverMessage: serverMessage,
           type: ErrorType.internalServer,
           code: code,
@@ -400,7 +376,7 @@ class SupabaseErrorHandler {
 
       default:
         return AppError(
-          messageKey: 'errors.unknown',
+          messageKey: 'errors.unknown'.tr(),
           serverMessage: serverMessage,
           type: ErrorType.unknown,
           code: code ?? ErrorCode.unknown,
@@ -410,7 +386,6 @@ class SupabaseErrorHandler {
     }
   }
 
-  /// Parse Postgrest error code to integer if possible
   static int? _parsePostgrestCode(final String? code) {
     if (code == null) return null;
     try {
