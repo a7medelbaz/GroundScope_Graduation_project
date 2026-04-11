@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
@@ -58,7 +59,7 @@ class _LoginFormState extends State<LoginForm> {
             hintText: 'auth.password'.tr(),
             keyboardType: TextInputType.visiblePassword,
             isPassword: !_isPasswordVisible,
-            // validator: Validators.password,
+            validator: Validators.password,
             suffixIcon: IconButton(
               icon: Icon(
                 _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
@@ -70,7 +71,13 @@ class _LoginFormState extends State<LoginForm> {
           ),
 
           verticalSpacing(60),
-          CustomTextButton(text: 'auth.login'.tr(), onPressed: _submit),
+          CustomTextButton(
+            text: 'auth.login'.tr(),
+            onPressed: () {
+              context.hideKeyboard();
+              _submit();
+            },
+          ),
           verticalSpacing(60),
           GestureDetector(
             child: Text(
