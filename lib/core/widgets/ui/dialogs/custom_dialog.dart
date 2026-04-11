@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/utils/spacing.dart';
 
 import '../../../themes/app_colors.dart';
 import '../../../themes/app_text_styles.dart';
 import '../../../utils/extensions/context_ext.dart';
+import '../../../utils/spacing.dart';
 import '../../custom_text_button.dart';
 
 class CustomAppDialog extends StatelessWidget {

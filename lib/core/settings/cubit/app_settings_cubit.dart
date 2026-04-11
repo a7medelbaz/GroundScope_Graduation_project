@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-
 import 'app_settings_state.dart';
 
 class AppSettingsCubit extends HydratedCubit<AppSettingsState> {

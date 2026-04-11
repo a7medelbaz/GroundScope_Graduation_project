@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ground_scope/core/auth/logic/cubit/auth_cubit.dart';
-import 'package:ground_scope/core/utils/functions/app_setting_method.dart';
-import 'package:ground_scope/core/utils/spacing.dart';
-import 'package:ground_scope/core/widgets/custom_text_button.dart';
+import '../../../../../core/auth/logic/cubit/auth_cubit.dart';
+import '../../../../../core/utils/functions/app_setting_method.dart';
+import '../../../../../core/utils/spacing.dart';
+import '../../../../../core/widgets/custom_text_button.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});

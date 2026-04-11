@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/utils/extensions/context_ext.dart';
-
 import '../../../../../../core/themes/app_colors.dart';
 import '../../../../../../core/themes/app_text_styles.dart';
+import '../../../../../../core/utils/extensions/context_ext.dart';
 import '../../../../../../core/utils/spacing.dart';
 
 class TaskDetailsCheckList extends StatefulWidget {

@@ -1,10 +1,9 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
-import 'package:ground_scope/modules/worker/features/home/data/remote/home_remote_ds.dart';
-import 'package:ground_scope/modules/worker/features/home/data/repo/home_repo.dart';
-import 'package:ground_scope/modules/worker/features/home/data/repo/home_repo_impl.dart';
-import 'package:ground_scope/modules/worker/features/home/logic/cubit/home_cubit.dart';
-
+import '../../modules/worker/features/home/data/remote/home_remote_ds.dart';
+import '../../modules/worker/features/home/data/repo/home_repo.dart';
+import '../../modules/worker/features/home/data/repo/home_repo_impl.dart';
+import '../../modules/worker/features/home/logic/cubit/home_cubit.dart';
 import '../auth/data/remote/auth_remote_ds.dart';
 import '../auth/data/repo/auth_repo.dart';
 import '../auth/data/repo/auth_repo_impl.dart';

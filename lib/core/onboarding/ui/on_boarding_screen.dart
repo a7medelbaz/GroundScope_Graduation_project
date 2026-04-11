@@ -1,9 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/utils/extensions/context_ext.dart';
-
 import '../../router/routes.dart';
 import '../../themes/app_text_styles.dart';
+import '../../utils/extensions/context_ext.dart';
 import '../../utils/spacing.dart';
 import '../../widgets/custom_text_button.dart';
 import 'widgets/on_boarding_hero_image.dart';
