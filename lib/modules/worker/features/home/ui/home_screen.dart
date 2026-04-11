@@ -1,84 +1,79 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ground_scope/core/auth/logic/cubit/auth_cubit.dart';
+import 'package:ground_scope/core/data/models/unit_model.dart';
+import 'package:ground_scope/core/themes/app_colors.dart';
+import 'package:ground_scope/core/themes/app_text_styles.dart';
+import 'package:ground_scope/core/utils/spacing.dart';
+import 'package:ground_scope/modules/worker/features/home/logic/cubit/home_cubit.dart';
 
-import '../../../../../core/auth/data/models/user_date.dart';
-import '../data/models/task_model.dart';
 import 'widgets/home_app_bar.dart';
 import 'widgets/worker_tasks_list_view.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  static const List<TaskModel> _tasks = [
-    TaskModel(
-      title: 'Baggage Handling',
-      timeRange: '07:30 - 08:30',
-      location: 'A321, Stand 12',
-      progress: 0.4,
-      status: TaskStatus.inProgress,
-      icon: Icons.luggage,
-    ),
-    TaskModel(
-      title: 'Cabin Cleaning',
-      timeRange: '09:30 - 10:30',
-      location: 'A321, Stand 12',
-      progress: 1.0,
-      status: TaskStatus.done,
-      icon: Icons.cleaning_services,
-    ),
-    TaskModel(
-      title: 'Aircraft Refueling',
-      timeRange: '08:45 - 09:15',
-      location: 'A321, Stand 12',
-      progress: 0.0,
-      status: TaskStatus.pending,
-      icon: Icons.local_gas_station,
-    ),
-    TaskModel(
-      title: 'Baggage Handling',
-      timeRange: '07:30 - 08:30',
-      location: 'A321, Stand 12',
-      progress: 0.4,
-      status: TaskStatus.inProgress,
-      icon: Icons.luggage,
-    ),
-    TaskModel(
-      title: 'Cabin Cleaning',
-      timeRange: '09:30 - 10:30',
-      location: 'A321, Stand 12',
-      progress: 1.0,
-      status: TaskStatus.done,
-      icon: Icons.cleaning_services,
-    ),
-    TaskModel(
-      title: 'Aircraft Refueling',
-      timeRange: '08:45 - 09:15',
-      location: 'A321, Stand 12',
-      progress: 0.0,
-      status: TaskStatus.pending,
-      icon: Icons.local_gas_station,
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          HomeAppBar(
-            userModel: UserModel(
-              fullName: 'Mustafa',
-              id: '123',
-              email: 'mustafa@example.com',
-              role: 'unit_manager',
-              isActive: true,
-              createdAt: DateTime.now(),
-            ),
-          ),
-
-          const WorkerTasksListView(tasks: _tasks),
-        ],
+      top: false,
+      child: BlocBuilder<AuthCubit, AuthState>(
+        builder: (context, authState) {
+          // 1. Handle Auth State first
+          if (authState is! AuthSuccess) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final user = authState.userModel;
+          return BlocBuilder<HomeCubit, HomeState>(
+            builder: (context, homeState) {
+              final unit = homeState is HomeLoaded
+                  ? homeState.unit
+                  : const UnitModel(
+                      id: "",
+                      name: "",
+                      serviceTypeId: "",
+                      status: "",
+                    );
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  HomeAppBar(userModel: user, unitModel: unit),
+                  verticalSpacing(16),
+                  Expanded(child: _buildHomeBody(context, homeState)),
+                ],
+              );
+            },
+          );
+        },
       ),
     );
+  }
+
+  Widget _buildHomeBody(BuildContext context, HomeState state) {
+    if (state is HomeLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (state is HomeFailure) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Text(
+            'Error loading tasks: ${state.error.messageKey}',
+            textAlign: TextAlign.center,
+            style: AppTextStyles.font14Light.copyWith(color: AppColors.red300),
+          ),
+        ),
+      );
+    }
+    if (state is HomeLoaded) {
+      return WorkerTasksListView(
+        tasks: state.tasks,
+        onRefresh: () async {
+          await context.read<HomeCubit>().fetchHomeData();
+        },
+      );
+    }
+    return const Center(child: Text('No tasks available'));
   }
 }
