@@ -91,7 +91,7 @@ class _QuickReportBottomSheetState extends State<QuickReportBottomSheet> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Quick Report', style: AppTextStyles.font18ExtraBold),
+                const Text('Quick Report', style: AppTextStyles.font18ExtraBold),
                 Text(
                   widget.task.title,
                   style: AppTextStyles.font12Light.copyWith(
@@ -195,7 +195,7 @@ class _QuickReportBottomSheetState extends State<QuickReportBottomSheet> {
                 width: 1.5,
               ),
             ),
-            child: Center(
+            child: const Center(
               child: Text(
                 'Tap to add photo',
                 style: AppTextStyles.font14SemiBold,
