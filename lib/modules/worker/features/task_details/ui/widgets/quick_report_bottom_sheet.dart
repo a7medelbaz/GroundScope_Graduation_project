@@ -87,7 +87,6 @@
 
 //           horizontalSpacing(12),
 
-<<<<<<< HEAD
 //           Expanded(
 //             child: Column(
 //               crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,22 +101,6 @@
 //               ],
 //             ),
 //           ),
-=======
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Quick Report', style: AppTextStyles.font18ExtraBold),
-                Text(
-                  widget.task.title,
-                  style: AppTextStyles.font12Light.copyWith(
-                    color: context.customColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
->>>>>>> 20ff1bfd16226a9aab81ca996e7295503e8ae7cd
 
 //           _buildCloseButton(context),
 //         ],
@@ -185,7 +168,6 @@
 //     );
 //   }
 
-<<<<<<< HEAD
 //   Widget _buildPhotoSection(BuildContext context) {
 //     return Column(
 //       crossAxisAlignment: CrossAxisAlignment.start,
@@ -224,46 +206,6 @@
 //       ],
 //     );
 //   }
-=======
-  Widget _buildPhotoSection(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _SectionLabel(
-          label: 'Add Photo',
-          optional: true,
-          labelColor: context.customColors.textSecondary,
-        ),
-        verticalSpacing(10),
-        GestureDetector(
-          onTap: () {
-            // TODO: image picker
-          },
-          child: Container(
-            width: double.infinity,
-            height: rh(130),
-            decoration: BoxDecoration(
-              color: context.customColors.divider.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(rr(16)),
-              border: Border.all(
-                color: _selectedImage != null
-                    ? AppColors.primary300
-                    : context.customColors.divider,
-                width: 1.5,
-              ),
-            ),
-            child: const Center(
-              child: Text(
-                'Tap to add photo',
-                style: AppTextStyles.font14SemiBold,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
->>>>>>> 20ff1bfd16226a9aab81ca996e7295503e8ae7cd
 
 //   Widget _buildTaskNameSection(BuildContext context) {
 //     return Column(
