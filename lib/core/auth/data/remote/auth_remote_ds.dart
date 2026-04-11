@@ -10,27 +10,23 @@ class AuthRemoteDs {
     required String email,
     required String password,
   }) async {
-    // 1. Authenticate with Supabase Auth
     final authResponse = await supabaseService.client.auth.signInWithPassword(
       email: email.trim(),
       password: password,
     );
-
     if (authResponse.user == null) {
       throw AppError.unauthorized();
     }
 
-    // 2. Fetch profile from 'users' table
     final userDataMap = await supabaseService.client
         .from('users')
         .select()
-        .eq('email', email.trim())
+        .eq('auth_id', authResponse.user!.id)
         .maybeSingle();
 
     if (userDataMap == null) {
-      throw AppError.unauthorized();
+      throw AppError.unauthorized("Profile not found.");
     }
-
     return UserModel.fromJson(userDataMap);
   }
 
