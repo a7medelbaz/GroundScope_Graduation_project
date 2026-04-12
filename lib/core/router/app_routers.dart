@@ -8,7 +8,7 @@ import 'package:ground_scope/core/router/routes.dart';
 import 'package:ground_scope/modules/admin/features/home/admin_screen.dart';
 import 'package:ground_scope/modules/supervisor/features/home/supervisor_screen.dart';
 import 'package:ground_scope/modules/worker/core/main_navigation/ui/worker_scaffold.dart';
-import 'package:ground_scope/modules/worker/features/report/ui/reports_screen.dart';
+import 'package:ground_scope/modules/worker/features/reports/ui/reports_screen.dart';
 import 'package:ground_scope/modules/worker/features/task_details/ui/task_details_screen.dart';
 import 'package:ground_scope/modules/worker/features/task_details/ui/task_info_screen.dart';
 
@@ -34,7 +34,7 @@ class AppRouter {
           TaskInfoScreen(task: arguments!['task'], pauses: const []),
           settings,
         );
-      case Routes.reportIssueScreen:
+      case Routes.addReportScreen:
         return _buildRoute(const ReportsScreen(), settings);
       case Routes.supervisorScreen:
         return _buildRoute(const SupervisorScreen(), settings);
