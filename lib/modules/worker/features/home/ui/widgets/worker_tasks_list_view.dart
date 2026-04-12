@@ -6,9 +6,9 @@ import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
 
-import 'task_status_filter_strip.dart';
-import 'task_list_empty_state.dart';
 import 'list_view_task_card.dart';
+import 'task_list_empty_state.dart';
+import 'task_status_filter_strip.dart';
 
 class WorkerTasksListView extends StatefulWidget {
   const WorkerTasksListView({
@@ -46,7 +46,7 @@ class _WorkerTasksListViewState extends State<WorkerTasksListView> {
           onStatusChanged: (status) => setState(() => _selectedStatus = status),
         ),
 
-        verticalSpacing(4),
+        verticalSpacing(24),
 
         // Section header
         Padding(
@@ -80,7 +80,7 @@ class _WorkerTasksListViewState extends State<WorkerTasksListView> {
           ),
         ),
 
-        verticalSpacing(12),
+        verticalSpacing(24),
 
         // Scrollable task list with proper RefreshIndicator
         Expanded(
