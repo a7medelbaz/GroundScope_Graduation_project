@@ -1,5 +1,3 @@
-// lib/modules/worker/features/home/data/models/task_model.dart
-
 enum TaskStatus {
   pending,
   assigned,
@@ -71,7 +69,6 @@ class TaskModel {
     this.notes,
     required this.createdAt,
     required this.updatedAt,
-    // Joined fields (from related tables — populated when fetched with joins)
     this.serviceTypeName,
     this.serviceTypeIcon,
     this.flightNumber,
@@ -96,7 +93,6 @@ class TaskModel {
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  // Joined / derived fields
   final String? serviceTypeName;
   final String? serviceTypeIcon;
   final String? flightNumber;
@@ -104,8 +100,7 @@ class TaskModel {
   final int checklistTotal;
   final int checklistDone;
 
-  /// Progress from 0.0 to 1.0 based on checklist completion.
-  /// Falls back to status-based estimate when no checklist data.
+  /// Progress
   double get progress {
     if (checklistTotal > 0) return checklistDone / checklistTotal;
     return switch (status) {
@@ -118,15 +113,61 @@ class TaskModel {
     };
   }
 
-  /// Formatted scheduled window e.g. "07:30 - 08:15"
+  /// Time range
   String get scheduledTimeRange {
     String fmt(DateTime dt) =>
         '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
     return '${fmt(scheduledStart)} – ${fmt(scheduledEnd)}';
   }
 
-  /// Duration in minutes
   int get durationMinutes => scheduledEnd.difference(scheduledStart).inMinutes;
+  TaskModel copyWith({
+    String? id,
+    String? flightId,
+    String? serviceTypeId,
+    String? unitId,
+    String? assignedBy,
+    String? createdBy,
+    TaskStatus? status,
+    TaskPriority? priority,
+    DateTime? scheduledStart,
+    DateTime? scheduledEnd,
+    DateTime? actualStart,
+    DateTime? actualEnd,
+    String? notes,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? serviceTypeName,
+    String? serviceTypeIcon,
+    String? flightNumber,
+    String? standCode,
+    int? checklistTotal,
+    int? checklistDone,
+  }) {
+    return TaskModel(
+      id: id ?? this.id,
+      flightId: flightId ?? this.flightId,
+      serviceTypeId: serviceTypeId ?? this.serviceTypeId,
+      unitId: unitId ?? this.unitId,
+      assignedBy: assignedBy ?? this.assignedBy,
+      createdBy: createdBy ?? this.createdBy,
+      status: status ?? this.status,
+      priority: priority ?? this.priority,
+      scheduledStart: scheduledStart ?? this.scheduledStart,
+      scheduledEnd: scheduledEnd ?? this.scheduledEnd,
+      actualStart: actualStart ?? this.actualStart,
+      actualEnd: actualEnd ?? this.actualEnd,
+      notes: notes ?? this.notes,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      serviceTypeName: serviceTypeName ?? this.serviceTypeName,
+      serviceTypeIcon: serviceTypeIcon ?? this.serviceTypeIcon,
+      flightNumber: flightNumber ?? this.flightNumber,
+      standCode: standCode ?? this.standCode,
+      checklistTotal: checklistTotal ?? this.checklistTotal,
+      checklistDone: checklistDone ?? this.checklistDone,
+    );
+  }
 
   factory TaskModel.fromMap(Map<String, dynamic> map) {
     return TaskModel(
