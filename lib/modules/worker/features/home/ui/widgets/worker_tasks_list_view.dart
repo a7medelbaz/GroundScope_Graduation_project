@@ -5,6 +5,7 @@ import '../../../../../../core/themes/app_colors.dart';
 import '../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../core/utils/extensions/context_ext.dart';
 import '../../../../../../core/utils/spacing.dart';
+
 import 'list_view_task_card.dart';
 import 'task_list_empty_state.dart';
 import 'task_status_filter_strip.dart';
@@ -45,7 +46,7 @@ class _WorkerTasksListViewState extends State<WorkerTasksListView> {
           onStatusChanged: (status) => setState(() => _selectedStatus = status),
         ),
 
-        verticalSpacing(4),
+        verticalSpacing(24),
 
         // Section header
         Padding(
@@ -79,7 +80,7 @@ class _WorkerTasksListViewState extends State<WorkerTasksListView> {
           ),
         ),
 
-        verticalSpacing(12),
+        verticalSpacing(24),
 
         // Scrollable task list with proper RefreshIndicator
         Expanded(

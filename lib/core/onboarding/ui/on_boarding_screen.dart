@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+
 import '../../router/routes.dart';
 import '../../themes/app_text_styles.dart';
 import '../../utils/extensions/context_ext.dart';

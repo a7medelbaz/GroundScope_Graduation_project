@@ -134,7 +134,7 @@ class CustomTextButton extends StatelessWidget {
       color: _isEnabled
           ? (borderColor ?? AppColors.primary200)
           : AppColors.grey200,
-      width: 1.5,
+      width: 1.2,
     );
   }
 

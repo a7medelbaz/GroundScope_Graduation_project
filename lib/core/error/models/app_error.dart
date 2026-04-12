@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+
 import '../types/error_type.dart';
 import 'error_details.dart';
 

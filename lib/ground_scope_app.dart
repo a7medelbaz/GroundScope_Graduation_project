@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'core/auth/logic/cubit/auth_cubit.dart';
 import 'core/auth/ui/user_authenticated_check.dart';
 import 'core/config/app_config.dart';
@@ -62,4 +63,5 @@ class GroundScopeApp extends StatelessWidget {
     );
   }
 }
+
 // um_fuel@airport.com → UM123456#

@@ -4,6 +4,8 @@ import '../../../../../../core/themes/app_colors.dart';
 import '../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../core/utils/extensions/context_ext.dart';
 import '../../../../../../core/utils/spacing.dart';
+import '../../../../../../core/utils/task_ui_helpers.dart';
+
 import 'task_status_badge.dart';
 
 class TaskCard extends StatelessWidget {
@@ -18,22 +20,6 @@ class TaskCard extends StatelessWidget {
   final int index;
   final bool isLast;
 
-  Color _statusColor(BuildContext context) => switch (task.status) {
-    TaskStatus.inProgress => AppColors.primary200,
-    TaskStatus.completed => AppColors.green200,
-    TaskStatus.pending => AppColors.amber200,
-    TaskStatus.assigned => AppColors.blue200,
-    TaskStatus.paused => AppColors.secondary200,
-    TaskStatus.cancelled => context.customColors.textDisabled,
-  };
-
-  Color _priorityColor(BuildContext context) => switch (task.priority) {
-    TaskPriority.critical => AppColors.red200,
-    TaskPriority.high => AppColors.secondary200,
-    TaskPriority.medium => AppColors.amber200,
-    TaskPriority.low => AppColors.green200,
-  };
-
   IconData get _serviceIcon => switch (task.serviceTypeName?.toLowerCase()) {
     'fuel' => Icons.local_gas_station_rounded,
     'cleaning' => Icons.cleaning_services_rounded,
@@ -45,8 +31,9 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = _statusColor(context);
-    final priorityColor = _priorityColor(context);
+    final statusColor = TaskUiHelpers.statusColor(task.status, context);
+    final priorityColor = TaskUiHelpers.priorityColor(task.priority);
+
     final cc = context.customColors;
 
     return Padding(
