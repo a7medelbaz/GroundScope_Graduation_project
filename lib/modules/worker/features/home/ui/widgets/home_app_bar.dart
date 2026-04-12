@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/data/models/unit_model.dart';
-import 'package:ground_scope/core/utils/extensions/datetime_ext.dart';
+import '../../../../../../core/data/models/unit_model.dart';
+import '../../../../../../core/utils/extensions/datetime_ext.dart';
 
 import '../../../../../../core/auth/data/models/user_date.dart';
 import '../../../../../../core/themes/app_colors.dart';

@@ -23,7 +23,7 @@ class UserModel {
     required this.createdAt,
   });
 
-// Better version (recommended)
+  // Better version (recommended)
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: json['id'] as String,

@@ -1,6 +1,5 @@
-
 import 'package:flutter/material.dart';
-import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/checklist_row.dart';
+import 'checklist_row.dart';
 
 import '../../../../../../core/data/models/task_model.dart';
 import '../../../../../../core/themes/app_colors.dart';

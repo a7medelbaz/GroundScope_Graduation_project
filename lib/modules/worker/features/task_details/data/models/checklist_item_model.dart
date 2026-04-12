@@ -1,4 +1,3 @@
-
 class ChecklistItemModel {
   const ChecklistItemModel({
     required this.id,

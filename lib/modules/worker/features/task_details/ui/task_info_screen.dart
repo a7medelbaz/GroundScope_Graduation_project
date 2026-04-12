@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/data/models/task_model.dart';
-import 'package:ground_scope/core/themes/app_colors.dart';
-import 'package:ground_scope/core/themes/app_text_styles.dart';
-import 'package:ground_scope/core/utils/extensions/context_ext.dart';
-import 'package:ground_scope/core/utils/spacing.dart';
-import 'package:ground_scope/modules/worker/core/widgets/section_label.dart';
-import 'package:ground_scope/modules/worker/features/task_details/data/models/task_pause_model.dart';
-import 'package:ground_scope/modules/worker/features/task_details/data/models/task_time_line_model.dart';
-import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/task_activity_timeline.dart';
-import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/task_flight_details_card.dart';
-import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/task_stand_details_card.dart';
-import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/task_timing_card.dart';
+import '../../../../../core/data/models/task_model.dart';
+import '../../../../../core/themes/app_colors.dart';
+import '../../../../../core/themes/app_text_styles.dart';
+import '../../../../../core/utils/extensions/context_ext.dart';
+import '../../../../../core/utils/spacing.dart';
+import '../../../core/widgets/section_label.dart';
+import '../data/models/task_pause_model.dart';
+import '../data/models/task_time_line_model.dart';
+import 'widgets/task_activity_timeline.dart';
+import 'widgets/task_flight_details_card.dart';
+import 'widgets/task_stand_details_card.dart';
+import 'widgets/task_timing_card.dart';
 
 class TaskInfoScreen extends StatelessWidget {
   const TaskInfoScreen({super.key, required this.task, required this.pauses});

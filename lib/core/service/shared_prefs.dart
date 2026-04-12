@@ -7,9 +7,7 @@ class SharedPref {
 
   /// Removes a value from SharedPreferences with given [key].
   static Future<void> removeData(final String key) async {
-    debugPrint(
-      'SharedPrefHelper : data with key : $key has been removed',
-    );
+    debugPrint('SharedPrefHelper : data with key : $key has been removed');
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
     await sharedPreferences.remove(key);
@@ -27,9 +25,7 @@ class SharedPref {
   static Future<Null> setData(final String key, final value) async {
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
-    debugPrint(
-      "SharedPrefHelper : setData with key : $key and value : $value",
-    );
+    debugPrint("SharedPrefHelper : setData with key : $key and value : $value");
     switch (value.runtimeType) {
       case const (String):
         await sharedPreferences.setString(key, value);

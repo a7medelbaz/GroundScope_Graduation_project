@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/themes/app_text_styles.dart';
-import 'package:ground_scope/core/utils/spacing.dart';
+import '../../../../../../core/themes/app_text_styles.dart';
+import '../../../../../../core/utils/spacing.dart';
 
 class TaskStatusBadge extends StatelessWidget {
   const TaskStatusBadge({super.key, required this.label, required this.color});

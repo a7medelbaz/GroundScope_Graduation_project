@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/widgets/custom_text_form_.dart';
+import '../../../../../../core/widgets/custom_text_form_.dart';
 
 import '../../../../../../core/themes/app_colors.dart';
 import '../../../../../../core/themes/app_text_styles.dart';

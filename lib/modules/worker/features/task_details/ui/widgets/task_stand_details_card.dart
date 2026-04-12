@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/data/models/task_model.dart';
-import 'package:ground_scope/core/widgets/info_card.dart';
-import 'package:ground_scope/core/widgets/info_row_data.dart';
+
+import '../../../../../../core/data/models/task_model.dart';
+import '../../../../../../core/widgets/info_card.dart';
+import '../../../../../../core/widgets/info_row_data.dart';
 
 class TaskStandDetailsCard extends StatelessWidget {
   const TaskStandDetailsCard({super.key, required this.task});

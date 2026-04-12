@@ -1,6 +1,6 @@
-import 'package:ground_scope/core/auth/data/models/user_date.dart';
-import 'package:ground_scope/core/error/models/app_error.dart';
-import 'package:ground_scope/core/networking/supabase_service.dart';
+import '../models/user_date.dart';
+import '../../../error/models/app_error.dart';
+import '../../../networking/supabase_service.dart';
 
 class AuthRemoteDs {
   final SupabaseService supabaseService;

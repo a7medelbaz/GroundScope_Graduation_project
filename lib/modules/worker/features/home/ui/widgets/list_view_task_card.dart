@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/data/models/task_model.dart';
-import 'package:ground_scope/core/themes/app_colors.dart';
-import 'package:ground_scope/core/themes/app_text_styles.dart';
-import 'package:ground_scope/core/utils/extensions/context_ext.dart';
-import 'package:ground_scope/core/utils/spacing.dart';
-import 'package:ground_scope/core/utils/task_ui_helpers.dart';
+import '../../../../../../core/data/models/task_model.dart';
+import '../../../../../../core/themes/app_colors.dart';
+import '../../../../../../core/themes/app_text_styles.dart';
+import '../../../../../../core/utils/extensions/context_ext.dart';
+import '../../../../../../core/utils/spacing.dart';
+import '../../../../../../core/utils/task_ui_helpers.dart';
 
 import 'task_status_badge.dart';
 
@@ -19,7 +19,6 @@ class TaskCard extends StatelessWidget {
   final TaskModel task;
   final int index;
   final bool isLast;
-
 
   IconData get _serviceIcon => switch (task.serviceTypeName?.toLowerCase()) {
     'fuel' => Icons.local_gas_station_rounded,

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/data/models/task_model.dart';
-import 'package:ground_scope/core/themes/app_colors.dart';
-import 'package:ground_scope/core/widgets/info_card.dart';
-import 'package:ground_scope/core/widgets/info_row_data.dart';
-import 'package:ground_scope/modules/worker/features/task_details/ui/task_info_screen.dart';
+import '../../../../../../core/data/models/task_model.dart';
+import '../../../../../../core/themes/app_colors.dart';
+import '../../../../../../core/widgets/info_card.dart';
+import '../../../../../../core/widgets/info_row_data.dart';
+import '../task_info_screen.dart';
 
 class TaskTimingCard extends StatelessWidget {
   const TaskTimingCard({super.key, required this.task});

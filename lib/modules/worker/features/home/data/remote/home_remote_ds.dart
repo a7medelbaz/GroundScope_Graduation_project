@@ -1,8 +1,8 @@
-import 'package:ground_scope/core/data/models/task_model.dart';
-import 'package:ground_scope/core/data/models/unit_model.dart';
-import 'package:ground_scope/core/error/models/app_error.dart';
-import 'package:ground_scope/core/error/types/error_handler.dart';
-import 'package:ground_scope/core/networking/supabase_service.dart';
+import '../../../../../../core/data/models/task_model.dart';
+import '../../../../../../core/data/models/unit_model.dart';
+import '../../../../../../core/error/models/app_error.dart';
+import '../../../../../../core/error/types/error_handler.dart';
+import '../../../../../../core/networking/supabase_service.dart';
 
 class HomeRemoteDs {
   final SupabaseService supabaseService;

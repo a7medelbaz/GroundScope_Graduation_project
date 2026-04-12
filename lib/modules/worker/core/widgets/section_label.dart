@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/themes/app_text_styles.dart';
-import 'package:ground_scope/core/utils/extensions/context_ext.dart';
-import 'package:ground_scope/core/utils/spacing.dart';
+import '../../../../core/themes/app_text_styles.dart';
+import '../../../../core/utils/extensions/context_ext.dart';
+import '../../../../core/utils/spacing.dart';
 
 class SectionLabel extends StatelessWidget {
   const SectionLabel({super.key, required this.title, required this.color});

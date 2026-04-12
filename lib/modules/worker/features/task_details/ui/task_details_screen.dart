@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/router/routes.dart';
-import 'package:ground_scope/core/widgets/ui/dialogs/app_dialogs.dart';
-import 'package:ground_scope/modules/worker/features/task_details/data/models/checklist_item_model.dart';
-import 'package:ground_scope/modules/worker/features/task_details/data/models/task_pause_model.dart';
-import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/task_details_notes_section.dart';
-import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/task_details_pause_history_section.dart';
-import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/task_details_quick_actions_row.dart';
-import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/task_details_task_meta_section.dart';
 
 import '../../../../../core/data/models/task_model.dart';
+import '../../../../../core/router/routes.dart';
 import '../../../../../core/utils/extensions/context_ext.dart';
 import '../../../../../core/utils/spacing.dart';
+import '../../../../../core/widgets/ui/dialogs/app_dialogs.dart';
+import '../data/models/checklist_item_model.dart';
+import '../data/models/task_pause_model.dart';
 import 'widgets/pause_reason_bottom_sheet.dart';
 import 'widgets/task_action_button.dart';
 import 'widgets/task_details_checklist.dart';
 import 'widgets/task_details_header.dart';
+import 'widgets/task_details_notes_section.dart';
+import 'widgets/task_details_pause_history_section.dart';
+import 'widgets/task_details_quick_actions_row.dart';
+import 'widgets/task_details_task_meta_section.dart';
 
 class TaskDetailsScreen extends StatefulWidget {
   const TaskDetailsScreen({super.key, required this.task});

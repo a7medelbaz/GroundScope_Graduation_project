@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/themes/app_colors.dart';
-import 'package:ground_scope/core/themes/app_text_styles.dart';
-import 'package:ground_scope/core/utils/extensions/context_ext.dart';
-import 'package:ground_scope/core/utils/spacing.dart';
-import 'package:ground_scope/core/widgets/info_row_data.dart';
+import '../themes/app_colors.dart';
+import '../themes/app_text_styles.dart';
+import '../utils/extensions/context_ext.dart';
+import '../utils/spacing.dart';
+import 'info_row_data.dart';
 
 class InfoCard extends StatelessWidget {
   const InfoCard({super.key, required this.rows});

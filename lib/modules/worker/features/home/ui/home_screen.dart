@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ground_scope/core/auth/logic/cubit/auth_cubit.dart';
-import 'package:ground_scope/core/data/models/unit_model.dart';
-import 'package:ground_scope/core/themes/app_colors.dart';
-import 'package:ground_scope/core/themes/app_text_styles.dart';
-import 'package:ground_scope/core/utils/spacing.dart';
-import 'package:ground_scope/modules/worker/features/home/logic/cubit/home_cubit.dart';
+import '../../../../../core/auth/logic/cubit/auth_cubit.dart';
+import '../../../../../core/data/models/unit_model.dart';
+import '../../../../../core/themes/app_colors.dart';
+import '../../../../../core/themes/app_text_styles.dart';
+import '../../../../../core/utils/spacing.dart';
+import '../logic/cubit/home_cubit.dart';
 
 import 'widgets/home_app_bar.dart';
 import 'widgets/worker_tasks_list_view.dart';

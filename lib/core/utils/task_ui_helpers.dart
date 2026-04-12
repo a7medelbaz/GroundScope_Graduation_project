@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/data/models/task_model.dart';
-import 'package:ground_scope/core/themes/app_colors.dart';
-import 'package:ground_scope/core/utils/extensions/context_ext.dart';
+import '../data/models/task_model.dart';
+import '../themes/app_colors.dart';
+import 'extensions/context_ext.dart';
 
 class TaskUiHelpers {
   static Color priorityColor(TaskPriority priority) => switch (priority) {

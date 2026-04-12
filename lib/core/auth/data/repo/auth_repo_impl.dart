@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'package:ground_scope/core/auth/data/models/user_date.dart';
-import 'package:ground_scope/core/config/app_constants.dart';
-import 'package:ground_scope/core/service/secure_storage.dart';
+import '../models/user_date.dart';
+import '../../../config/app_constants.dart';
+import '../../../service/secure_storage.dart';
 import '../remote/auth_remote_ds.dart';
 import 'auth_repo.dart';
 
