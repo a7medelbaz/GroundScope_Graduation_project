@@ -3,11 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'core/localization/localization_manager.dart';
-import 'core/widgets/error_screen.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'core/config/app_config.dart';
 import 'core/di/dependency_injection.dart';
 import 'core/localization/localization_manager.dart';
