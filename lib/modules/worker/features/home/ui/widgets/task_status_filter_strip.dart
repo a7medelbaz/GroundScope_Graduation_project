@@ -3,7 +3,6 @@ import '../../../../../../core/data/models/task_model.dart';
 import '../../../../../../core/themes/app_colors.dart';
 import '../../../../../../core/utils/extensions/context_ext.dart';
 import '../../../../../../core/utils/spacing.dart';
-
 import 'task_status_chip.dart';
 
 class TaskStatusFilterStrip extends StatelessWidget {

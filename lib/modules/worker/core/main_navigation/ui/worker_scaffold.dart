@@ -4,7 +4,6 @@ import '../../../../../core/di/dependency_injection.dart';
 import '../../../../../core/utils/extensions/context_ext.dart';
 import '../../../features/home/logic/cubit/home_cubit.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
-
 import '../../../../../core/themes/app_colors.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../../../features/home/ui/home_screen.dart';

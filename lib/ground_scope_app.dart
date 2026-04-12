@@ -8,8 +8,12 @@ import 'core/settings/cubit/app_settings_cubit.dart';
 import 'core/settings/cubit/app_settings_state.dart';
 
 import 'core/auth/logic/cubit/auth_cubit.dart';
+import 'core/auth/ui/user_authenticated_check.dart';
+import 'core/config/app_config.dart';
 import 'core/di/dependency_injection.dart';
 import 'core/router/app_routers.dart';
+import 'core/settings/cubit/app_settings_cubit.dart';
+import 'core/settings/cubit/app_settings_state.dart';
 import 'core/themes/theme_data/theme_data_dark.dart';
 import 'core/themes/theme_data/theme_data_light.dart';
 
