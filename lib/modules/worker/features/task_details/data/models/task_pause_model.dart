@@ -1,0 +1,39 @@
+// lib/modules/worker/features/task_details/data/models/task_pause_model.dart
+
+class TaskPauseModel {
+  const TaskPauseModel({
+    required this.id,
+    required this.taskId,
+    required this.pausedAt,
+    this.resumedAt,
+    this.reason,
+    this.pausedBy,
+  });
+
+  final String id;
+  final String taskId;
+  final DateTime pausedAt;
+  final DateTime? resumedAt;
+  final String? reason;
+  final String? pausedBy;
+
+  bool get isActive => resumedAt == null;
+
+  Duration get duration {
+    final end = resumedAt ?? DateTime.now();
+    return end.difference(pausedAt);
+  }
+
+  factory TaskPauseModel.fromMap(Map<String, dynamic> map) {
+    return TaskPauseModel(
+      id: map['id'] as String,
+      taskId: map['task_id'] as String,
+      pausedAt: DateTime.parse(map['paused_at'] as String),
+      resumedAt: map['resumed_at'] != null
+          ? DateTime.parse(map['resumed_at'] as String)
+          : null,
+      reason: map['reason'] as String?,
+      pausedBy: map['paused_by'] as String?,
+    );
+  }
+}
