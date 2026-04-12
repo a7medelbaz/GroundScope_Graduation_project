@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-
 import '../../../../../../core/auth/data/models/user_date.dart';
 import '../../../../../../core/data/models/unit_model.dart';
 import '../../../../../../core/themes/app_colors.dart';
 import '../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../core/utils/extensions/datetime_ext.dart';
 import '../../../../../../core/utils/spacing.dart';
+import '../../../../../../core/widgets/notification_button.dart';
 
 class HomeAppBar extends StatelessWidget {
   const HomeAppBar({
@@ -99,43 +99,7 @@ class HomeAppBar extends StatelessWidget {
                 ),
               ),
               // Notification button
-              GestureDetector(
-                onTap: () {},
-                child: Container(
-                  width: rw(44),
-                  height: rw(44),
-                  decoration: BoxDecoration(
-                    color: AppColors.white.withValues(alpha: 0.12),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: AppColors.white.withValues(alpha: 0.2),
-                    ),
-                  ),
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      const Icon(
-                        Icons.notifications_outlined,
-                        color: AppColors.white,
-                        size: 22,
-                      ),
-                      // Unread dot
-                      Positioned(
-                        top: rh(8),
-                        right: rw(8),
-                        child: Container(
-                          width: rw(8),
-                          height: rw(8),
-                          decoration: const BoxDecoration(
-                            color: AppColors.secondary200,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              NotificationButton(onTap: () {}),
             ],
           ),
 
