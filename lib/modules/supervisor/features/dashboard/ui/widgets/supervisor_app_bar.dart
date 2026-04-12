@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
-import '../../../../../../core/auth/data/models/user_date.dart';
-import '../../../../../../core/data/models/unit_model.dart';
-import '../../../../../../core/themes/app_colors.dart';
-import '../../../../../../core/themes/app_text_styles.dart';
-import '../../../../../../core/utils/extensions/datetime_ext.dart';
-import '../../../../../../core/utils/spacing.dart';
+import '../../../../../../../core/auth/data/models/user_date.dart';
+import '../../../../../../../core/themes/app_colors.dart';
+import '../../../../../../../core/themes/app_text_styles.dart';
+import '../../../../../../../core/utils/extensions/datetime_ext.dart';
+import '../../../../../../../core/utils/spacing.dart';
 import '../../../../../../core/widgets/notification_button.dart';
 
-class HomeAppBar extends StatelessWidget {
-  const HomeAppBar({
-    super.key,
-    required this.userModel,
-    required this.unitModel,
-  });
-  final UserModel userModel;
-  final UnitModel unitModel;
+class SupervisorAppBar extends StatelessWidget {
+  const SupervisorAppBar({super.key, required this.user});
+
+  final UserModel user;
 
   String get _greeting {
     final hour = DateTime.now().hour;
@@ -53,28 +48,54 @@ class HomeAppBar extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Avatar + name block
+              // Avatar circle
+              Container(
+                width: rw(46),
+                height: rw(46),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.white.withValues(alpha: 0.15),
+                  border: Border.all(
+                    color: AppColors.white.withValues(alpha: 0.3),
+                    width: 1.5,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    user.fullName.isNotEmpty
+                        ? user.fullName[0].toUpperCase()
+                        : 'S',
+                    style: AppTextStyles.font20ExtraBold.copyWith(
+                      color: AppColors.white,
+                    ),
+                  ),
+                ),
+              ),
+              horizontalSpacing(12),
+
+              // Name + role
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       _greeting,
-                      style: AppTextStyles.font14Light.copyWith(
+                      style: AppTextStyles.font12Light.copyWith(
                         color: AppColors.primary100,
-                        letterSpacing: 0.4,
+                        letterSpacing: 0.3,
                       ),
                     ),
                     verticalSpacing(2),
                     Text(
-                      unitModel.name,
-                      style: AppTextStyles.font22ExtraBold.copyWith(
+                      user.fullName,
+                      style: AppTextStyles.font18ExtraBold.copyWith(
                         color: AppColors.white,
                         letterSpacing: 0.2,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     verticalSpacing(4),
-                    // Role chip
                     Container(
                       padding: EdgeInsets.symmetric(
                         horizontal: rw(10),
@@ -88,7 +109,7 @@ class HomeAppBar extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        userModel.fullName,
+                        user.role.toUpperCase(),
                         style: AppTextStyles.font12SemiBold.copyWith(
                           color: AppColors.primary50,
                           letterSpacing: 1.2,
@@ -98,59 +119,55 @@ class HomeAppBar extends StatelessWidget {
                   ],
                 ),
               ),
-              // Notification button
-              NotificationButton(onTap: () {}),
+
+              // Notification icon
+              NotificationButton(
+                onTap: () {
+                  // ToDo Build this screen
+                },
+              ),
             ],
           ),
 
           verticalSpacing(20),
-          // Divider line
           Container(height: 1, color: AppColors.white.withValues(alpha: 0.15)),
           verticalSpacing(16),
 
-          // Status row — shift + active indicator
+          // Date row
           Row(
             children: [
-              // Active shift
-              Row(
-                children: [
-                  Container(
-                    width: rw(8),
-                    height: rw(8),
-                    decoration: BoxDecoration(
-                      color: AppColors.green200,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.green200.withValues(alpha: 0.5),
-                          blurRadius: 6,
-                          spreadRadius: 1,
-                        ),
-                      ],
-                    ),
-                  ),
-                  horizontalSpacing(8),
-                  Text(
-                    'On Shift',
-                    style: AppTextStyles.font12Light.copyWith(
-                      color: AppColors.white,
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-                  horizontalSpacing(8),
-                  Text(
-                    '${unitModel.shiftStartTime != null ? _formatTime(unitModel.shiftStartTime!) : '--:--'} - ${unitModel.shiftEndTime != null ? _formatTime(unitModel.shiftEndTime!) : '--:--'}',
-                    style: AppTextStyles.font12SemiBold.copyWith(
-                      color: AppColors.white,
-                      letterSpacing: 0.8,
-                    ),
-                  ),
-                ],
+              const Icon(
+                Icons.calendar_today_outlined,
+                size: 13,
+                color: AppColors.primary100,
               ),
-              const Spacer(),
-              // Date
+              horizontalSpacing(6),
               Text(
                 DateTime.now().formattedDateTimeWithWeekday,
+                style: AppTextStyles.font12Light.copyWith(
+                  color: AppColors.white,
+                  letterSpacing: 0.3,
+                ),
+              ),
+              const Spacer(),
+              Container(
+                width: rw(8),
+                height: rw(8),
+                decoration: BoxDecoration(
+                  color: AppColors.green200,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.green200.withValues(alpha: 0.5),
+                      blurRadius: 6,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                ),
+              ),
+              horizontalSpacing(6),
+              Text(
+                'On Duty',
                 style: AppTextStyles.font12Light.copyWith(
                   color: AppColors.white,
                   letterSpacing: 0.3,
@@ -162,17 +179,4 @@ class HomeAppBar extends StatelessWidget {
       ),
     );
   }
-}
-
-String _formatTime(String time) {
-  final parts = time.split(':');
-  if (parts.length >= 2) {
-    int hour = int.parse(parts[0]);
-    String minute = parts[1];
-    String period = hour >= 12 ? 'PM' : 'AM';
-    hour = hour % 12;
-    hour = hour == 0 ? 12 : hour; // Convert 0 to 12
-    return '$hour:$minute $period';
-  }
-  return time;
 }

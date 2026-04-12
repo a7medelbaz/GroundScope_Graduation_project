@@ -10,7 +10,7 @@ class Routes {
   static const String reportsScreen = '/reportsScreen';
 
   // ########## Supervisor
-  static const String supervisorScreen = '/supervisorScreen';
+  static const String supervisorScaffold = '/supervisorScaffold';
 
   // ########## Admin
   static const String adminScreen = '/adminScreen';

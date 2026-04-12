@@ -5,12 +5,12 @@ import 'package:ground_scope/core/auth/ui/login_screen.dart';
 import 'package:ground_scope/core/onboarding/ui/on_boarding_screen.dart';
 import 'package:ground_scope/core/router/routes.dart';
 import 'package:ground_scope/modules/admin/features/home/admin_screen.dart';
-import 'package:ground_scope/modules/supervisor/features/home/supervisor_screen.dart';
 import 'package:ground_scope/modules/worker/core/main_navigation/ui/worker_scaffold.dart';
 import 'package:ground_scope/modules/worker/features/add_report/ui/add_report_screen.dart';
 import 'package:ground_scope/modules/worker/features/reports/ui/reports_screen.dart';
 import 'package:ground_scope/modules/worker/features/task_details/ui/task_details_screen.dart';
 import 'package:ground_scope/modules/worker/features/task_details/ui/task_info_screen.dart';
+import '../../modules/supervisor/core/main_navigation/supervisor_scaffold.dart';
 
 class AppRouter {
   AppRouter._();
@@ -38,8 +38,8 @@ class AppRouter {
         return _buildRoute(const AddReportScreen(), settings);
       case Routes.reportsScreen:
         return _buildRoute(const ReportsScreen(), settings);
-      case Routes.supervisorScreen:
-        return _buildRoute(const SupervisorScreen(), settings);
+      case Routes.supervisorScaffold:
+        return _buildRoute(const SupervisorScaffold(), settings);
       case Routes.adminScreen:
         return _buildRoute(const AdminScreen(), settings);
       default:
