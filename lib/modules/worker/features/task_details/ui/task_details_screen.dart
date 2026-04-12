@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:ground_scope/core/widgets/ui/dialogs/app_dialogs.dart';
-import 'package:ground_scope/modules/worker/features/task_details/data/models/checklist_item_model.dart';
-import 'package:ground_scope/modules/worker/features/task_details/data/models/task_pause_model.dart';
-import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/task_details_notes_section.dart';
-import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/task_details_pause_history_section.dart';
+import '../data/models/checklist_item_model.dart';
+import '../data/models/task_pause_model.dart';
+import 'widgets/task_details_notes_section.dart';
+import 'widgets/task_details_pause_history_section.dart';
 import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/task_details_task_meta_section.dart';
 
 import '../../../../../core/data/models/task_model.dart';
