@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:ground_scope/core/router/routes.dart';
 import 'package:ground_scope/core/widgets/ui/dialogs/app_dialogs.dart';
-import '../data/models/checklist_item_model.dart';
-import '../data/models/task_pause_model.dart';
-import 'widgets/task_details_notes_section.dart';
-import 'widgets/task_details_pause_history_section.dart';
+import 'package:ground_scope/modules/worker/features/task_details/data/models/checklist_item_model.dart';
+import 'package:ground_scope/modules/worker/features/task_details/data/models/task_pause_model.dart';
+import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/task_details_notes_section.dart';
+import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/task_details_pause_history_section.dart';
+import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/task_details_quick_actions_row.dart';
 import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/task_details_task_meta_section.dart';
 
 import '../../../../../core/data/models/task_model.dart';
@@ -24,11 +26,7 @@ class TaskDetailsScreen extends StatefulWidget {
 
 class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
   late TaskStatus _status;
-
-  // Mock checklist — replace with Supabase fetch
   late List<ChecklistItemModel> _checklist;
-
-  // Mock pauses — replace with Supabase fetch
   final List<TaskPauseModel> _pauses = [];
 
   @override
@@ -91,7 +89,6 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
   Future<void> _onPause() async {
     final reason = await PauseReasonBottomSheet.show(context);
     if (reason != null || true) {
-      // proceed even without reason
       setState(() {
         _status = TaskStatus.paused;
         _pauses.add(
@@ -114,7 +111,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
       AppDialogs.showConfirm(
         context,
         title: 'Checklist Incomplete',
-        message: ' Are you sure you want to Finish the task?',
+        message: 'Are you sure you want to finish the task?',
         onConfirm: () {
           setState(() => _status = TaskStatus.completed);
           context.pop();
@@ -156,15 +153,23 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
           ),
           Expanded(
             child: SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(
-                rw(20),
-                rh(20),
-                rw(20),
-                rh(120), // space for bottom bar
-              ),
+              padding: EdgeInsets.fromLTRB(rw(20), rh(20), rw(20), rh(120)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  TaskDetailsQuickActionsRow(
+                    onInfoTap: () => context.pushNamed(
+                      Routes.taskDetailsInfoScreen,
+                      arguments: {
+                        'task': widget.task.copyWith(status: _status),
+                        'pauses': _pauses,
+                      },
+                    ),
+                    onReportTap: () =>
+                        context.pushNamed(Routes.addReportScreen),
+                    taskStatus: _status,
+                  ),
+                  verticalSpacing(24),
                   TaskDetailsTaskMetaSection(task: task),
                   verticalSpacing(24),
                   if (_pauses.isNotEmpty) ...[
@@ -176,10 +181,11 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                     taskStatus: _status,
                     onToggle: _onChecklistToggle,
                   ),
+
                   verticalSpacing(24),
-                  if (task.notes != null && task.notes!.isNotEmpty) ...[
+
+                  if (task.notes != null && task.notes!.isNotEmpty)
                     TaskDetailsNotesSection(notes: task.notes!),
-                  ],
                 ],
               ),
             ),

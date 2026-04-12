@@ -1,4 +1,3 @@
-// lib/modules/worker/features/task_details/ui/widgets/task_details_checklist.dart
 
 import 'package:flutter/material.dart';
 import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/checklist_row.dart';
