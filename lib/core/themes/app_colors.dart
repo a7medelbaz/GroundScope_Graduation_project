@@ -17,6 +17,7 @@ class AppColors {
   static const Color secondary400 = Color(0xff6B102A);
 
   // ##White And Black Colors
+  static const Color transparent = Color(0x00000000);
   static const Color white = Color(0xffffffff);
   static const Color grey50 = Color(0xffeceff3);
   static const Color grey100 = Color(0xffdfe1e7);
