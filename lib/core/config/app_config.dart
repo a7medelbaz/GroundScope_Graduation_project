@@ -30,9 +30,8 @@ class AppConfig {
   static const String buildNumber = '1';
 
   // Supabase Config
-  static String supaBaseUr = dotenv.env['SUPABASE_URL']!;
-  static String supaBaseKey = dotenv.env['SUPABASE_ANON_KEY']!;
-
+static String get supaBaseUrl => dotenv.env['SUPABASE_URL'] ?? '';
+  static String get supaBaseKey => dotenv.env['SUPABASE_ANON_KEY'] ?? '';
   // Developer Info
 
   static const String developerName = 'Mustafa Elbaz';

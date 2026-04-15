@@ -26,6 +26,7 @@ void main() async {
       statusBarIconBrightness: Brightness.dark,
     ),
   );
+  await dotenv.load(fileName: ".env");
   ErrorWidget.builder = (final details) => const ErrorScreen();
   await EasyLocalization.ensureInitialized();
   await ScreenUtil.ensureScreenSize();
@@ -36,10 +37,10 @@ void main() async {
   );
 
   await Supabase.initialize(
-    url: AppConfig.supaBaseUr,
+    url: AppConfig.supaBaseUrl,
     anonKey: AppConfig.supaBaseKey,
   );
-  await dotenv.load(fileName: ".env");
+
   await setUpDependencies();
   runApp(
     EasyLocalization(
