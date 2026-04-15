@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'core/localization/localization_manager.dart';
 import 'core/widgets/error_screen.dart';
@@ -37,7 +38,7 @@ void main() async {
     url: AppConfig.supaBaseUr,
     anonKey: AppConfig.supaBaseKey,
   );
-
+  await dotenv.load(fileName: ".env");
   await setUpDependencies();
   runApp(
     EasyLocalization(
