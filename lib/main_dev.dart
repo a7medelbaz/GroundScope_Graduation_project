@@ -2,14 +2,16 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'core/localization/localization_manager.dart';
-import 'core/widgets/error_screen.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'core/config/app_config.dart';
 import 'core/di/dependency_injection.dart';
+import 'core/localization/localization_manager.dart';
+import 'core/widgets/error_screen.dart';
 import 'ground_scope_app.dart';
 
 void main() async {
@@ -24,6 +26,7 @@ void main() async {
       statusBarIconBrightness: Brightness.dark,
     ),
   );
+  await dotenv.load(fileName: ".env");
   ErrorWidget.builder = (final details) => const ErrorScreen();
   await EasyLocalization.ensureInitialized();
   await ScreenUtil.ensureScreenSize();
@@ -34,7 +37,7 @@ void main() async {
   );
 
   await Supabase.initialize(
-    url: AppConfig.supaBaseUr,
+    url: AppConfig.supaBaseUrl,
     anonKey: AppConfig.supaBaseKey,
   );
 

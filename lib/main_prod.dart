@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -25,6 +26,7 @@ void main() async {
       statusBarIconBrightness: Brightness.dark,
     ),
   );
+  await dotenv.load(fileName: ".env");
   ErrorWidget.builder = (final details) => const ErrorScreen();
   await EasyLocalization.ensureInitialized();
   await ScreenUtil.ensureScreenSize();
@@ -35,10 +37,9 @@ void main() async {
   );
 
   await Supabase.initialize(
-    url: AppConfig.supaBaseUr,
+    url: AppConfig.supaBaseUrl,
     anonKey: AppConfig.supaBaseKey,
   );
-
   await setUpDependencies();
   runApp(
     EasyLocalization(

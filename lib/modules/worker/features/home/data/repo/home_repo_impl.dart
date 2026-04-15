@@ -1,6 +1,6 @@
 import 'dart:convert';
 import '../../../../../../core/auth/data/models/user_date.dart';
-import '../../../../../../core/config/app_constants.dart';
+import '../../../../../../core/utils/app_constants.dart';
 import '../../../../../../core/data/models/task_model.dart';
 import '../../../../../../core/data/models/unit_model.dart';
 import '../../../../../../core/error/models/app_error.dart';
