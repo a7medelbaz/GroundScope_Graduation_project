@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../../core/data/models/task_model.dart';
+import '../../../../../../core/shared/data/models/task_model.dart';
 import '../../../../../../core/themes/app_colors.dart';
 import '../../../../../../core/utils/spacing.dart';
 import '../../../../../../core/widgets/custom_text_button.dart';

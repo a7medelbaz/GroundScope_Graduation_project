@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../../../core/data/models/task_model.dart';
+import '../../../../../../core/shared/data/models/task_model.dart';
 import '../../../../../../core/themes/app_colors.dart';
 import '../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../core/utils/extensions/context_ext.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/data/models/task_model.dart';
+import '../../../../../core/shared/data/models/task_model.dart';
 import '../../../../../core/router/routes.dart';
 import '../../../../../core/utils/extensions/context_ext.dart';
 import '../../../../../core/utils/spacing.dart';

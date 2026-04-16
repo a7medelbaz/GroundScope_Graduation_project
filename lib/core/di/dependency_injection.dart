@@ -1,5 +1,9 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
+import 'package:ground_scope/core/shared/data/remote/unit_remote_ds.dart';
+import 'package:ground_scope/core/shared/data/repo/unit_repo.dart';
+import 'package:ground_scope/core/shared/data/repo/unit_repo_impl.dart';
+
 import '../../modules/worker/features/home/data/remote/home_remote_ds.dart';
 import '../../modules/worker/features/home/data/repo/home_repo.dart';
 import '../../modules/worker/features/home/data/repo/home_repo_impl.dart';
@@ -22,6 +26,14 @@ Future<void> setUpDependencies() async {
     );
   }
   getIt.registerLazySingleton<SupabaseService>(() => SupabaseService());
+
+  // Shared DI
+  getIt.registerLazySingleton<UnitRemoteDs>(
+    () => UnitRemoteDs(supabaseService: getIt<SupabaseService>()),
+  );
+  getIt.registerLazySingleton<UnitRepo>(
+    () => UnitRepoImpl(unitRemoteDs: getIt<UnitRemoteDs>()),
+  );
 
   /// Auth DI
   getIt.registerLazySingleton<AuthRemoteDs>(
@@ -46,6 +58,6 @@ Future<void> setUpDependencies() async {
     ),
   );
   getIt.registerFactory<HomeCubit>(
-    () => HomeCubit(homeRepo: getIt<HomeRepo>()),
+    () => HomeCubit(homeRepo: getIt<HomeRepo>(), unitRepo: getIt<UnitRepo>()),
   );
 }

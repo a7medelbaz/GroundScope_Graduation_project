@@ -1,12 +1,8 @@
-import 'dart:convert';
-import '../../../../../../core/auth/data/models/user_date.dart';
-import '../../../../../../core/utils/app_constants.dart';
-import '../../../../../../core/data/models/task_model.dart';
-import '../../../../../../core/data/models/unit_model.dart';
 import '../../../../../../core/error/models/app_error.dart';
 import '../../../../../../core/service/secure_storage.dart';
-import 'home_repo.dart';
+import '../../../../../../core/shared/data/models/task_model.dart';
 import '../remote/home_remote_ds.dart';
+import 'home_repo.dart';
 
 class HomeRepoImpl implements HomeRepo {
   final HomeRemoteDs remoteDs;
@@ -15,35 +11,11 @@ class HomeRepoImpl implements HomeRepo {
   HomeRepoImpl({required this.remoteDs, required this.secureStorage});
 
   @override
-  Future<List<TaskModel>> fetchWorkerTasks() async {
+  Future<List<TaskModel>> fetchWorkerTasks({required String unitId}) async {
     try {
-      final user = await _getAuthenticatedUser();
-      if (user.unitId == null) throw AppError.unauthorized("No unit assigned.");
-      return await remoteDs.fetchWorkerTasks(user.unitId!);
+      return await remoteDs.fetchWorkerTasks(unitId);
     } catch (e) {
       throw e is AppError ? e : AppError.unknown();
-    }
-  }
-
-  @override
-  Future<UnitModel> getUnitData() async {
-    try {
-      final user = await _getAuthenticatedUser();
-      return await remoteDs.fetchUnitData(user.id);
-    } catch (e) {
-      throw e is AppError ? e : AppError.unknown();
-    }
-  }
-
-  Future<UserModel> _getAuthenticatedUser() async {
-    final String? jsonString = await secureStorage.read(
-      key: AppConstants.userDataKey,
-    );
-    if (jsonString == null || jsonString.isEmpty) throw AppError.unauthorized();
-    try {
-      return UserModel.fromJson(jsonDecode(jsonString));
-    } catch (_) {
-      throw AppError.unknown();
     }
   }
 }

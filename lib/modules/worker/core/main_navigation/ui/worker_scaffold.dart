@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../../core/di/dependency_injection.dart';
-import '../../../../../core/utils/extensions/context_ext.dart';
-import '../../../features/home/logic/cubit/home_cubit.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
+
+import '../../../../../core/di/dependency_injection.dart';
 import '../../../../../core/themes/app_colors.dart';
+import '../../../../../core/utils/extensions/context_ext.dart';
 import '../../../../../core/utils/spacing.dart';
+import '../../../features/home/logic/cubit/home_cubit.dart';
 import '../../../features/home/ui/home_screen.dart';
 import '../../../features/notifications/ui/notifications_screen.dart';
 import '../../../features/profile/ui/profile_screen.dart';
@@ -75,7 +76,9 @@ class _WorkerScaffoldState extends State<WorkerScaffold> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<HomeCubit>(
-          create: (context) => getIt<HomeCubit>()..fetchHomeData(),
+          create: (context) => getIt<HomeCubit>()
+            ..fetchTasks()
+            ..fetchUnitData(),
         ),
       ],
       child: PersistentTabView(
