@@ -70,7 +70,7 @@ class HomeScreen extends StatelessWidget {
       return WorkerTasksListView(
         tasks: state.tasks,
         onRefresh: () async {
-          await context.read<HomeCubit>().fetchTasks();
+          await context.read<HomeCubit>().init();
         },
       );
     }

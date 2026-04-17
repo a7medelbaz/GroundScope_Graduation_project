@@ -32,8 +32,7 @@ class AppRouter {
         return _buildRoute(
           BlocProvider(
             create: (context) =>
-                getIt<TaskDetailsCubit>()
-                  ..fetchTaskCheckList(taskId: arguments['task'].id),
+                getIt<TaskDetailsCubit>()..initTask(task: arguments['task']),
             child: TaskDetailsScreen(task: arguments!['task']),
           ),
           settings,
