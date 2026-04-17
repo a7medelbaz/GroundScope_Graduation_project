@@ -30,7 +30,7 @@ class TaskDetailsHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = TaskUiHelpers.statusColor(task.status, context);
+    final statusColor = TaskUiHelpers.statusColor(task.status!, context);
     final priorityColor = TaskUiHelpers.priorityColor(task.priority);
 
     return Container(
@@ -166,7 +166,7 @@ class TaskDetailsHeader extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        task.status.label,
+                        task.status!.label.toUpperCase(),
                         style: AppTextStyles.font12SemiBold.copyWith(
                           color: AppColors.white,
                         ),

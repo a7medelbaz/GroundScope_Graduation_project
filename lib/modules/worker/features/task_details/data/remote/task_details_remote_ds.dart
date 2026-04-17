@@ -72,7 +72,7 @@ class TaskDetailsRemoteDs {
     try {
       await supabaseService.client
           .from('tasks')
-          .update({'status': newStatus.name})
+          .update({'status': newStatus.dbValue})
           .eq('id', taskId);
     } catch (e) {
       ErrorHandler.handle(e);

@@ -28,6 +28,17 @@ enum TaskStatus {
   };
 }
 
+extension TaskStatusDb on TaskStatus {
+  String get dbValue => switch (this) {
+    TaskStatus.pending => 'pending',
+    TaskStatus.assigned => 'assigned',
+    TaskStatus.inProgress => 'in_progress',
+    TaskStatus.paused => 'paused',
+    TaskStatus.completed => 'completed',
+    TaskStatus.cancelled => 'cancelled',
+  };
+}
+
 enum TaskPriority {
   low('low'),
   medium('medium'),
@@ -83,7 +94,7 @@ class TaskModel {
   final String? unitId;
   final String? assignedBy;
   final String? createdBy;
-  final TaskStatus status;
+  final TaskStatus? status;
   final TaskPriority priority;
   final DateTime scheduledStart;
   final DateTime scheduledEnd;
@@ -222,7 +233,7 @@ class TaskModel {
       'unit_id': unitId,
       'assigned_by': assignedBy,
       'created_by': createdBy,
-      'status': status.value,
+      'status': status!.value,
       'priority': priority.value,
       'scheduled_start': scheduledStart.toIso8601String(),
       'scheduled_end': scheduledEnd.toIso8601String(),

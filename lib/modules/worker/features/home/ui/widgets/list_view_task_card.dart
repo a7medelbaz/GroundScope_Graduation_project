@@ -39,10 +39,9 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = TaskUiHelpers.statusColor(task.status, context);
+    final statusColor = TaskUiHelpers.statusColor(task.status!, context);
     final priorityColor = TaskUiHelpers.priorityColor(task.priority);
     final cc = context.customColors;
-
     final bool isInProgress = task.status == TaskStatus.inProgress;
 
     return Padding(
@@ -192,7 +191,7 @@ class TaskCard extends StatelessWidget {
 
                         // Status Badge
                         TaskStatusBadge(
-                          label: task.status.label,
+                          label: task.status!.label,
                           color: statusColor,
                         ),
                       ],
