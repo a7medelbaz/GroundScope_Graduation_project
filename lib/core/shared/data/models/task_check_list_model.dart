@@ -1,4 +1,3 @@
-
 class TaskCheckListModel {
   final String id;
   final String taskId;
