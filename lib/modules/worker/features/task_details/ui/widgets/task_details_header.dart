@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../../../../../core/utils/task_ui_helpers.dart';
+import 'package:ground_scope/core/utils/extensions/string_ext.dart';
 
 import '../../../../../../core/shared/data/models/task_model.dart';
 import '../../../../../../core/themes/app_colors.dart';
 import '../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../core/utils/spacing.dart';
+import '../../../../../../core/utils/task_ui_helpers.dart';
 
 class TaskDetailsHeader extends StatelessWidget {
   const TaskDetailsHeader({
@@ -51,8 +52,8 @@ class TaskDetailsHeader extends StatelessWidget {
       padding: EdgeInsets.only(
         left: rw(20),
         right: rw(20),
-        top: rh(56),
-        bottom: rh(24),
+        top: rh(46),
+        bottom: rh(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,8 +63,8 @@ class TaskDetailsHeader extends StatelessWidget {
               GestureDetector(
                 onTap: () => onBackButtonPressed(),
                 child: Container(
-                  width: rw(38),
-                  height: rw(38),
+                  width: rw(32),
+                  height: rw(32),
                   decoration: BoxDecoration(
                     color: AppColors.white.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
@@ -82,13 +83,12 @@ class TaskDetailsHeader extends StatelessWidget {
               Expanded(
                 child: Text(
                   'Task Details',
-                  style: AppTextStyles.font18ExtraBold.copyWith(
+                  style: AppTextStyles.font16ExtraBold.copyWith(
                     color: AppColors.white,
                     letterSpacing: 0.3,
                   ),
                 ),
               ),
-              // Priority badge
               Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: rw(10),
@@ -125,10 +125,7 @@ class TaskDetailsHeader extends StatelessWidget {
               ),
             ],
           ),
-
           verticalSpacing(20),
-
-          // ── Service type + status ──────────────────────────
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -150,13 +147,12 @@ class TaskDetailsHeader extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      task.serviceTypeName ?? 'Ground Service',
+                      '${task.flightNumber ?? ''} '.trim(),
                       style: AppTextStyles.font22ExtraBold.copyWith(
                         color: AppColors.white,
                       ),
                     ),
                     verticalSpacing(4),
-                    // Status pill
                     Container(
                       padding: EdgeInsets.symmetric(
                         horizontal: rw(10),
@@ -172,7 +168,7 @@ class TaskDetailsHeader extends StatelessWidget {
                       child: Text(
                         task.status.label,
                         style: AppTextStyles.font12SemiBold.copyWith(
-                          color: statusColor,
+                          color: AppColors.white,
                         ),
                       ),
                     ),
@@ -193,7 +189,7 @@ class TaskDetailsHeader extends StatelessWidget {
             children: [
               _InfoPill(
                 icon: Icons.flight_rounded,
-                label: task.flightNumber ?? '—',
+                label: task.serviceTypeName?.capitalize() ?? '—',
               ),
               horizontalSpacing(10),
               if (task.standCode != null)
@@ -318,8 +314,6 @@ class _InfoPill extends StatelessWidget {
   }
 }
 
-// ── Time column ───────────────────────────────────────────────
-
 class _TimeColumn extends StatelessWidget {
   const _TimeColumn({
     required this.label,
@@ -339,7 +333,7 @@ class _TimeColumn extends StatelessWidget {
         Text(
           label,
           style: AppTextStyles.font12Light.copyWith(
-            color: AppColors.primary100,
+            color: AppColors.white,
             fontSize: 10,
             letterSpacing: 0.3,
           ),
@@ -354,13 +348,6 @@ class _TimeColumn extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         verticalSpacing(2),
-        Text(
-          subLabel,
-          style: AppTextStyles.font12Light.copyWith(
-            color: AppColors.primary100,
-          ),
-          textAlign: TextAlign.center,
-        ),
       ],
     );
   }
