@@ -37,7 +37,7 @@ class HomeScreen extends StatelessWidget {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  HomeAppBar(userModel: user, unitModel: unit),
+                  HomeAppBar(userModel: user, unitModel: unit as UnitModel),
                   verticalSpacing(16),
                   Expanded(child: _buildHomeBody(context, homeState)),
                 ],

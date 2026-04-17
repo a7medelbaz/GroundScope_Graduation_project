@@ -11,14 +11,15 @@ final class HomeInitial extends HomeState {}
 
 final class HomeLoading extends HomeState {}
 
-final class HomeLoaded extends HomeState {
+class HomeLoaded extends HomeState {
+  final UnitModel? unit;
   final List<TaskModel> tasks;
-  final UnitModel unit; // Added unit data here
 
-  const HomeLoaded({required this.tasks, required this.unit});
+  const HomeLoaded({this.unit, required this.tasks});
 
-  @override
-  List<Object?> get props => [tasks, unit];
+  HomeLoaded copyWith({UnitModel? unit, List<TaskModel>? tasks}) {
+    return HomeLoaded(unit: unit ?? this.unit, tasks: tasks ?? this.tasks);
+  }
 }
 
 final class HomeFailure extends HomeState {

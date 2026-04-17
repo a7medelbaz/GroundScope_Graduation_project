@@ -36,7 +36,6 @@ class HomeCubit extends Cubit<HomeState> {
       final Map<String, dynamic> map = jsonDecode(jsonString);
       return UserModel.fromJson(map);
     } catch (e) {
-      // This print is the most important one!
       print("❌ MODEL PARSING FAILED: $e");
     }
     return null;
@@ -70,7 +69,6 @@ class HomeCubit extends Cubit<HomeState> {
 
     try {
       final user = await _getUser();
-
       if (user == null) {
         emit(HomeFailure(error: AppError.unauthorized('Please log in again.')));
         return;
@@ -85,12 +83,33 @@ class HomeCubit extends Cubit<HomeState> {
       }
 
       final tasks = await homeRepo.fetchWorkerTasks(unitId: user.unitId!);
-
-      if (currentUnit != null) {
-        emit(HomeLoaded(unit: currentUnit, tasks: tasks));
-      }
+      emit(HomeLoaded(unit: currentUnit, tasks: tasks));
     } on AppError catch (e) {
       emit(HomeFailure(error: e));
+    } catch (e) {
+      emit(HomeFailure(error: AppError.unknown()));
+    }
+  }
+
+  Future<void> init() async {
+    emit(HomeLoading());
+    try {
+      final user = await _getUser();
+      if (user == null || user.unitId == null) {
+        emit(
+          HomeFailure(
+            error: AppError.unauthorized('No unit assigned to user.'),
+          ),
+        );
+        return;
+      }
+      final results = await Future.wait([
+        homeRepo.fetchWorkerTasks(unitId: user.unitId!),
+        unitRepo.getUnitData(unitId: user.unitId!),
+      ]);
+      final tasks = results[0] as List<TaskModel>;
+      final unit = results[1] as UnitModel;
+      emit(HomeLoaded(unit: unit, tasks: tasks));
     } catch (e) {
       emit(HomeFailure(error: AppError.unknown()));
     }
