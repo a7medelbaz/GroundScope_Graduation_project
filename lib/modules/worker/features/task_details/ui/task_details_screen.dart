@@ -50,6 +50,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
           _popWithResult();
         },
       );
+    } else {
+      _popWithResult();
     }
   }
 
