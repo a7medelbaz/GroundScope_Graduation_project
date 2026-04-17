@@ -1,5 +1,6 @@
 import 'package:ground_scope/core/error/types/error_handler.dart';
 import 'package:ground_scope/core/networking/supabase_service.dart';
+import 'package:ground_scope/core/shared/data/models/task_model.dart';
 
 class TaskDetailsRemoteDs {
   final SupabaseService supabaseService;
@@ -20,7 +21,61 @@ class TaskDetailsRemoteDs {
           })
           .eq('id', itemId);
     } catch (e) {
-      throw ErrorHandler.handle(e);
+      ErrorHandler.handle(e);
+    }
+  }
+
+  Future<void> pauseTask({
+    required String taskId,
+    required String reason,
+    required String userId,
+  }) async {
+    try {
+      await supabaseService.client.from('task_pauses').insert({
+        'task_id': taskId,
+        'reason': reason.trim(),
+        'paused_by': userId,
+      });
+
+      await supabaseService.client
+          .from('tasks')
+          .update({'status': 'paused'})
+          .eq('id', taskId);
+    } catch (e) {
+      ErrorHandler.handle(e);
+    }
+  }
+
+  Future<void> resumePause({
+    required String pauseId,
+    required String taskId,
+  }) async {
+    try {
+      await supabaseService.client
+          .from('task_pauses')
+          .update({'resumed_at': DateTime.now().toIso8601String()})
+          .eq('id', pauseId);
+      await supabaseService.client
+          .from('tasks')
+          .update({'status': 'in_progress'})
+          .eq('id', taskId);
+    } catch (e) {
+      print("❌ RAW ERROR: $e");
+      ErrorHandler.handle(e);
+    }
+  }
+
+  Future<void> updateTaskStatus({
+    required String taskId,
+    required TaskStatus newStatus,
+  }) async {
+    try {
+      await supabaseService.client
+          .from('tasks')
+          .update({'status': newStatus.name})
+          .eq('id', taskId);
+    } catch (e) {
+      ErrorHandler.handle(e);
     }
   }
 }
