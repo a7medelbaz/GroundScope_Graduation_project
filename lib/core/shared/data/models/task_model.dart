@@ -1,5 +1,4 @@
 import 'package:ground_scope/core/shared/data/models/flight_model.dart';
-import 'package:ground_scope/core/shared/data/models/service_type_model.dart';
 
 enum TaskStatus {
   pending('pending'),
@@ -70,10 +69,12 @@ class TaskModel {
     this.notes,
     required this.createdAt,
     required this.updatedAt,
-
-    // relations
+    this.serviceTypeName,
+    this.serviceTypeIcon,
+    // Rich objects
     this.flight,
-    this.serviceType,
+    this.checklistTotal = 0,
+    this.checklistDone = 0,
   });
 
   final String id;
@@ -82,52 +83,113 @@ class TaskModel {
   final String? unitId;
   final String? assignedBy;
   final String? createdBy;
-
   final TaskStatus status;
   final TaskPriority priority;
-
   final DateTime scheduledStart;
   final DateTime scheduledEnd;
   final DateTime? actualStart;
   final DateTime? actualEnd;
-
   final String? notes;
   final DateTime createdAt;
   final DateTime updatedAt;
 
-  final FlightModel? flight;
-  final ServiceTypeModel? serviceType;
+  /// Joined Objects
+  final String? serviceTypeName;
+  final String? serviceTypeIcon;
+  final FlightModel? flight; // Fixed: Use the actual model
 
-  // ===== UI SAFE GETTERS =====
-  String? get serviceTypeName => serviceType?.name;
-  String? get serviceTypeIcon => serviceType?.icon;
+  /// Checklist
+  final int checklistTotal;
+  final int checklistDone;
 
+  // Helpers
   String? get flightNumber => flight?.flightNumber;
-  String? get standCode => flight?.standId;
-
-  int get durationMinutes => scheduledEnd.difference(scheduledStart).inMinutes;
+  String? get standCode => flight?.stand?.code;
 
   double get progress {
+    if (checklistTotal > 0) {
+      return (checklistDone / checklistTotal).clamp(0.0, 1.0);
+    }
     return switch (status) {
-      TaskStatus.pending => 0,
-      TaskStatus.assigned => 0,
-      TaskStatus.inProgress => 0.5,
-      TaskStatus.paused => 0.5,
-      TaskStatus.completed => 1,
-      TaskStatus.cancelled => 0,
+      TaskStatus.completed => 1.0,
+      TaskStatus.inProgress || TaskStatus.paused => 0.5,
+      _ => 0.0,
     };
   }
 
+  String get scheduledTimeRange {
+    String fmt(DateTime dt) =>
+        '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+
+    return '${fmt(scheduledStart)} – ${fmt(scheduledEnd)}';
+  }
+
+  int get durationMinutes => scheduledEnd.difference(scheduledStart).inMinutes;
+
+  TaskModel copyWith({
+    String? id,
+    String? flightId,
+    String? serviceTypeId,
+    String? unitId,
+    String? assignedBy,
+    String? createdBy,
+    TaskStatus? status,
+    TaskPriority? priority,
+    DateTime? scheduledStart,
+    DateTime? scheduledEnd,
+    DateTime? actualStart,
+    DateTime? actualEnd,
+    String? notes,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? serviceTypeName,
+    String? serviceTypeIcon,
+    String? flightNumber,
+    String? standCode,
+    int? checklistTotal,
+    int? checklistDone,
+  }) {
+    return TaskModel(
+      id: id ?? this.id,
+      flightId: flightId ?? this.flightId,
+      serviceTypeId: serviceTypeId ?? this.serviceTypeId,
+      unitId: unitId ?? this.unitId,
+      assignedBy: assignedBy ?? this.assignedBy,
+      createdBy: createdBy ?? this.createdBy,
+      status: status ?? this.status,
+      priority: priority ?? this.priority,
+      scheduledStart: scheduledStart ?? this.scheduledStart,
+      scheduledEnd: scheduledEnd ?? this.scheduledEnd,
+      actualStart: actualStart ?? this.actualStart,
+      actualEnd: actualEnd ?? this.actualEnd,
+      notes: notes ?? this.notes,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      serviceTypeName: serviceTypeName ?? this.serviceTypeName,
+      serviceTypeIcon: serviceTypeIcon ?? this.serviceTypeIcon,
+      flight: flight ?? flight,
+      checklistTotal: checklistTotal ?? this.checklistTotal,
+      checklistDone: checklistDone ?? this.checklistDone,
+    );
+  }
+
   factory TaskModel.fromMap(Map<String, dynamic> map) {
+    // 1. Extract nested maps from the Supabase join
+    final flightMap = map['flights'] as Map<String, dynamic>?;
+    final serviceType = map['service_types'] as Map<String, dynamic>?;
+
     return TaskModel(
       id: map['id'],
-      flightId: map['flight_id'],
-      serviceTypeId: map['service_type_id'],
+      // flightId must be the String UUID from the tasks table
+      flightId: map['flight_id']?.toString() ?? '',
+      serviceTypeId: map['service_type_id']?.toString() ?? '',
       unitId: map['unit_id'],
       assignedBy: map['assigned_by'],
       createdBy: map['created_by'],
+
       status: TaskStatus.fromString(map['status']),
       priority: TaskPriority.fromString(map['priority']),
+
       scheduledStart: DateTime.parse(map['scheduled_start']),
       scheduledEnd: DateTime.parse(map['scheduled_end']),
       actualStart: map['actual_start'] != null
@@ -136,20 +198,22 @@ class TaskModel {
       actualEnd: map['actual_end'] != null
           ? DateTime.parse(map['actual_end'])
           : null,
+
       notes: map['notes'],
       createdAt: DateTime.parse(map['created_at']),
       updatedAt: DateTime.parse(map['updated_at']),
 
-      flight: map['flights'] != null
-          ? FlightModel.fromMap(map['flights'])
-          : null,
+      // 2. Map Service Type Data
+      serviceTypeName: serviceType?['name'],
+      serviceTypeIcon: serviceType?['icon'],
 
-      serviceType: map['service_types'] != null
-          ? ServiceTypeModel.fromMap(map['service_types'])
-          : null,
+      // 3. Map the nested Flight (which now includes Stands)
+      flight: flightMap != null ? FlightModel.fromMap(flightMap) : null,
+
+      checklistTotal: map['checklist_total'] ?? 0,
+      checklistDone: map['checklist_done'] ?? 0,
     );
   }
-
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -158,8 +222,8 @@ class TaskModel {
       'unit_id': unitId,
       'assigned_by': assignedBy,
       'created_by': createdBy,
-      'status': status.name,
-      'priority': priority.name,
+      'status': status.value,
+      'priority': priority.value,
       'scheduled_start': scheduledStart.toIso8601String(),
       'scheduled_end': scheduledEnd.toIso8601String(),
       'actual_start': actualStart?.toIso8601String(),
