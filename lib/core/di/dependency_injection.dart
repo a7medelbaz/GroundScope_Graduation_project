@@ -1,7 +1,10 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
+import 'package:ground_scope/core/shared/data/remote/flights_remote_ds.dart';
 import 'package:ground_scope/core/shared/data/remote/task_remote_ds.dart';
 import 'package:ground_scope/core/shared/data/remote/unit_remote_ds.dart';
+import 'package:ground_scope/core/shared/data/repo/flight_repo.dart';
+import 'package:ground_scope/core/shared/data/repo/flight_repo_impl.dart';
 import 'package:ground_scope/core/shared/data/repo/task_repo.dart';
 import 'package:ground_scope/core/shared/data/repo/task_repo_impl.dart';
 import 'package:ground_scope/core/shared/data/repo/unit_repo.dart';
@@ -75,6 +78,14 @@ Future<void> setUpDependencies() async {
   getIt.registerFactory<HomeCubit>(
     () => HomeCubit(homeRepo: getIt<HomeRepo>(), unitRepo: getIt<UnitRepo>()),
   );
+  // Flight DI
+  getIt.registerLazySingleton<FlightsRemoteDs>(
+    () => FlightsRemoteDs(supabaseService: getIt<SupabaseService>()),
+  );
+  getIt.registerLazySingleton<FlightRepo>(
+    () => FlightRepoImpl(flightsRemoteDs: getIt<FlightsRemoteDs>()),
+  );
+
   // Task Details DI
   getIt.registerLazySingleton<TaskDetailsRemoteDs>(
     () => TaskDetailsRemoteDs(supabaseService: getIt<SupabaseService>()),
