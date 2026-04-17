@@ -6,7 +6,7 @@ import '../../../../../core/themes/app_colors.dart';
 import '../../../../../core/utils/extensions/context_ext.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../../../core/widgets/section_label.dart';
-import '../../task_details/data/models/task_pause_model.dart';
+import '../../../../../core/shared/data/models/task_pause_model.dart';
 import '../../task_details/data/models/task_time_line_model.dart';
 import 'widgets/task_activity_timeline.dart';
 import 'widgets/task_flight_details_card.dart';
@@ -18,8 +18,6 @@ class TaskInfoScreen extends StatelessWidget {
 
   final TaskModel task;
   final List<TaskPauseModel> pauses;
-
-  // ── helpers ──────────────────────────────────────────────────
 
   static String fmt(DateTime? dt) {
     if (dt == null) return '—';

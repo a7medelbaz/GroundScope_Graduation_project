@@ -15,8 +15,7 @@ class TaskActionButton extends StatelessWidget {
     required this.onComplete,
     this.isLoading = false,
   });
-
-  final TaskStatus status;
+  final TaskStatus? status;
   final VoidCallback onStart;
   final VoidCallback onPause;
   final VoidCallback onResume;
