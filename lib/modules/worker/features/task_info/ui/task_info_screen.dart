@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/modules/worker/features/task_details/ui/widgets/task_info_header.dart';
+import 'package:ground_scope/modules/worker/features/task_info/ui/widgets/task_info_header.dart';
 
 import '../../../../../core/shared/data/models/task_model.dart';
 import '../../../../../core/themes/app_colors.dart';
 import '../../../../../core/utils/extensions/context_ext.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../../../core/widgets/section_label.dart';
-import '../data/models/task_pause_model.dart';
-import '../data/models/task_time_line_model.dart';
+import '../../task_details/data/models/task_pause_model.dart';
+import '../../task_details/data/models/task_time_line_model.dart';
 import 'widgets/task_activity_timeline.dart';
 import 'widgets/task_flight_details_card.dart';
 import 'widgets/task_stand_details_card.dart';
@@ -121,15 +121,11 @@ class TaskInfoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final cc = context.customColors;
     final timeline = _buildTimeline();
-
     return Scaffold(
       backgroundColor: cc.background,
       body: Column(
         children: [
-          // ── Header ─────────────────────────────────────────
           TaskInfoHeader(task: task),
-
-          // ── Body ───────────────────────────────────────────
           Expanded(
             child: SingleChildScrollView(
               padding: EdgeInsets.fromLTRB(rw(20), rh(20), rw(20), rh(40)),
@@ -163,9 +159,7 @@ class TaskInfoScreen extends StatelessWidget {
                   ),
                   verticalSpacing(12),
                   TaskTimingCard(task: task),
-
                   verticalSpacing(24),
-
                   // Activity timeline
                   const SectionLabel(
                     title: 'Activity Timeline',

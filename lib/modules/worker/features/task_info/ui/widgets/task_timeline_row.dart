@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../core/utils/extensions/context_ext.dart';
 import '../../../../../../core/utils/spacing.dart';
-import '../../data/models/task_time_line_model.dart';
+import '../../../task_details/data/models/task_time_line_model.dart';
 import '../task_info_screen.dart';
 
 class TaskTimelineRow extends StatelessWidget {
