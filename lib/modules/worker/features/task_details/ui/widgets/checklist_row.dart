@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:ground_scope/core/shared/data/models/task_check_list_model.dart';
+
 import '../../../../../../core/themes/app_colors.dart';
 import '../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../core/utils/extensions/context_ext.dart';
 import '../../../../../../core/utils/spacing.dart';
-import '../../data/models/checklist_item_model.dart';
 
 class ChecklistRow extends StatelessWidget {
   const ChecklistRow({
@@ -14,7 +15,7 @@ class ChecklistRow extends StatelessWidget {
     required this.onToggle,
   });
 
-  final ChecklistItemModel item;
+  final TaskCheckListModel item;
   final int index;
   final bool canCheck;
   final VoidCallback onToggle;
@@ -43,7 +44,6 @@ class ChecklistRow extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Order index
             SizedBox(
               width: rw(22),
               child: Text(
@@ -54,7 +54,6 @@ class ChecklistRow extends StatelessWidget {
               ),
             ),
             horizontalSpacing(8),
-            // Item text
             Expanded(
               child: Text(
                 item.item,
@@ -66,7 +65,6 @@ class ChecklistRow extends StatelessWidget {
               ),
             ),
             horizontalSpacing(12),
-            // Checkbox
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               width: rw(24),

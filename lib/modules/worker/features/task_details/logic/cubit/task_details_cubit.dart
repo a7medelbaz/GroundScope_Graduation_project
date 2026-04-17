@@ -62,33 +62,26 @@ class TaskDetailsCubit extends Cubit<TaskDetailsState> {
     required bool isChecked,
   }) async {
     final currentList = state.checklist;
-
-    /// ✅ Optimistic Update
     final updatedList = currentList.map((item) {
       if (item.id == itemId) {
         return item.copyWith(isChecked: isChecked);
       }
       return item;
     }).toList();
-
     emit(state.copyWith(checklist: updatedList));
-
     try {
       final user = await _getUser();
 
       if (user == null) {
         throw AppError.unauthorized('Please log in again.');
       }
-
       await taskDetailsRepo.updateChecklistItem(
         itemId: itemId,
         isChecked: isChecked,
         userId: user.id,
       );
     } catch (e) {
-      /// ❗ Rollback لو فشل
       emit(state.copyWith(checklist: currentList));
-
       emit(state.copyWith(error: e is AppError ? e : ErrorHandler.handle(e)));
     }
   }
