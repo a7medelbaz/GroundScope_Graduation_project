@@ -1,3 +1,5 @@
+import 'package:ground_scope/core/error/models/app_error.dart';
+import 'package:ground_scope/core/shared/data/models/task_model.dart';
 import 'package:ground_scope/modules/worker/features/task_details/data/remote/task_details_remote_ds.dart';
 import 'package:ground_scope/modules/worker/features/task_details/data/repo/task_details_repo.dart';
 
@@ -17,5 +19,38 @@ class TaskDetailsRepoImpl implements TaskDetailsRepo {
       isChecked: isChecked,
       userId: userId,
     );
+  }
+
+  @override
+  Future<void> pauseTask({
+    required String taskId,
+    required String reason,
+    required String userId,
+  }) {
+    return taskDetailsRemoteDs.pauseTask(
+      taskId: taskId,
+      reason: reason,
+      userId: userId,
+    );
+  }
+
+  @override
+  Future<void> resumePause({required String pauseId, required String taskId}) {
+    return taskDetailsRemoteDs.resumePause(pauseId: pauseId, taskId: taskId);
+  }
+
+  @override
+  Future<void> updateTaskStatus({
+    required String taskId,
+    required TaskStatus newStatus,
+  }) async {
+    try {
+      await taskDetailsRemoteDs.updateTaskStatus(
+        taskId: taskId,
+        newStatus: newStatus,
+      );
+    } catch (e) {
+      throw e is AppError ? e : AppError.unknown();
+    }
   }
 }
