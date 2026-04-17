@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'checklist_row.dart';
 
-import '../../../../../../core/data/models/task_model.dart';
+import '../../../../../../core/shared/data/models/task_check_list_model.dart';
+import '../../../../../../core/shared/data/models/task_model.dart';
 import '../../../../../../core/themes/app_colors.dart';
 import '../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../core/utils/extensions/context_ext.dart';
 import '../../../../../../core/utils/spacing.dart';
-import '../../data/models/checklist_item_model.dart';
+import 'checklist_row.dart';
 
 class TaskDetailsChecklist extends StatelessWidget {
   const TaskDetailsChecklist({
@@ -16,9 +16,9 @@ class TaskDetailsChecklist extends StatelessWidget {
     required this.onToggle,
   });
 
-  final List<ChecklistItemModel> items;
+  final List<TaskCheckListModel> items;
   final TaskStatus taskStatus;
-  final void Function(ChecklistItemModel item) onToggle;
+  final void Function(TaskCheckListModel item) onToggle;
 
   bool get _canCheck => taskStatus == TaskStatus.inProgress;
 
@@ -32,7 +32,6 @@ class TaskDetailsChecklist extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── Section header ─────────────────────────────────
         Row(
           children: [
             Container(

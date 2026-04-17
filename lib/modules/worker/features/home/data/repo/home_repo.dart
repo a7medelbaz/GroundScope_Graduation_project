@@ -1,7 +1,5 @@
-import '../../../../../../core/data/models/task_model.dart';
-import '../../../../../../core/data/models/unit_model.dart';
+import '../../../../../../core/shared/data/models/task_model.dart';
 
 abstract class HomeRepo {
-  Future<List<TaskModel>> fetchWorkerTasks();
-  Future<UnitModel> getUnitData();
+  Future<List<TaskModel>> fetchWorkerTasks({required String unitId});
 }

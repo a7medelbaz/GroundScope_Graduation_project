@@ -23,23 +23,31 @@ class UserModel {
     required this.createdAt,
   });
 
-  // Better version (recommended)
   factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
-      id: json['id'] as String,
-      fullName: json['full_name'] as String? ?? '',
-      email: json['email'] as String? ?? '',
-      phone: json['phone'] as String?,
-      role: json['role'] as String, // or json['role']?.toString() ?? ''
-      serviceTypeId: json['service_type_id'] as String?,
-      unitId: json['unit_id'] as String?,
-      fcmToken: json['fcm_token'] as String?,
-      isActive: json['is_active'] as bool? ?? true,
-      createdAt: DateTime.parse(json['created_at'] as String),
-    );
+    try {
+      return UserModel(
+        // Using toString() handles cases where UUIDs might be treated weirdly
+        id: json['id']?.toString() ?? '',
+        fullName: json['full_name']?.toString() ?? '',
+        email: json['email']?.toString() ?? '',
+        phone: json['phone']?.toString(),
+        role: json['role']?.toString() ?? 'worker',
+        serviceTypeId: json['service_type_id']?.toString(),
+        unitId: json['unit_id']?.toString(),
+        fcmToken: json['fcm_token']?.toString(),
+        isActive: json['is_active'] is bool ? json['is_active'] : true,
+        createdAt: json['created_at'] != null
+            ? DateTime.parse(json['created_at'].toString())
+            : DateTime.now(),
+      );
+    } catch (e, stack) {
+      // This will show up in your terminal if the model fails
+      print("CRITICAL: UserModel Parsing Error: $e");
+      print("STACKTRACE: $stack");
+      rethrow;
+    }
   }
 
-  /// Convert Dart object → Map (for insert/update)
   Map<String, dynamic> toJson() {
     return {
       'id': id,

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../../../core/auth/logic/cubit/auth_cubit.dart';
-import '../../../../../core/data/models/unit_model.dart';
+import '../../../../../core/shared/data/models/unit_model.dart';
 import '../../../../../core/themes/app_colors.dart';
 import '../../../../../core/themes/app_text_styles.dart';
 import '../../../../../core/utils/spacing.dart';
@@ -36,7 +37,7 @@ class HomeScreen extends StatelessWidget {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  HomeAppBar(userModel: user, unitModel: unit),
+                  HomeAppBar(userModel: user, unitModel: unit as UnitModel),
                   verticalSpacing(16),
                   Expanded(child: _buildHomeBody(context, homeState)),
                 ],
@@ -52,8 +53,8 @@ class HomeScreen extends StatelessWidget {
     if (state is HomeLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-
     if (state is HomeFailure) {
+      print('Error loading tasks: ${state.error.messageKey}'); // Debug log
       return Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -69,7 +70,7 @@ class HomeScreen extends StatelessWidget {
       return WorkerTasksListView(
         tasks: state.tasks,
         onRefresh: () async {
-          await context.read<HomeCubit>().fetchHomeData();
+          await context.read<HomeCubit>().init();
         },
       );
     }

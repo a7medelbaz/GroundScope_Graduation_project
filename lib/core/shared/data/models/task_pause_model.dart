@@ -1,6 +1,6 @@
-// lib/modules/worker/features/task_details/data/models/task_pause_model.dart
+import 'package:equatable/equatable.dart';
 
-class TaskPauseModel {
+class TaskPauseModel extends Equatable {
   const TaskPauseModel({
     required this.id,
     required this.taskId,
@@ -36,4 +36,7 @@ class TaskPauseModel {
       pausedBy: map['paused_by'] as String?,
     );
   }
+
+  @override
+  List<Object?> get props => [id, taskId, pausedAt, resumedAt, reason];
 }

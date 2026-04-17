@@ -1,15 +1,19 @@
 // ignore_for_file: unused_local_variable
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart'; // Add this import
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/auth/ui/login_screen.dart';
+import 'package:ground_scope/core/di/dependency_injection.dart';
 import 'package:ground_scope/core/onboarding/ui/on_boarding_screen.dart';
 import 'package:ground_scope/core/router/routes.dart';
 import 'package:ground_scope/modules/admin/features/home/admin_screen.dart';
 import 'package:ground_scope/modules/worker/core/main_navigation/ui/worker_scaffold.dart';
 import 'package:ground_scope/modules/worker/features/add_report/ui/add_report_screen.dart';
 import 'package:ground_scope/modules/worker/features/reports/ui/reports_screen.dart';
+import 'package:ground_scope/modules/worker/features/task_details/logic/cubit/task_details_cubit.dart';
 import 'package:ground_scope/modules/worker/features/task_details/ui/task_details_screen.dart';
-import 'package:ground_scope/modules/worker/features/task_details/ui/task_info_screen.dart';
+import 'package:ground_scope/modules/worker/features/task_info/ui/task_info_screen.dart';
+
 import '../../modules/supervisor/core/main_navigation/supervisor_scaffold.dart';
 
 class AppRouter {
@@ -26,7 +30,11 @@ class AppRouter {
         return _buildRoute(const WorkerScaffold(), settings);
       case Routes.taskDetailsScreen:
         return _buildRoute(
-          TaskDetailsScreen(task: arguments!['task']),
+          BlocProvider(
+            create: (context) =>
+                getIt<TaskDetailsCubit>()..initTask(task: arguments['task']),
+            child: TaskDetailsScreen(task: arguments!['task']),
+          ),
           settings,
         );
       case Routes.taskDetailsInfoScreen:

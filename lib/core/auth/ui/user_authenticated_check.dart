@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ground_scope/core/di/dependency_injection.dart';
+import 'package:ground_scope/modules/worker/features/home/logic/cubit/home_cubit.dart';
+
 import '../../../modules/admin/features/home/admin_screen.dart';
 import '../../../modules/supervisor/core/main_navigation/supervisor_scaffold.dart';
 import '../../../modules/worker/core/main_navigation/ui/worker_scaffold.dart';
@@ -17,7 +20,10 @@ class UserAuthenticatedCheck extends StatelessWidget {
     }
     if (authState is AuthSuccess) {
       return switch (authState.userModel.role) {
-        'unit_manager' => const WorkerScaffold(),
+        'unit_manager' => MultiBlocProvider(
+          providers: [BlocProvider(create: (_) => getIt<HomeCubit>()..init())],
+          child: const WorkerScaffold(),
+        ),
         'supervisor' => const SupervisorScaffold(),
         'admin' => const AdminScreen(),
         _ => const OnBoardingScreen(),

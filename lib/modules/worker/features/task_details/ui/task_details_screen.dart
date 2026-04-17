@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ground_scope/core/router/routes.dart';
+import 'package:ground_scope/core/shared/data/models/task_model.dart';
+import 'package:ground_scope/core/utils/extensions/context_ext.dart';
+import 'package:ground_scope/core/utils/spacing.dart';
+import 'package:ground_scope/core/widgets/ui/dialogs/app_dialogs.dart';
+import 'package:ground_scope/modules/worker/features/task_details/logic/cubit/task_details_cubit.dart';
 
-import '../../../../../core/data/models/task_model.dart';
-import '../../../../../core/router/routes.dart';
-import '../../../../../core/utils/extensions/context_ext.dart';
-import '../../../../../core/utils/spacing.dart';
-import '../../../../../core/widgets/ui/dialogs/app_dialogs.dart';
-import '../data/models/checklist_item_model.dart';
-import '../data/models/task_pause_model.dart';
 import 'widgets/pause_reason_bottom_sheet.dart';
 import 'widgets/task_action_button.dart';
 import 'widgets/task_details_checklist.dart';
@@ -25,189 +25,177 @@ class TaskDetailsScreen extends StatefulWidget {
 }
 
 class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
-  late TaskStatus _status;
-  late List<ChecklistItemModel> _checklist;
-  final List<TaskPauseModel> _pauses = [];
+  late TaskDetailsCubit cubit;
 
   @override
   void initState() {
     super.initState();
-    _status = widget.task.status;
-    _checklist = _mockChecklist();
+    cubit = context.read<TaskDetailsCubit>();
+    cubit.initTask(task: widget.task);
   }
 
-  List<ChecklistItemModel> _mockChecklist() {
-    final serviceType = widget.task.serviceTypeName?.toLowerCase() ?? '';
-    final items = switch (serviceType) {
-      'fuel' => [
-        'Connect fuel hose to aircraft',
-        'Confirm fuel type with captain',
-        'Begin fueling — monitor gauge',
-        'Reach target fuel quantity',
-        'Disconnect hose and secure caps',
-        'Submit fuel log',
-      ],
-      'cleaning' => [
-        'Remove all waste from cabin',
-        'Wipe tray tables and armrests',
-        'Vacuum all seat rows',
-        'Clean lavatories',
-        'Restock amenities',
-        'Final walkthrough and sign-off',
-      ],
-      'baggage' => [
-        'Position belt loader at cargo door',
-        'Unload arriving baggage',
-        'Sort baggage by destination',
-        'Load departing baggage',
-        'Secure cargo doors',
-        'Submit baggage report',
-      ],
-      _ => [
-        'Prepare equipment',
-        'Execute service procedure',
-        'Quality check',
-        'Sign-off and report',
-      ],
-    };
+  void _popWithResult() {
+    context.pop(true);
+  }
 
-    return items.asMap().entries.map((e) {
-      final alreadyDone = e.key < widget.task.checklistDone;
-      return ChecklistItemModel(
-        id: 'mock-${e.key}',
-        taskId: widget.task.id,
-        item: e.value,
-        isChecked: alreadyDone,
-        checkedAt: alreadyDone ? DateTime.now() : null,
-        orderIndex: e.key,
+  Future<void> _onBack(TaskDetailsState state) async {
+    if (state.status == TaskStatus.inProgress) {
+      await AppDialogs.showConfirm(
+        context,
+        title: 'Finish Task?',
+        message: 'Do you want to mark this task as completed before leaving?',
+        confirmText: 'Finish',
+        cancelText: 'Stay',
+        onConfirm: () {
+          _popWithResult();
+        },
       );
-    }).toList();
-  }
-
-  void _onStart() => setState(() => _status = TaskStatus.inProgress);
-
-  Future<void> _onPause() async {
-    final reason = await PauseReasonBottomSheet.show(context);
-    if (reason != null || true) {
-      setState(() {
-        _status = TaskStatus.paused;
-        _pauses.add(
-          TaskPauseModel(
-            id: 'pause-${_pauses.length}',
-            taskId: widget.task.id,
-            pausedAt: DateTime.now(),
-            reason: reason,
-          ),
-        );
-      });
+    } else {
+      _popWithResult();
     }
   }
 
-  void _onResume() => setState(() => _status = TaskStatus.inProgress);
+  Future<void> _onStart() async {
+    await cubit.updateTaskStatus(
+      taskId: widget.task.id,
+      newStatus: TaskStatus.inProgress,
+    );
+  }
 
-  void _onComplete() {
-    final allChecked = _checklist.every((i) => i.isChecked);
+  Future<void> _onResume() => _onStart();
+
+  Future<void> _onPause() async {
+    final reason = await PauseReasonBottomSheet.show(context);
+    if (reason == null || reason.trim().isEmpty) return;
+    await cubit.pauseTask(taskId: widget.task.id, reason: reason.trim());
+  }
+
+  Future<void> _onComplete(TaskDetailsState state) async {
+    final allChecked = state.checklist.every((e) => e.isChecked);
+    Future<void> complete() async {
+      await cubit.updateTaskStatus(
+        taskId: widget.task.id,
+        newStatus: TaskStatus.completed,
+      );
+      _popWithResult();
+    }
+
     if (!allChecked) {
       AppDialogs.showConfirm(
         context,
         title: 'Checklist Incomplete',
-        message: 'Are you sure you want to finish the task?',
-        onConfirm: () {
-          setState(() => _status = TaskStatus.completed);
-          context.pop();
-        },
-        confirmText: 'Finish Anyway',
-        cancelText: 'Go Back',
+        message: 'Finish task anyway?',
+        confirmText: 'Finish',
+        cancelText: 'Cancel',
+        onConfirm: complete,
       );
       return;
     }
-    setState(() => _status = TaskStatus.completed);
-    Navigator.of(context).pop();
-  }
 
-  void _onChecklistToggle(ChecklistItemModel item) {
-    setState(() {
-      final index = _checklist.indexWhere((i) => i.id == item.id);
-      _checklist[index] = item.copyWith(
-        isChecked: !item.isChecked,
-        checkedAt: !item.isChecked ? DateTime.now() : null,
-      );
-    });
+    await complete();
   }
 
   @override
   Widget build(BuildContext context) {
-    final cc = context.customColors;
-    final task = widget.task;
+    return BlocConsumer<TaskDetailsCubit, TaskDetailsState>(
+      listener: (context, state) {
+        if (state.error != null) {
+          context.showSnackBar(state.error!.messageKey);
+        }
+      },
+      builder: (context, state) {
+        if (state.isLoading && state.checklist.isEmpty) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-    return Scaffold(
-      backgroundColor: cc.background,
-      extendBodyBehindAppBar: true,
-      body: Column(
-        children: [
-          TaskDetailsHeader(
-            task: task.copyWith(status: _status),
-            onBackButtonPressed: _status == TaskStatus.inProgress
-                ? _onComplete
-                : context.pop,
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(rw(20), rh(20), rw(20), rh(120)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TaskDetailsQuickActionsRow(
-                    onInfoTap: () => context.pushNamed(
-                      Routes.taskDetailsInfoScreen,
-                      arguments: {
-                        'task': widget.task.copyWith(status: _status),
-                        'pauses': _pauses,
-                      },
-                    ),
-                    onReportTap: () =>
-                        context.pushNamed(Routes.addReportScreen),
-                    taskStatus: _status,
-                  ),
-                  verticalSpacing(24),
-                  TaskDetailsTaskMetaSection(task: task),
-                  verticalSpacing(24),
-                  if (_pauses.isNotEmpty) ...[
-                    TaskDetailsPauseHistorySection(pauses: _pauses),
-                    verticalSpacing(24),
-                  ],
-                  TaskDetailsChecklist(
-                    items: _checklist,
-                    taskStatus: _status,
-                    onToggle: _onChecklistToggle,
-                  ),
+        final task = widget.task.copyWith(status: state.status);
 
-                  verticalSpacing(24),
-
-                  if (task.notes != null && task.notes!.isNotEmpty)
-                    TaskDetailsNotesSection(notes: task.notes!),
-                ],
+        return Scaffold(
+          backgroundColor: context.customColors.background,
+          extendBodyBehindAppBar: true,
+          body: Column(
+            children: [
+              TaskDetailsHeader(
+                task: task,
+                onBackButtonPressed: () => _onBack(state),
               ),
-            ),
+
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.fromLTRB(rw(20), rh(20), rw(20), rh(140)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildQuickActions(task, state),
+                      verticalSpacing(24),
+                      TaskDetailsTaskMetaSection(task: task),
+                      verticalSpacing(24),
+                      _buildPauseHistory(state),
+                      verticalSpacing(24),
+                      _buildChecklist(state),
+                      verticalSpacing(24),
+                      _buildNotes(task),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+          bottomSheet: _buildActions(state),
+        );
+      },
+    );
+  }
+
+  Widget _buildQuickActions(TaskModel task, TaskDetailsState state) {
+    return TaskDetailsQuickActionsRow(
+      onInfoTap: () => context.pushNamed(
+        Routes.taskDetailsInfoScreen,
+        arguments: {'task': task},
       ),
-      bottomSheet:
-          _status == TaskStatus.completed ||
-              _status == TaskStatus.cancelled ||
-              _status == TaskStatus.pending
-          ? null
-          : Container(
-              padding: EdgeInsets.fromLTRB(rw(20), rh(16), rw(20), rh(32)),
-              decoration: BoxDecoration(color: cc.background),
-              child: TaskActionButton(
-                status: _status,
-                onStart: _onStart,
-                onPause: _onPause,
-                onResume: _onResume,
-                onComplete: _onComplete,
-              ),
-            ),
+      onReportTap: () => context.pushNamed(Routes.addReportScreen),
+      taskStatus: state.status!,
+    );
+  }
+
+  Widget _buildPauseHistory(TaskDetailsState state) {
+    if (state.pauses.isEmpty) return const SizedBox.shrink();
+    return TaskDetailsPauseHistorySection(pauses: state.pauses);
+  }
+
+  Widget _buildChecklist(TaskDetailsState state) {
+    return TaskDetailsChecklist(
+      items: state.checklist,
+      taskStatus: state.status!,
+      onToggle: (item) {
+        cubit.updateChecklistItem(itemId: item.id, isChecked: !item.isChecked);
+      },
+    );
+  }
+
+  Widget _buildNotes(TaskModel task) {
+    if (task.notes?.isEmpty ?? true) return const SizedBox.shrink();
+    return TaskDetailsNotesSection(notes: task.notes!);
+  }
+
+  Widget? _buildActions(TaskDetailsState state) {
+    if (state.status == TaskStatus.completed ||
+        state.status == TaskStatus.cancelled) {
+      return null;
+    }
+
+    return Container(
+      padding: EdgeInsets.fromLTRB(rw(20), rh(16), rw(20), rh(32)),
+      decoration: BoxDecoration(color: context.customColors.background),
+      child: TaskActionButton(
+        status: state.status,
+        onStart: _onStart,
+        onPause: _onPause,
+        onResume: _onResume,
+        onComplete: () => _onComplete(state),
+      ),
     );
   }
 }
