@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 
 import '../../../../../core/auth/logic/cubit/auth_cubit.dart';
 import '../../../../../core/shared/data/models/unit_model.dart';
@@ -67,11 +68,13 @@ class HomeScreen extends StatelessWidget {
       );
     }
     if (state is HomeLoaded) {
-      return WorkerTasksListView(
-        tasks: state.tasks,
+      return RefreshIndicator(
+        backgroundColor: context.customColors.background,
+        color: AppColors.primary200,
         onRefresh: () async {
-          await context.read<HomeCubit>().init();
+          await context.read<HomeCubit>().refreshTasks();
         },
+        child: WorkerTasksListView(tasks: state.tasks),
       );
     }
     return const Center(child: Text('No tasks available'));
