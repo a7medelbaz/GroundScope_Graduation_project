@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ground_scope/modules/worker/features/add_report/ui/add_report_screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 import '../../../../../core/themes/app_colors.dart';
@@ -44,6 +45,10 @@ class _WorkerScaffoldState extends State<WorkerScaffold> {
         ),
       ),
       PersistentBottomNavBarItem(
+        icon: Icon(Icons.add, color: activeColor, size: rr(24)),
+        inactiveIcon: Icon(Icons.add, color: inactiveColor, size: rr(24)),
+      ),
+      PersistentBottomNavBarItem(
         icon: Icon(
           Icons.notifications_outlined,
           color: activeColor,
@@ -67,6 +72,7 @@ class _WorkerScaffoldState extends State<WorkerScaffold> {
     _screens = [
       const HomeScreen(),
       const ReportsScreen(),
+      const AddReportScreen(),
       const NotificationsScreen(),
       const ProfileScreen(),
     ];
@@ -75,7 +81,7 @@ class _WorkerScaffoldState extends State<WorkerScaffold> {
       controller: _controller,
       screens: _screens,
       items: _navBarItems(context),
-      navBarStyle: NavBarStyle.style9,
+      navBarStyle: NavBarStyle.style15,
       backgroundColor: context.customColors.background.withValues(alpha: 0.95),
       navBarHeight: rh(60),
       padding: const EdgeInsets.only(top: 2, bottom: 8),

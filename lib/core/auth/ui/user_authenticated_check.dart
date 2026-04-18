@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../di/dependency_injection.dart';
-import '../../../modules/worker/features/home/logic/cubit/home_cubit.dart';
+import 'package:ground_scope/modules/worker/features/add_report/logic/cubit/add_report_cubit.dart';
 
 import '../../../modules/admin/features/home/admin_screen.dart';
 import '../../../modules/supervisor/core/main_navigation/supervisor_scaffold.dart';
 import '../../../modules/worker/core/main_navigation/ui/worker_scaffold.dart';
+import '../../../modules/worker/features/home/logic/cubit/home_cubit.dart';
+import '../../di/dependency_injection.dart';
 import '../../onboarding/ui/on_boarding_screen.dart';
 import '../logic/cubit/auth_cubit.dart';
 
@@ -21,7 +22,10 @@ class UserAuthenticatedCheck extends StatelessWidget {
     if (authState is AuthSuccess) {
       return switch (authState.userModel.role) {
         'unit_manager' => MultiBlocProvider(
-          providers: [BlocProvider(create: (_) => getIt<HomeCubit>()..init())],
+          providers: [
+            BlocProvider(create: (_) => getIt<HomeCubit>()..init()),
+            BlocProvider(create: (_) => getIt<AddReportCubit>()..fetchTasks()),
+          ],
           child: const WorkerScaffold(),
         ),
         'supervisor' => const SupervisorScaffold(),

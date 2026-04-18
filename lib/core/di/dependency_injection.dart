@@ -1,5 +1,21 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
+import 'package:ground_scope/core/shared/data/remote/report_remote_ds.dart';
+import 'package:ground_scope/core/shared/data/repo/report_repo.dart';
+import 'package:ground_scope/core/shared/data/repo/report_repo_impl.dart';
+
+import '../../modules/worker/features/add_report/logic/cubit/add_report_cubit.dart';
+import '../../modules/worker/features/home/logic/cubit/home_cubit.dart';
+import '../../modules/worker/features/task_details/data/remote/task_details_remote_ds.dart';
+import '../../modules/worker/features/task_details/data/repo/task_details_repo.dart';
+import '../../modules/worker/features/task_details/data/repo/task_details_repo_impl.dart';
+import '../../modules/worker/features/task_details/logic/cubit/task_details_cubit.dart';
+import '../auth/data/remote/auth_remote_ds.dart';
+import '../auth/data/repo/auth_repo.dart';
+import '../auth/data/repo/auth_repo_impl.dart';
+import '../auth/logic/cubit/auth_cubit.dart';
+import '../networking/supabase_service.dart';
+import '../service/secure_storage.dart';
 import '../service/user_service.dart';
 import '../shared/data/remote/flights_remote_ds.dart';
 import '../shared/data/remote/task_remote_ds.dart';
@@ -10,21 +26,6 @@ import '../shared/data/repo/task_repo.dart';
 import '../shared/data/repo/task_repo_impl.dart';
 import '../shared/data/repo/unit_repo.dart';
 import '../shared/data/repo/unit_repo_impl.dart';
-import '../../modules/worker/features/task_details/data/remote/task_details_remote_ds.dart';
-import '../../modules/worker/features/task_details/data/repo/task_details_repo.dart';
-import '../../modules/worker/features/task_details/data/repo/task_details_repo_impl.dart';
-import '../../modules/worker/features/task_details/logic/cubit/task_details_cubit.dart';
-
-import '../../modules/worker/features/home/data/remote/home_remote_ds.dart';
-import '../../modules/worker/features/home/data/repo/home_repo.dart';
-import '../../modules/worker/features/home/data/repo/home_repo_impl.dart';
-import '../../modules/worker/features/home/logic/cubit/home_cubit.dart';
-import '../auth/data/remote/auth_remote_ds.dart';
-import '../auth/data/repo/auth_repo.dart';
-import '../auth/data/repo/auth_repo_impl.dart';
-import '../auth/logic/cubit/auth_cubit.dart';
-import '../networking/supabase_service.dart';
-import '../service/secure_storage.dart';
 
 final getIt = GetIt.instance;
 Future<void> setUpDependencies() async {
@@ -57,6 +58,13 @@ Future<void> setUpDependencies() async {
   getIt.registerLazySingleton<TaskRepo>(
     () => TaskRepoImpl(taskRemoteDs: getIt<TaskRemoteDs>()),
   );
+  // #Reports DI
+  getIt.registerLazySingleton<ReportRemoteDs>(
+    () => ReportRemoteDs(supabaseService: getIt<SupabaseService>()),
+  );
+  getIt.registerLazySingleton<ReportRepo>(
+    () => ReportRepoImpl(reportRemoteDs: getIt<ReportRemoteDs>()),
+  );
 
   /// Auth DI
   getIt.registerLazySingleton<AuthRemoteDs>(
@@ -70,21 +78,11 @@ Future<void> setUpDependencies() async {
   );
   getIt.registerFactory<AuthCubit>(() => AuthCubit(getIt<AuthRepo>()));
 
-  // Home DI
-  getIt.registerLazySingleton<HomeRemoteDs>(
-    () => HomeRemoteDs(supabaseService: getIt<SupabaseService>()),
-  );
-  getIt.registerLazySingleton<HomeRepo>(
-    () => HomeRepoImpl(
-      remoteDs: getIt<HomeRemoteDs>(),
-      secureStorage: getIt<SecureStorage>(),
-    ),
-  );
   getIt.registerFactory<HomeCubit>(
     () => HomeCubit(
-      homeRepo: getIt<HomeRepo>(),
       unitRepo: getIt<UnitRepo>(),
       userService: getIt<UserService>(),
+      taskRepo: getIt<TaskRepo>(),
     ),
   );
   // Flight DI
@@ -108,6 +106,16 @@ Future<void> setUpDependencies() async {
       taskDetailsRepo: getIt<TaskDetailsRepo>(),
       taskRepo: getIt<TaskRepo>(),
       userService: getIt<UserService>(),
+    ),
+  );
+
+  // AddReport DI
+  getIt.registerFactory<AddReportCubit>(
+    () => AddReportCubit(
+      reportRepo: getIt<ReportRepo>(),
+
+      userService: getIt<UserService>(),
+      taskRepo: getIt<TaskRepo>(),
     ),
   );
 }

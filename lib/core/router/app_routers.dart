@@ -29,7 +29,7 @@ class AppRouter {
         final task = arguments?['preSelectedTask'] as TaskModel?;
         return _buildRoute(
           BlocProvider(
-            create: (context) => getIt<AddReportCubit>(),
+            create: (context) => getIt<AddReportCubit>()..fetchTasks(),
             child: AddReportScreen(preSelectedTask: task),
           ),
           settings,
