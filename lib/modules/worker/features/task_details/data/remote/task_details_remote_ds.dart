@@ -54,7 +54,8 @@ class TaskDetailsRemoteDs {
       await supabaseService.client
           .from('task_pauses')
           .update({'resumed_at': DateTime.now().toIso8601String()})
-          .eq('id', pauseId);
+          .eq('id', pauseId)
+          .select();
       await supabaseService.client
           .from('tasks')
           .update({'status': 'in_progress'})
