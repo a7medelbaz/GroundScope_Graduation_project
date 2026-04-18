@@ -72,7 +72,7 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: context.customColors.background,
         color: AppColors.primary200,
         onRefresh: () async {
-          await context.read<HomeCubit>().refreshTasks();
+          await context.read<HomeCubit>().init();
         },
         child: WorkerTasksListView(tasks: state.tasks),
       );
