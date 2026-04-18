@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../../../core/shared/data/models/task_model.dart';
 import '../../../../../../core/themes/app_colors.dart';
 import '../../../../../../core/utils/extensions/context_ext.dart';
@@ -38,6 +39,18 @@ class TaskStatusFilterStrip extends StatelessWidget {
           ),
           horizontalSpacing(8),
           TaskStatusChip(
+            label: 'Assigned',
+            count: _count(TaskStatus.assigned),
+            color: AppColors.blue200,
+            isSelected: selectedStatus == TaskStatus.assigned,
+            onTap: () => onStatusChanged(
+              selectedStatus == TaskStatus.assigned
+                  ? null
+                  : TaskStatus.assigned,
+            ),
+          ),
+          horizontalSpacing(8),
+          TaskStatusChip(
             label: 'In Progress',
             count: _count(TaskStatus.inProgress),
             color: AppColors.primary200,
@@ -50,24 +63,12 @@ class TaskStatusFilterStrip extends StatelessWidget {
           ),
           horizontalSpacing(8),
           TaskStatusChip(
-            label: 'Pending',
-            count: _count(TaskStatus.pending),
+            label: 'Pused',
+            count: _count(TaskStatus.paused),
             color: AppColors.amber200,
-            isSelected: selectedStatus == TaskStatus.pending,
+            isSelected: selectedStatus == TaskStatus.paused,
             onTap: () => onStatusChanged(
-              selectedStatus == TaskStatus.pending ? null : TaskStatus.pending,
-            ),
-          ),
-          horizontalSpacing(8),
-          TaskStatusChip(
-            label: 'Assigned',
-            count: _count(TaskStatus.assigned),
-            color: AppColors.blue200,
-            isSelected: selectedStatus == TaskStatus.assigned,
-            onTap: () => onStatusChanged(
-              selectedStatus == TaskStatus.assigned
-                  ? null
-                  : TaskStatus.assigned,
+              selectedStatus == TaskStatus.paused ? null : TaskStatus.paused,
             ),
           ),
           horizontalSpacing(8),
