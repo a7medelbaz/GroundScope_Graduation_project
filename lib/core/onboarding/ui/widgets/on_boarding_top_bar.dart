@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+
 import '../../../../core/utils/functions/app_setting_method.dart';
 import '../../../utils/extensions/context_ext.dart';
 import '../../../widgets/custom_icon_button.dart';

@@ -1,7 +1,7 @@
-import 'package:ground_scope/core/shared/data/models/task_check_list_model.dart';
-import 'package:ground_scope/core/shared/data/models/task_pause_model.dart';
-import 'package:ground_scope/core/shared/data/remote/task_remote_ds.dart';
-import 'package:ground_scope/core/shared/data/repo/task_repo.dart';
+import '../models/task_check_list_model.dart';
+import '../models/task_pause_model.dart';
+import '../remote/task_remote_ds.dart';
+import 'task_repo.dart';
 
 class TaskRepoImpl implements TaskRepo {
   final TaskRemoteDs taskRemoteDs;

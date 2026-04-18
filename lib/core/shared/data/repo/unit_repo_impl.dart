@@ -1,8 +1,7 @@
-
-import 'package:ground_scope/core/error/models/app_error.dart';
-import 'package:ground_scope/core/error/types/error_handler.dart';
-import 'package:ground_scope/core/shared/data/models/unit_model.dart';
-import 'package:ground_scope/core/shared/data/remote/unit_remote_ds.dart';
+import '../../../error/models/app_error.dart';
+import '../../../error/types/error_handler.dart';
+import '../models/unit_model.dart';
+import '../remote/unit_remote_ds.dart';
 
 import 'unit_repo.dart';
 

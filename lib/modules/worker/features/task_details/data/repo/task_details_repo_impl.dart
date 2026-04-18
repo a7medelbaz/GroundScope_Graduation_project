@@ -1,7 +1,7 @@
-import 'package:ground_scope/core/error/models/app_error.dart';
-import 'package:ground_scope/core/shared/data/models/task_model.dart';
-import 'package:ground_scope/modules/worker/features/task_details/data/remote/task_details_remote_ds.dart';
-import 'package:ground_scope/modules/worker/features/task_details/data/repo/task_details_repo.dart';
+import '../../../../../../core/error/models/app_error.dart';
+import '../../../../../../core/shared/data/models/task_model.dart';
+import '../remote/task_details_remote_ds.dart';
+import 'task_details_repo.dart';
 
 class TaskDetailsRepoImpl implements TaskDetailsRepo {
   final TaskDetailsRemoteDs taskDetailsRemoteDs;

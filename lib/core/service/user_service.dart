@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:ground_scope/core/auth/data/models/user_date.dart';
-import 'package:ground_scope/core/service/secure_storage.dart';
-import 'package:ground_scope/core/utils/app_constants.dart';
+import '../auth/data/models/user_date.dart';
+import 'secure_storage.dart';
+import '../utils/app_constants.dart';
 
 class UserService {
   const UserService({required this.secureStorage});

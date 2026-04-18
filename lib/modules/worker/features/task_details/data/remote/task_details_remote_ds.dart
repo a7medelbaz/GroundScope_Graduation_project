@@ -1,6 +1,6 @@
-import 'package:ground_scope/core/error/types/error_handler.dart';
-import 'package:ground_scope/core/networking/supabase_service.dart';
-import 'package:ground_scope/core/shared/data/models/task_model.dart';
+import '../../../../../../core/error/types/error_handler.dart';
+import '../../../../../../core/networking/supabase_service.dart';
+import '../../../../../../core/shared/data/models/task_model.dart';
 
 class TaskDetailsRemoteDs {
   const TaskDetailsRemoteDs({required this.supabaseService});

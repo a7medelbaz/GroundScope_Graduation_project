@@ -1,6 +1,6 @@
-import 'package:ground_scope/core/error/types/error_handler.dart';
-import 'package:ground_scope/core/networking/supabase_service.dart';
-import 'package:ground_scope/core/shared/data/models/flight_model.dart';
+import '../../../error/types/error_handler.dart';
+import '../../../networking/supabase_service.dart';
+import '../models/flight_model.dart';
 
 class FlightsRemoteDs {
   final SupabaseService supabaseService;

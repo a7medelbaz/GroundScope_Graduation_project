@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../models/app_error.dart';
 import '../models/error_details.dart';
 import '../types/error_type.dart';

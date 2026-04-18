@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../../../core/auth/logic/cubit/auth_cubit.dart';
 import '../../../../../core/utils/functions/app_setting_method.dart';
 import '../../../../../core/utils/spacing.dart';

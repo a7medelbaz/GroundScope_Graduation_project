@@ -1,12 +1,12 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ground_scope/core/error/models/app_error.dart';
-import 'package:ground_scope/core/error/types/error_handler.dart';
-import 'package:ground_scope/core/service/user_service.dart';
-import 'package:ground_scope/core/shared/data/models/task_check_list_model.dart';
-import 'package:ground_scope/core/shared/data/models/task_model.dart';
-import 'package:ground_scope/core/shared/data/models/task_pause_model.dart';
-import 'package:ground_scope/core/shared/data/repo/task_repo.dart';
+import '../../../../../../core/error/models/app_error.dart';
+import '../../../../../../core/error/types/error_handler.dart';
+import '../../../../../../core/service/user_service.dart';
+import '../../../../../../core/shared/data/models/task_check_list_model.dart';
+import '../../../../../../core/shared/data/models/task_model.dart';
+import '../../../../../../core/shared/data/models/task_pause_model.dart';
+import '../../../../../../core/shared/data/repo/task_repo.dart';
 import '../../data/repo/task_details_repo.dart';
 
 part 'task_details_state.dart';

@@ -30,7 +30,7 @@ class AppConfig {
   static const String buildNumber = '1';
 
   // Supabase Config
-static String get supaBaseUrl => dotenv.env['SUPABASE_URL'] ?? '';
+  static String get supaBaseUrl => dotenv.env['SUPABASE_URL'] ?? '';
   static String get supaBaseKey => dotenv.env['SUPABASE_ANON_KEY'] ?? '';
   // Developer Info
 

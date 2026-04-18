@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../../../../core/themes/app_colors.dart';
 import '../../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../../core/utils/extensions/context_ext.dart';
@@ -137,18 +138,12 @@ class _StackedProgressBar extends StatelessWidget {
             final totalWidth = constraints.maxWidth;
             return Row(
               children: [
-                Container(
-                  width: totalWidth * done,
-                  color: AppColors.green200,
-                ),
+                Container(width: totalWidth * done, color: AppColors.green200),
                 Container(
                   width: totalWidth * inProgress,
                   color: AppColors.primary200,
                 ),
-                Container(
-                  width: totalWidth * delay,
-                  color: AppColors.amber200,
-                ),
+                Container(width: totalWidth * delay, color: AppColors.amber200),
               ],
             );
           },

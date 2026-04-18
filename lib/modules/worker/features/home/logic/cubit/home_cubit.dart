@@ -1,10 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ground_scope/core/error/models/app_error.dart';
-import 'package:ground_scope/core/service/user_service.dart';
-import 'package:ground_scope/core/shared/data/models/task_model.dart';
-import 'package:ground_scope/core/shared/data/models/unit_model.dart';
-import 'package:ground_scope/core/shared/data/repo/unit_repo.dart';
+import '../../../../../../core/error/models/app_error.dart';
+import '../../../../../../core/service/user_service.dart';
+import '../../../../../../core/shared/data/models/task_model.dart';
+import '../../../../../../core/shared/data/models/unit_model.dart';
+import '../../../../../../core/shared/data/repo/unit_repo.dart';
 
 import '../../data/repo/home_repo.dart';
 

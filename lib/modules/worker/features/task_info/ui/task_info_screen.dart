@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/modules/worker/features/task_info/ui/widgets/task_info_header.dart';
+import 'widgets/task_info_header.dart';
 
 import '../../../../../core/shared/data/models/task_model.dart';
 import '../../../../../core/shared/data/models/task_pause_model.dart';
