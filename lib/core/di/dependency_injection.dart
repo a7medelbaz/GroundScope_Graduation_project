@@ -1,5 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
+import 'package:ground_scope/core/service/user_service.dart';
 import 'package:ground_scope/core/shared/data/remote/flights_remote_ds.dart';
 import 'package:ground_scope/core/shared/data/remote/task_remote_ds.dart';
 import 'package:ground_scope/core/shared/data/remote/unit_remote_ds.dart';
@@ -36,6 +37,10 @@ Future<void> setUpDependencies() async {
     );
   }
   getIt.registerLazySingleton<SupabaseService>(() => SupabaseService());
+
+  getIt.registerLazySingleton<UserService>(
+    () => UserService(secureStorage: getIt<SecureStorage>()),
+  );
 
   // Shared DI
   // #Unit DI
@@ -76,7 +81,11 @@ Future<void> setUpDependencies() async {
     ),
   );
   getIt.registerFactory<HomeCubit>(
-    () => HomeCubit(homeRepo: getIt<HomeRepo>(), unitRepo: getIt<UnitRepo>()),
+    () => HomeCubit(
+      homeRepo: getIt<HomeRepo>(),
+      unitRepo: getIt<UnitRepo>(),
+      userService: getIt<UserService>(),
+    ),
   );
   // Flight DI
   getIt.registerLazySingleton<FlightsRemoteDs>(
@@ -98,6 +107,7 @@ Future<void> setUpDependencies() async {
     () => TaskDetailsCubit(
       taskDetailsRepo: getIt<TaskDetailsRepo>(),
       taskRepo: getIt<TaskRepo>(),
+      userService: getIt<UserService>(),
     ),
   );
 }
