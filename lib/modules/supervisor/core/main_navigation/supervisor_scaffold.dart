@@ -48,7 +48,11 @@ class _SupervisorScaffoldState extends State<SupervisorScaffold> {
       ),
       PersistentBottomNavBarItem(
         icon: Icon(Icons.assignment_outlined, size: rr(28), color: activeColor),
-        inactiveIcon: Icon(Icons.assignment, size: rr(28), color: inactiveColor),
+        inactiveIcon: Icon(
+          Icons.assignment,
+          size: rr(28),
+          color: inactiveColor,
+        ),
       ),
       PersistentBottomNavBarItem(
         icon: Icon(Icons.person_outline, size: rr(28), color: activeColor),

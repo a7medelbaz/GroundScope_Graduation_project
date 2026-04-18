@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/shared/data/models/task_model.dart';
-import 'package:ground_scope/core/themes/app_colors.dart';
-import 'package:ground_scope/core/themes/app_text_styles.dart';
-import 'package:ground_scope/core/utils/spacing.dart';
-import 'package:ground_scope/modules/worker/features/task_info/ui/widgets/quick_pill.dart';
+import '../../../../../../core/shared/data/models/task_model.dart';
+import '../../../../../../core/themes/app_colors.dart';
+import '../../../../../../core/themes/app_text_styles.dart';
+import '../../../../../../core/utils/spacing.dart';
+import 'quick_pill.dart';
 
 class TaskInfoHeader extends StatelessWidget {
   const TaskInfoHeader({super.key, required this.task});

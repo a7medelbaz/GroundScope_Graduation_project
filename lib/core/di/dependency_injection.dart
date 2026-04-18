@@ -1,18 +1,19 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
-import 'package:ground_scope/core/shared/data/remote/flights_remote_ds.dart';
-import 'package:ground_scope/core/shared/data/remote/task_remote_ds.dart';
-import 'package:ground_scope/core/shared/data/remote/unit_remote_ds.dart';
-import 'package:ground_scope/core/shared/data/repo/flight_repo.dart';
-import 'package:ground_scope/core/shared/data/repo/flight_repo_impl.dart';
-import 'package:ground_scope/core/shared/data/repo/task_repo.dart';
-import 'package:ground_scope/core/shared/data/repo/task_repo_impl.dart';
-import 'package:ground_scope/core/shared/data/repo/unit_repo.dart';
-import 'package:ground_scope/core/shared/data/repo/unit_repo_impl.dart';
-import 'package:ground_scope/modules/worker/features/task_details/data/remote/task_details_remote_ds.dart';
-import 'package:ground_scope/modules/worker/features/task_details/data/repo/task_details_repo.dart';
-import 'package:ground_scope/modules/worker/features/task_details/data/repo/task_details_repo_impl.dart';
-import 'package:ground_scope/modules/worker/features/task_details/logic/cubit/task_details_cubit.dart';
+import '../service/user_service.dart';
+import '../shared/data/remote/flights_remote_ds.dart';
+import '../shared/data/remote/task_remote_ds.dart';
+import '../shared/data/remote/unit_remote_ds.dart';
+import '../shared/data/repo/flight_repo.dart';
+import '../shared/data/repo/flight_repo_impl.dart';
+import '../shared/data/repo/task_repo.dart';
+import '../shared/data/repo/task_repo_impl.dart';
+import '../shared/data/repo/unit_repo.dart';
+import '../shared/data/repo/unit_repo_impl.dart';
+import '../../modules/worker/features/task_details/data/remote/task_details_remote_ds.dart';
+import '../../modules/worker/features/task_details/data/repo/task_details_repo.dart';
+import '../../modules/worker/features/task_details/data/repo/task_details_repo_impl.dart';
+import '../../modules/worker/features/task_details/logic/cubit/task_details_cubit.dart';
 
 import '../../modules/worker/features/home/data/remote/home_remote_ds.dart';
 import '../../modules/worker/features/home/data/repo/home_repo.dart';
@@ -36,6 +37,10 @@ Future<void> setUpDependencies() async {
     );
   }
   getIt.registerLazySingleton<SupabaseService>(() => SupabaseService());
+
+  getIt.registerLazySingleton<UserService>(
+    () => UserService(secureStorage: getIt<SecureStorage>()),
+  );
 
   // Shared DI
   // #Unit DI
@@ -76,7 +81,11 @@ Future<void> setUpDependencies() async {
     ),
   );
   getIt.registerFactory<HomeCubit>(
-    () => HomeCubit(homeRepo: getIt<HomeRepo>(), unitRepo: getIt<UnitRepo>()),
+    () => HomeCubit(
+      homeRepo: getIt<HomeRepo>(),
+      unitRepo: getIt<UnitRepo>(),
+      userService: getIt<UserService>(),
+    ),
   );
   // Flight DI
   getIt.registerLazySingleton<FlightsRemoteDs>(
@@ -98,6 +107,7 @@ Future<void> setUpDependencies() async {
     () => TaskDetailsCubit(
       taskDetailsRepo: getIt<TaskDetailsRepo>(),
       taskRepo: getIt<TaskRepo>(),
+      userService: getIt<UserService>(),
     ),
   );
 }

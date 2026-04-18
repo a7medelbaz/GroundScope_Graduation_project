@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ground_scope/core/router/routes.dart';
-import 'package:ground_scope/core/shared/data/models/task_model.dart';
-import 'package:ground_scope/core/utils/extensions/context_ext.dart';
-import 'package:ground_scope/core/utils/spacing.dart';
-import 'package:ground_scope/core/widgets/ui/dialogs/app_dialogs.dart';
-import 'package:ground_scope/modules/worker/features/task_details/logic/cubit/task_details_cubit.dart';
+import '../../../../../core/router/routes.dart';
+import '../../../../../core/shared/data/models/task_model.dart';
+import '../../../../../core/utils/extensions/context_ext.dart';
+import '../../../../../core/utils/spacing.dart';
+import '../../../../../core/widgets/ui/dialogs/app_dialogs.dart';
+import '../logic/cubit/task_details_cubit.dart';
 
 import 'widgets/pause_reason_bottom_sheet.dart';
 import 'widgets/task_action_button.dart';
@@ -62,7 +62,9 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
     );
   }
 
-  Future<void> _onResume() => _onStart();
+  Future<void> _onResume() async {
+    await cubit.resumeTask(widget.task.id);
+  }
 
   Future<void> _onPause() async {
     final reason = await PauseReasonBottomSheet.show(context);
@@ -80,7 +82,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
       _popWithResult();
     }
 
-    if (!allChecked) {
+    if (!allChecked && state.status == TaskStatus.inProgress) {
       AppDialogs.showConfirm(
         context,
         title: 'Checklist Incomplete',
@@ -132,11 +134,11 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                       verticalSpacing(24),
                       TaskDetailsTaskMetaSection(task: task),
                       verticalSpacing(24),
-                      _buildPauseHistory(state),
-                      verticalSpacing(24),
                       _buildChecklist(state),
                       verticalSpacing(24),
                       _buildNotes(task),
+                      verticalSpacing(24),
+                      _buildPauseHistory(state),
                     ],
                   ),
                 ),
@@ -153,7 +155,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
     return TaskDetailsQuickActionsRow(
       onInfoTap: () => context.pushNamed(
         Routes.taskDetailsInfoScreen,
-        arguments: {'task': task},
+        arguments: {'task': task, 'pauses': state.pauses},
       ),
       onReportTap: () => context.pushNamed(Routes.addReportScreen),
       taskStatus: state.status!,

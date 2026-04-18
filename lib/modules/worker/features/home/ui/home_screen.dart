@@ -5,6 +5,7 @@ import '../../../../../core/auth/logic/cubit/auth_cubit.dart';
 import '../../../../../core/shared/data/models/unit_model.dart';
 import '../../../../../core/themes/app_colors.dart';
 import '../../../../../core/themes/app_text_styles.dart';
+import '../../../../../core/utils/extensions/context_ext.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../logic/cubit/home_cubit.dart';
 import 'widgets/home_app_bar.dart';
@@ -67,11 +68,13 @@ class HomeScreen extends StatelessWidget {
       );
     }
     if (state is HomeLoaded) {
-      return WorkerTasksListView(
-        tasks: state.tasks,
+      return RefreshIndicator(
+        backgroundColor: context.customColors.background,
+        color: AppColors.primary200,
         onRefresh: () async {
-          await context.read<HomeCubit>().init();
+          await context.read<HomeCubit>().refreshTasks();
         },
+        child: WorkerTasksListView(tasks: state.tasks),
       );
     }
     return const Center(child: Text('No tasks available'));

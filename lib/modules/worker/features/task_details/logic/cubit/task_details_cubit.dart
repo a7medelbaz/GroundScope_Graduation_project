@@ -1,52 +1,38 @@
-import 'dart:convert';
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ground_scope/core/auth/data/models/user_date.dart';
-import 'package:ground_scope/core/di/dependency_injection.dart';
-import 'package:ground_scope/core/error/models/app_error.dart';
-import 'package:ground_scope/core/error/types/error_handler.dart';
-import 'package:ground_scope/core/service/secure_storage.dart';
-import 'package:ground_scope/core/shared/data/models/task_check_list_model.dart';
-import 'package:ground_scope/core/shared/data/models/task_model.dart';
-import 'package:ground_scope/core/shared/data/models/task_pause_model.dart';
-import 'package:ground_scope/core/shared/data/repo/task_repo.dart';
-import 'package:ground_scope/core/utils/app_constants.dart';
-import 'package:ground_scope/modules/worker/features/task_details/data/repo/task_details_repo.dart';
+import '../../../../../../core/error/models/app_error.dart';
+import '../../../../../../core/error/types/error_handler.dart';
+import '../../../../../../core/service/user_service.dart';
+import '../../../../../../core/shared/data/models/task_check_list_model.dart';
+import '../../../../../../core/shared/data/models/task_model.dart';
+import '../../../../../../core/shared/data/models/task_pause_model.dart';
+import '../../../../../../core/shared/data/repo/task_repo.dart';
+import '../../data/repo/task_details_repo.dart';
 
 part 'task_details_state.dart';
 
 class TaskDetailsCubit extends Cubit<TaskDetailsState> {
-  TaskDetailsCubit({required this.taskDetailsRepo, required this.taskRepo})
-    : super(const TaskDetailsState());
+  TaskDetailsCubit({
+    required this.taskDetailsRepo,
+    required this.taskRepo,
+    required this.userService,
+  }) : super(const TaskDetailsState());
 
   final TaskDetailsRepo taskDetailsRepo;
   final TaskRepo taskRepo;
+  final UserService userService;
 
-  Future<UserModel?> _getUser() async {
-    final jsonString = await getIt<SecureStorage>().read(
-      key: AppConstants.userDataKey,
-    );
-
-    if (jsonString == null) return null;
-
-    try {
-      return UserModel.fromJson(jsonDecode(jsonString));
-    } catch (_) {
-      return null;
-    }
-  }
-Future<void> initTask({required TaskModel task}) async {
+  Future<void> initTask({required TaskModel task}) async {
     emit(state.copyWith(isLoading: true, error: null));
-
     try {
-      final checklist = await taskRepo.getTaskCheckList(taskId: task.id);
-      final pauses = await taskRepo.getTaskPauseHistory(taskId: task.id);
-
+      final results = await Future.wait([
+        taskRepo.getTaskCheckList(taskId: task.id),
+        taskRepo.getTaskPauseHistory(taskId: task.id),
+      ]);
       emit(
         state.copyWith(
-          checklist: checklist,
-          pauses: pauses,
+          checklist: results[0] as List<TaskCheckListModel>,
+          pauses: results[1] as List<TaskPauseModel>,
           status: task.status,
           isLoading: false,
         ),
@@ -60,18 +46,21 @@ Future<void> initTask({required TaskModel task}) async {
       );
     }
   }
+
   Future<void> updateChecklistItem({
     required String itemId,
     required bool isChecked,
   }) async {
     final old = state.checklist;
-    final updated = old.map((e) {
-      if (e.id == itemId) return e.copyWith(isChecked: isChecked);
-      return e;
-    }).toList();
-    emit(state.copyWith(checklist: updated));
+    emit(
+      state.copyWith(
+        checklist: old
+            .map((e) => e.id == itemId ? e.copyWith(isChecked: isChecked) : e)
+            .toList(),
+      ),
+    );
     try {
-      final user = await _getUser();
+      final user = await userService.getUser();
       if (user == null) throw AppError.unauthorized('Login required');
       await taskDetailsRepo.updateChecklistItem(
         itemId: itemId,
@@ -79,8 +68,7 @@ Future<void> initTask({required TaskModel task}) async {
         userId: user.id,
       );
     } catch (e) {
-      emit(state.copyWith(checklist: old));
-      emit(state.copyWith(error: ErrorHandler.handle(e)));
+      emit(state.copyWith(checklist: old, error: ErrorHandler.handle(e)));
     }
   }
 
@@ -92,38 +80,81 @@ Future<void> initTask({required TaskModel task}) async {
     required String taskId,
     required String reason,
   }) async {
-    final user = await _getUser();
+    final user = await userService.getUser();
     if (user == null) return;
 
     final oldStatus = state.status;
 
-    final pause = TaskPauseModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      taskId: taskId,
-      pausedAt: DateTime.now(),
-      reason: reason,
-    );
-
     emit(
       state.copyWith(
         status: TaskStatus.paused,
-        pauses: [...state.pauses, pause],
+        pauses: [
+          ...state.pauses,
+          TaskPauseModel(
+            id: '', // temp — replaced after fetch
+            taskId: taskId,
+            pausedAt: DateTime.now(),
+            reason: reason,
+          ),
+        ],
       ),
     );
+
     try {
       await taskDetailsRepo.pauseTask(
         taskId: taskId,
         reason: reason,
         userId: user.id,
       );
+      final freshPauses = await taskRepo.getTaskPauseHistory(taskId: taskId);
+      emit(state.copyWith(pauses: freshPauses));
     } catch (e) {
-      emit(state.copyWith(status: oldStatus));
-      emit(state.copyWith(error: ErrorHandler.handle(e)));
+      emit(
+        state.copyWith(
+          status: oldStatus,
+          pauses: state.pauses.where((p) => p.id.isNotEmpty).toList(),
+          error: ErrorHandler.handle(e),
+        ),
+      );
     }
   }
 
   Future<void> resumeTask(String taskId) async {
-    await updateTaskStatus(taskId: taskId, newStatus: TaskStatus.inProgress);
+    final activePause = state.pauses
+        .where((p) => p.resumedAt == null && p.id.isNotEmpty)
+        .lastOrNull;
+
+    if (activePause == null) {
+      await updateTaskStatus(taskId: taskId, newStatus: TaskStatus.inProgress);
+      return;
+    }
+
+    final oldStatus = state.status;
+    final now = DateTime.now();
+
+    emit(
+      state.copyWith(
+        status: TaskStatus.inProgress,
+        pauses: state.pauses
+            .map((p) => p.id == activePause.id ? p.copyWith(resumedAt: now) : p)
+            .toList(),
+      ),
+    );
+
+    try {
+      await taskDetailsRepo.resumePause(
+        pauseId: activePause.id,
+        taskId: taskId,
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: oldStatus,
+          pauses: state.pauses,
+          error: ErrorHandler.handle(e),
+        ),
+      );
+    }
   }
 
   Future<void> completeTask(String taskId) async {
@@ -135,17 +166,14 @@ Future<void> initTask({required TaskModel task}) async {
     required TaskStatus newStatus,
   }) async {
     final oldStatus = state.status;
-
     emit(state.copyWith(status: newStatus));
-
     try {
       await taskDetailsRepo.updateTaskStatus(
         taskId: taskId,
         newStatus: newStatus,
       );
     } catch (e) {
-      emit(state.copyWith(status: oldStatus));
-      emit(state.copyWith(error: ErrorHandler.handle(e)));
+      emit(state.copyWith(status: oldStatus, error: ErrorHandler.handle(e)));
     }
   }
 }

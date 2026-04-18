@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../data/models/user_date.dart';
+
 import '../../../error/models/app_error.dart';
+import '../../data/models/user_date.dart';
 import '../../data/repo/auth_repo.dart';
 
 part 'auth_state.dart';

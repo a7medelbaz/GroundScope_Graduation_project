@@ -1,4 +1,5 @@
 part of 'task_details_cubit.dart';
+
 class TaskDetailsState extends Equatable {
   final List<TaskCheckListModel> checklist;
   final List<TaskPauseModel> pauses;

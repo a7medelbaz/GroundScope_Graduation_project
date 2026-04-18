@@ -1,4 +1,4 @@
-import 'package:ground_scope/core/shared/data/models/flight_model.dart';
+import 'flight_model.dart';
 
 enum TaskStatus {
   pending('pending'),

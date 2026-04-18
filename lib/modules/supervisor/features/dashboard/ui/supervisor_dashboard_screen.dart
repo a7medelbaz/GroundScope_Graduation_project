@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../../../core/auth/data/models/user_date.dart';
 import '../../../../../core/auth/logic/cubit/auth_cubit.dart';
 import '../../../../../core/themes/app_colors.dart';

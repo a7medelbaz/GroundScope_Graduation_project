@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/shared/data/models/task_check_list_model.dart';
+import '../../../../../../core/shared/data/models/task_check_list_model.dart';
 
 import '../../../../../../core/themes/app_colors.dart';
 import '../../../../../../core/themes/app_text_styles.dart';

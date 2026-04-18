@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ground_scope/core/di/dependency_injection.dart';
-import 'package:ground_scope/modules/worker/features/home/logic/cubit/home_cubit.dart';
+import '../../di/dependency_injection.dart';
+import '../../../modules/worker/features/home/logic/cubit/home_cubit.dart';
 
 import '../../../modules/admin/features/home/admin_screen.dart';
 import '../../../modules/supervisor/core/main_navigation/supervisor_scaffold.dart';

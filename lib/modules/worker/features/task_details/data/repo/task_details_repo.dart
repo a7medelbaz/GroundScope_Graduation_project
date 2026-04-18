@@ -1,4 +1,4 @@
-import 'package:ground_scope/core/shared/data/models/task_model.dart';
+import '../../../../../../core/shared/data/models/task_model.dart';
 
 abstract class TaskDetailsRepo {
   Future<void> updateChecklistItem({

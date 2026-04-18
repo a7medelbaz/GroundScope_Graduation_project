@@ -1,4 +1,4 @@
-import 'package:ground_scope/core/shared/data/models/stand_model.dart';
+import 'stand_model.dart';
 
 enum FlightStatus {
   scheduled,

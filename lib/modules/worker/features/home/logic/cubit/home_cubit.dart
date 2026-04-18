@@ -1,44 +1,51 @@
-import 'dart:convert';
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ground_scope/core/auth/data/models/user_date.dart';
-import 'package:ground_scope/core/di/dependency_injection.dart';
-import 'package:ground_scope/core/error/models/app_error.dart';
-import 'package:ground_scope/core/service/secure_storage.dart';
-import 'package:ground_scope/core/shared/data/models/task_model.dart';
-import 'package:ground_scope/core/shared/data/models/unit_model.dart';
-import 'package:ground_scope/core/shared/data/repo/unit_repo.dart';
-import 'package:ground_scope/core/utils/app_constants.dart';
+import '../../../../../../core/error/models/app_error.dart';
+import '../../../../../../core/service/user_service.dart';
+import '../../../../../../core/shared/data/models/task_model.dart';
+import '../../../../../../core/shared/data/models/unit_model.dart';
+import '../../../../../../core/shared/data/repo/unit_repo.dart';
 
 import '../../data/repo/home_repo.dart';
 
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  HomeCubit({required this.homeRepo, required this.unitRepo})
-    : super(HomeInitial());
+  HomeCubit({
+    required this.homeRepo,
+    required this.unitRepo,
+    required this.userService,
+  }) : super(HomeInitial());
 
   final HomeRepo homeRepo;
   final UnitRepo unitRepo;
-
-  Future<UserModel?> _getUser() async {
-    final jsonString = await getIt<SecureStorage>().read(
-      key: AppConstants.userDataKey,
-    );
-
-    if (jsonString == null) {
-      print("❌ ERROR: No data found in Secure Storage. User is not logged in.");
-      return null;
-    }
-
+  final UserService userService;
+  Future<void> init() async {
+    emit(HomeLoading());
     try {
-      final Map<String, dynamic> map = jsonDecode(jsonString);
-      return UserModel.fromJson(map);
+      final user = await userService.getUser();
+
+      if (user == null || user.unitId == null) {
+        emit(HomeFailure(error: AppError.unauthorized('No unit assigned.')));
+        return;
+      }
+
+      final results = await Future.wait([
+        homeRepo.fetchWorkerTasks(unitId: user.unitId!),
+        unitRepo.getUnitData(unitId: user.unitId!),
+      ]);
+
+      emit(
+        HomeLoaded(
+          tasks: results[0] as List<TaskModel>,
+          unit: results[1] as UnitModel,
+        ),
+      );
+    } on AppError catch (e) {
+      emit(HomeFailure(error: e));
     } catch (e) {
-      print("❌ MODEL PARSING FAILED: $e");
+      emit(HomeFailure(error: e is AppError ? e : AppError.unknown()));
     }
-    return null;
   }
 
   Future<void> fetchUnitData() async {
@@ -48,7 +55,7 @@ class HomeCubit extends Cubit<HomeState> {
     if (state is! HomeLoaded) emit(HomeLoading());
 
     try {
-      final user = await _getUser();
+      final user = await userService.getUser();
 
       if (user == null) {
         emit(HomeFailure(error: AppError.unauthorized('Please log in again.')));
@@ -66,9 +73,8 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> fetchTasks() async {
     final currentUnit = state is HomeLoaded ? (state as HomeLoaded).unit : null;
-
     try {
-      final user = await _getUser();
+      final user = await userService.getUser();
       if (user == null) {
         emit(HomeFailure(error: AppError.unauthorized('Please log in again.')));
         return;
@@ -87,31 +93,24 @@ class HomeCubit extends Cubit<HomeState> {
     } on AppError catch (e) {
       emit(HomeFailure(error: e));
     } catch (e) {
-      emit(HomeFailure(error: AppError.unknown()));
+      emit(HomeFailure(error: e is AppError ? e : AppError.unknown()));
     }
   }
 
-  Future<void> init() async {
-    emit(HomeLoading());
+  Future<void> refreshTasks() async {
+    final current = state;
+    if (current is! HomeLoaded) return;
+
     try {
-      final user = await _getUser();
-      if (user == null || user.unitId == null) {
-        emit(
-          HomeFailure(
-            error: AppError.unauthorized('No unit assigned to user.'),
-          ),
-        );
-        return;
-      }
-      final results = await Future.wait([
-        homeRepo.fetchWorkerTasks(unitId: user.unitId!),
-        unitRepo.getUnitData(unitId: user.unitId!),
-      ]);
-      final tasks = results[0] as List<TaskModel>;
-      final unit = results[1] as UnitModel;
-      emit(HomeLoaded(unit: unit, tasks: tasks));
+      final user = await userService.getUser();
+      if (user?.unitId == null) return;
+
+      final tasks = await homeRepo.fetchWorkerTasks(unitId: user!.unitId!);
+      emit(current.copyWith(tasks: tasks));
+    } on AppError catch (e) {
+      emit(HomeFailure(error: e));
     } catch (e) {
-      emit(HomeFailure(error: AppError.unknown()));
+      emit(HomeFailure(error: e is AppError ? e : AppError.unknown()));
     }
   }
 }

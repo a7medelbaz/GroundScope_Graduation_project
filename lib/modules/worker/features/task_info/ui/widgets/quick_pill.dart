@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/themes/app_colors.dart';
-import 'package:ground_scope/core/themes/app_text_styles.dart';
-import 'package:ground_scope/core/utils/spacing.dart';
+import '../../../../../../core/themes/app_colors.dart';
+import '../../../../../../core/themes/app_text_styles.dart';
+import '../../../../../../core/utils/spacing.dart';
 
 class QuickPill extends StatelessWidget {
   const QuickPill({super.key, required this.icon, required this.label});
