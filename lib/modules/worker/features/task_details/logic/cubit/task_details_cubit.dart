@@ -1,53 +1,38 @@
-import 'dart:convert';
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ground_scope/core/auth/data/models/user_date.dart';
-import 'package:ground_scope/core/di/dependency_injection.dart';
 import 'package:ground_scope/core/error/models/app_error.dart';
 import 'package:ground_scope/core/error/types/error_handler.dart';
-import 'package:ground_scope/core/service/secure_storage.dart';
+import 'package:ground_scope/core/service/user_service.dart';
 import 'package:ground_scope/core/shared/data/models/task_check_list_model.dart';
 import 'package:ground_scope/core/shared/data/models/task_model.dart';
 import 'package:ground_scope/core/shared/data/models/task_pause_model.dart';
 import 'package:ground_scope/core/shared/data/repo/task_repo.dart';
-import 'package:ground_scope/core/utils/app_constants.dart';
-import 'package:ground_scope/modules/worker/features/task_details/data/repo/task_details_repo.dart';
+import '../../data/repo/task_details_repo.dart';
 
 part 'task_details_state.dart';
 
 class TaskDetailsCubit extends Cubit<TaskDetailsState> {
-  TaskDetailsCubit({required this.taskDetailsRepo, required this.taskRepo})
-    : super(const TaskDetailsState());
+  TaskDetailsCubit({
+    required this.taskDetailsRepo,
+    required this.taskRepo,
+    required this.userService,
+  }) : super(const TaskDetailsState());
 
   final TaskDetailsRepo taskDetailsRepo;
   final TaskRepo taskRepo;
-
-  Future<UserModel?> _getUser() async {
-    final jsonString = await getIt<SecureStorage>().read(
-      key: AppConstants.userDataKey,
-    );
-
-    if (jsonString == null) return null;
-
-    try {
-      return UserModel.fromJson(jsonDecode(jsonString));
-    } catch (_) {
-      return null;
-    }
-  }
+  final UserService userService;
 
   Future<void> initTask({required TaskModel task}) async {
     emit(state.copyWith(isLoading: true, error: null));
-
     try {
-      final checklist = await taskRepo.getTaskCheckList(taskId: task.id);
-      final pauses = await taskRepo.getTaskPauseHistory(taskId: task.id);
-
+      final results = await Future.wait([
+        taskRepo.getTaskCheckList(taskId: task.id),
+        taskRepo.getTaskPauseHistory(taskId: task.id),
+      ]);
       emit(
         state.copyWith(
-          checklist: checklist,
-          pauses: pauses,
+          checklist: results[0] as List<TaskCheckListModel>,
+          pauses: results[1] as List<TaskPauseModel>,
           status: task.status,
           isLoading: false,
         ),
@@ -67,13 +52,15 @@ class TaskDetailsCubit extends Cubit<TaskDetailsState> {
     required bool isChecked,
   }) async {
     final old = state.checklist;
-    final updated = old.map((e) {
-      if (e.id == itemId) return e.copyWith(isChecked: isChecked);
-      return e;
-    }).toList();
-    emit(state.copyWith(checklist: updated));
+    emit(
+      state.copyWith(
+        checklist: old
+            .map((e) => e.id == itemId ? e.copyWith(isChecked: isChecked) : e)
+            .toList(),
+      ),
+    );
     try {
-      final user = await _getUser();
+      final user = await userService.getUser();
       if (user == null) throw AppError.unauthorized('Login required');
       await taskDetailsRepo.updateChecklistItem(
         itemId: itemId,
@@ -81,8 +68,7 @@ class TaskDetailsCubit extends Cubit<TaskDetailsState> {
         userId: user.id,
       );
     } catch (e) {
-      emit(state.copyWith(checklist: old));
-      emit(state.copyWith(error: ErrorHandler.handle(e)));
+      emit(state.copyWith(checklist: old, error: ErrorHandler.handle(e)));
     }
   }
 
@@ -94,61 +80,51 @@ class TaskDetailsCubit extends Cubit<TaskDetailsState> {
     required String taskId,
     required String reason,
   }) async {
-    final user = await _getUser();
+    final user = await userService.getUser();
     if (user == null) return;
 
     final oldStatus = state.status;
 
-    // Optimistic update — use a temp id for now
-    final tempPause = TaskPauseModel(
-      id: '', // will be replaced after DB insert
-      taskId: taskId,
-      pausedAt: DateTime.now(),
-      reason: reason,
-    );
-
     emit(
       state.copyWith(
         status: TaskStatus.paused,
-        pauses: [...state.pauses, tempPause],
+        pauses: [
+          ...state.pauses,
+          TaskPauseModel(
+            id: '', // temp — replaced after fetch
+            taskId: taskId,
+            pausedAt: DateTime.now(),
+            reason: reason,
+          ),
+        ],
       ),
     );
 
     try {
-      // pauseTask inserts the row — we need the real id back
-      // so we fetch the latest pause for this task after insert
       await taskDetailsRepo.pauseTask(
         taskId: taskId,
         reason: reason,
         userId: user.id,
       );
-
-      // Fetch the real pause row to get its DB-generated id
       final freshPauses = await taskRepo.getTaskPauseHistory(taskId: taskId);
-      print('🟡 freshPauses count: ${freshPauses.length}');
-      print('🟡 freshPauses: $freshPauses');
-      // Replace the temp pause with the real one from DB
       emit(state.copyWith(pauses: freshPauses));
     } catch (e) {
-      // Roll back
       emit(
         state.copyWith(
           status: oldStatus,
           pauses: state.pauses.where((p) => p.id.isNotEmpty).toList(),
+          error: ErrorHandler.handle(e),
         ),
       );
-      emit(state.copyWith(error: ErrorHandler.handle(e)));
     }
   }
 
   Future<void> resumeTask(String taskId) async {
-    // Find the currently active pause (the one with no resumedAt)
     final activePause = state.pauses
         .where((p) => p.resumedAt == null && p.id.isNotEmpty)
-        .lastOrNull; // lastOrNull in case of multiple — pick most recent
+        .lastOrNull;
 
     if (activePause == null) {
-      // No active pause found — just update status
       await updateTaskStatus(taskId: taskId, newStatus: TaskStatus.inProgress);
       return;
     }
@@ -156,24 +132,28 @@ class TaskDetailsCubit extends Cubit<TaskDetailsState> {
     final oldStatus = state.status;
     final now = DateTime.now();
 
-    // Optimistic: mark the active pause as resumed locally
-    final updatedPauses = state.pauses.map((p) {
-      if (p.id == activePause.id) return p.copyWith(resumedAt: now);
-      return p;
-    }).toList();
-
-    emit(state.copyWith(status: TaskStatus.inProgress, pauses: updatedPauses));
+    emit(
+      state.copyWith(
+        status: TaskStatus.inProgress,
+        pauses: state.pauses
+            .map((p) => p.id == activePause.id ? p.copyWith(resumedAt: now) : p)
+            .toList(),
+      ),
+    );
 
     try {
-      // Write resumed_at to task_pauses AND update tasks.status
       await taskDetailsRepo.resumePause(
         pauseId: activePause.id,
         taskId: taskId,
       );
     } catch (e) {
-      // Roll back
-      emit(state.copyWith(status: oldStatus, pauses: state.pauses));
-      emit(state.copyWith(error: ErrorHandler.handle(e)));
+      emit(
+        state.copyWith(
+          status: oldStatus,
+          pauses: state.pauses,
+          error: ErrorHandler.handle(e),
+        ),
+      );
     }
   }
 
@@ -186,17 +166,14 @@ class TaskDetailsCubit extends Cubit<TaskDetailsState> {
     required TaskStatus newStatus,
   }) async {
     final oldStatus = state.status;
-
     emit(state.copyWith(status: newStatus));
-
     try {
       await taskDetailsRepo.updateTaskStatus(
         taskId: taskId,
         newStatus: newStatus,
       );
     } catch (e) {
-      emit(state.copyWith(status: oldStatus));
-      emit(state.copyWith(error: ErrorHandler.handle(e)));
+      emit(state.copyWith(status: oldStatus, error: ErrorHandler.handle(e)));
     }
   }
 }

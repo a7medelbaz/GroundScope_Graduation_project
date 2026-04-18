@@ -4,6 +4,7 @@ import 'package:ground_scope/core/shared/data/models/task_model.dart';
 
 class TaskDetailsRemoteDs {
   const TaskDetailsRemoteDs({required this.supabaseService});
+
   final SupabaseService supabaseService;
 
   Future<void> updateChecklistItem({
@@ -31,16 +32,16 @@ class TaskDetailsRemoteDs {
     required String userId,
   }) async {
     try {
+      await supabaseService.client
+          .from('tasks')
+          .update({'status': 'paused'})
+          .eq('id', taskId);
+
       await supabaseService.client.from('task_pauses').insert({
         'task_id': taskId,
         'reason': reason.trim(),
         'paused_by': userId,
       });
-
-      await supabaseService.client
-          .from('tasks')
-          .update({'status': 'paused'})
-          .eq('id', taskId);
     } catch (e) {
       throw ErrorHandler.handle(e);
     }
@@ -52,14 +53,13 @@ class TaskDetailsRemoteDs {
   }) async {
     try {
       await supabaseService.client
-          .from('task_pauses')
-          .update({'resumed_at': DateTime.now().toIso8601String()})
-          .eq('id', pauseId)
-          .select();
-      await supabaseService.client
           .from('tasks')
           .update({'status': 'in_progress'})
           .eq('id', taskId);
+      await supabaseService.client
+          .from('task_pauses')
+          .update({'resumed_at': DateTime.now().toIso8601String()})
+          .eq('id', pauseId);
     } catch (e) {
       throw ErrorHandler.handle(e);
     }

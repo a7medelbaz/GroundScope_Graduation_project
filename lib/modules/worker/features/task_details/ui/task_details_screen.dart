@@ -82,7 +82,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
       _popWithResult();
     }
 
-    if (!allChecked) {
+    if (!allChecked && state.status == TaskStatus.inProgress) {
       AppDialogs.showConfirm(
         context,
         title: 'Checklist Incomplete',
