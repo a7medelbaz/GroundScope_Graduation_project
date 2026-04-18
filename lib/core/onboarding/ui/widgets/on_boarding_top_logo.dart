@@ -1,6 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+
 import '../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../core/utils/app_assets.dart';
 import '../../../../../../core/utils/spacing.dart';
@@ -13,13 +13,9 @@ class OnBoardingTopLogo extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SvgPicture.asset(
-          AppAssets.appLogoSVG,
-          height: responsiveHeight(40),
-          width: responsiveWidth(40),
-        ),
+        Image.asset(AppAssets.appLogoPNG, height: rh(40), width: rw(40)),
         horizontalSpacing(8),
-        Text("app_title".tr(), style: AppTextStyles.font20Bold),
+        Text("app_title".tr(), style: AppTextStyles.font20ExtraBold),
       ],
     );
   }

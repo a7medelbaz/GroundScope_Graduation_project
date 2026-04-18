@@ -1,103 +1,147 @@
 import 'package:flutter/material.dart';
+
 import 'app_colors.dart';
 
-class CustomColors {
-  // Backgrounds
-  final Color background;
-  final Color surface;
-  final Color surfaceVariant;
-  final Color surfaceVariant2;
+/// CustomColors — semantic theme tokens
+/// ─────────────────────────────────────
+/// These are theme-aware colors used across widgets.
+/// Always access via: Theme.of(context).customColors
+///
+/// Light/Dark values are set in [_light()] and [_dark()] factories.
 
-  // Text
+class CustomColors {
+  // ─── Text ─────────────────────────────────────
   final Color textPrimary;
   final Color textSecondary;
+  final Color textHint;
+  final Color textDisabled;
+  final Color textInverse; // text on dark/primary backgrounds
 
-  // Borders & Dividers
+  // ─── Background ───────────────────────────────
+  final Color background;
+  final Color backgroundSecondary; // cards, sheets, etc.
+  final Color backgroundInverse;
+
+  // ─── Surface / Container ──────────────────────
+  final Color surface;
+  final Color surfaceVariant; // slightly different surface
+
+  // ─── Border & Divider ─────────────────────────
   final Color border;
   final Color divider;
 
-  // Status Containers
-  final Color successContainer;
-  final Color infoContainer;
-  final Color warningContainer;
-  final Color errorContainer;
+  // ─── Icon ─────────────────────────────────────
+  final Color iconPrimary;
+  final Color iconSecondary;
 
-  // Brand / Accent
-  final Color accentBlue;
-  final Color accentBlueSoft;
+  // ─── Status ───────────────────────────────────
+  final Color success;
+  final Color successBackground;
+  final Color warning;
+  final Color warningBackground;
+  final Color error;
+  final Color errorBackground;
+  final Color info;
+  final Color infoBackground;
 
   const CustomColors._({
-    required this.background,
-    required this.surface,
-    required this.surfaceVariant,
-    required this.surfaceVariant2,
     required this.textPrimary,
     required this.textSecondary,
+    required this.textHint,
+    required this.textDisabled,
+    required this.textInverse,
+    required this.background,
+    required this.backgroundSecondary,
+    required this.backgroundInverse,
+    required this.surface,
+    required this.surfaceVariant,
     required this.border,
     required this.divider,
-    required this.successContainer,
-    required this.infoContainer,
-    required this.warningContainer,
-    required this.errorContainer,
-    required this.accentBlue,
-    required this.accentBlueSoft,
+    required this.iconPrimary,
+    required this.iconSecondary,
+    required this.success,
+    required this.successBackground,
+    required this.warning,
+    required this.warningBackground,
+    required this.error,
+    required this.errorBackground,
+    required this.info,
+    required this.infoBackground,
   });
 
-  /*──────────────── LIGHT ────────────────*/
   factory CustomColors.light() {
     return const CustomColors._(
-      // Backgrounds
-      background: AppColors.grey0,
-      surface: AppColors.grey25,
-      surfaceVariant: AppColors.grey50,
-      surfaceVariant2: AppColors.primary25,
-
       // Text
-      textPrimary: AppColors.grey900,
-      textSecondary: AppColors.grey500,
+      textPrimary: AppColors.black,
+      textSecondary: AppColors.grey600,
+      textHint: AppColors.grey400,
+      textDisabled: AppColors.grey300,
+      textInverse: AppColors.white,
 
-      // Borders
+      // Background
+      background: AppColors.backgroundLight,
+      backgroundSecondary: AppColors.grey50,
+      backgroundInverse: AppColors.black,
+
+      // Surface
+      surface: AppColors.white,
+      surfaceVariant: AppColors.grey100,
+
+      // Border & Divider
       border: AppColors.grey200,
       divider: AppColors.grey100,
 
-      // Status
-      successContainer: AppColors.green25,
-      infoContainer: AppColors.primary25,
-      warningContainer: AppColors.yellow25,
-      errorContainer: AppColors.red25,
+      // Icon
+      iconPrimary: AppColors.grey700,
+      iconSecondary: AppColors.grey400,
 
-      // Brand
-      accentBlue: AppColors.primary300,
-      accentBlueSoft: AppColors.primary50,
+      // Status
+      success: AppColors.green200,
+      successBackground: AppColors.green0,
+      warning: AppColors.amber200,
+      warningBackground: AppColors.amber0,
+      error: AppColors.red200,
+      errorBackground: AppColors.red0,
+      info: AppColors.blue200,
+      infoBackground: AppColors.blue0,
     );
   }
 
-  /*──────────────── DARK ────────────────*/
   factory CustomColors.dark() {
     return const CustomColors._(
-      // Backgrounds
-      background: AppColors.grey900,
+      // Text
+      textPrimary: AppColors.white,
+      textSecondary: AppColors.grey300,
+      textHint: AppColors.grey500,
+      textDisabled: AppColors.grey600,
+      textInverse: AppColors.black,
+
+      // Background
+      background: AppColors.backgroundDark,
+      backgroundSecondary: AppColors.grey800,
+      backgroundInverse: AppColors.white,
+
+      // Surface
       surface: AppColors.grey800,
       surfaceVariant: AppColors.grey700,
-      surfaceVariant2: AppColors.primary200,
 
-      // Text
-      textPrimary: AppColors.grey25,
-      textSecondary: AppColors.grey400,
-
-      // Borders
+      // Border & Divider
       border: AppColors.grey600,
       divider: AppColors.grey700,
 
-      // Status
-      successContainer: AppColors.green300,
-      infoContainer: AppColors.primary200,
-      warningContainer: AppColors.yellow200,
-      errorContainer: AppColors.red200,
+      // Icon
+      iconPrimary: AppColors.grey200,
+      iconSecondary: AppColors.grey500,
 
-      // Brand
-      accentBlue: AppColors.primary100,
-      accentBlueSoft: AppColors.primary300,
+      // Status
+      success: AppColors.green200,
+      successBackground: AppColors.green400,
+      warning: AppColors.amber200,
+      warningBackground: AppColors.amber400,
+      error: AppColors.red200,
+      errorBackground: AppColors.red400,
+      info: AppColors.blue200,
+      infoBackground: AppColors.blue400,
     );
   }
 }

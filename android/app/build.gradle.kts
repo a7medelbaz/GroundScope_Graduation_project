@@ -41,19 +41,19 @@ android {
         }
     }
     flavorDimensions += "default"
-    productFlavors {
-    create("development") {
-        dimension = "default"
-        resValue("string", "app_name", "GroundScop development")
-        applicationIdSuffix = ".development"
-    }
 
-    create("production") {
-        dimension = "default"
-        resValue("string", "app_name", "GroundScop production")
-        applicationIdSuffix = ".production"
+    productFlavors {
+        create("development") {
+            dimension = "default"
+            applicationIdSuffix = ".development"
+            resValue("string", "app_name", "Ground Scope Dev") // app name with Dev
+        }
+        create("production") {
+            dimension = "default"
+            // no suffix for production
+            resValue("string", "app_name", "Ground Scope") // clean app name
+        }
     }
-}
 }
 
 flutter {
