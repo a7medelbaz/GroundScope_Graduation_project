@@ -30,11 +30,16 @@ class TaskRemoteDs {
           .from('task_pauses')
           .select()
           .eq('task_id', taskId)
-          .order('paused_at', ascending: false);
-      final dataList = response as List<dynamic>;
-      return dataList.map((json) => TaskPauseModel.fromMap(json)).toList();
+          .order(
+            'paused_at',
+            ascending: true,
+          ); // ascending so timeline is chronological
+      print('🔵 task_pauses raw response: $response');
+      return (response as List<dynamic>)
+          .map((json) => TaskPauseModel.fromMap(json as Map<String, dynamic>))
+          .toList();
     } catch (e) {
-      ErrorHandler.handle(e);
+      throw ErrorHandler.handle(e); // ← throw, don't just call
     }
   }
 }

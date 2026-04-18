@@ -1,36 +1,51 @@
 import 'package:flutter/material.dart';
-import '../../../../../../core/themes/app_text_styles.dart';
-import '../../../../../../core/utils/extensions/context_ext.dart';
-import '../../../../../../core/utils/spacing.dart';
-import '../../../task_details/data/models/task_time_line_model.dart';
+import 'package:ground_scope/core/shared/data/models/task_model.dart';
+import 'package:ground_scope/core/shared/data/models/task_pause_model.dart';
+import 'package:ground_scope/core/themes/app_text_styles.dart';
+import 'package:ground_scope/core/utils/extensions/context_ext.dart';
+import 'package:ground_scope/core/utils/spacing.dart';
+import 'package:ground_scope/modules/worker/features/task_info/data/model/task_time_line_model.dart';
+
 import 'task_timeline_row.dart';
 
 class TaskActivityTimeline extends StatelessWidget {
-  const TaskActivityTimeline({super.key, required this.events});
-  final List<TaskTimelineModel> events;
+  const TaskActivityTimeline({
+    super.key,
+    required this.task,
+    required this.pauses,
+  });
+
+  final TaskModel task;
+  final List<TaskPauseModel> pauses;
 
   @override
   Widget build(BuildContext context) {
-    if (events.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: rh(24)),
-          child: Text(
-            'No activity recorded yet',
-            style: AppTextStyles.font14Light.copyWith(
-              color: context.customColors.textHint,
-            ),
-          ),
-        ),
-      );
-    }
+    final cc = context.customColors;
+    final events = TaskTimelineModel.buildFrom(task: task, pauses: pauses);
 
     return Column(
-      children: events.asMap().entries.map((entry) {
-        final isLast = entry.key == events.length - 1;
-        final event = entry.value;
-        return TaskTimelineRow(event: event, isLast: isLast);
-      }).toList(),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ── Empty state ──────────────────────────────────
+        if (events.isEmpty)
+          Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: rh(24)),
+              child: Text(
+                'No activity recorded yet',
+                style: AppTextStyles.font14Light.copyWith(color: cc.textHint),
+              ),
+            ),
+          )
+        // ── Timeline rows ────────────────────────────────
+        else
+          ...events.asMap().entries.map((entry) {
+            return TaskTimelineRow(
+              event: entry.value,
+              isLast: entry.key == events.length - 1,
+            );
+          }),
+      ],
     );
   }
 }

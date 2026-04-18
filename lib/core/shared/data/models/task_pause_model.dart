@@ -1,3 +1,5 @@
+// lib/core/shared/data/models/task_pause_model.dart
+
 import 'package:equatable/equatable.dart';
 
 class TaskPauseModel extends Equatable {
@@ -22,6 +24,24 @@ class TaskPauseModel extends Equatable {
   Duration get duration {
     final end = resumedAt ?? DateTime.now();
     return end.difference(pausedAt);
+  }
+
+  TaskPauseModel copyWith({
+    String? id,
+    String? taskId,
+    DateTime? pausedAt,
+    DateTime? resumedAt,
+    String? reason,
+    String? pausedBy,
+  }) {
+    return TaskPauseModel(
+      id: id ?? this.id,
+      taskId: taskId ?? this.taskId,
+      pausedAt: pausedAt ?? this.pausedAt,
+      resumedAt: resumedAt ?? this.resumedAt,
+      reason: reason ?? this.reason,
+      pausedBy: pausedBy ?? this.pausedBy,
+    );
   }
 
   factory TaskPauseModel.fromMap(Map<String, dynamic> map) {

@@ -36,7 +36,8 @@ class TaskDetailsCubit extends Cubit<TaskDetailsState> {
       return null;
     }
   }
-Future<void> initTask({required TaskModel task}) async {
+
+  Future<void> initTask({required TaskModel task}) async {
     emit(state.copyWith(isLoading: true, error: null));
 
     try {
@@ -60,6 +61,7 @@ Future<void> initTask({required TaskModel task}) async {
       );
     }
   }
+
   Future<void> updateChecklistItem({
     required String itemId,
     required bool isChecked,
@@ -97,8 +99,9 @@ Future<void> initTask({required TaskModel task}) async {
 
     final oldStatus = state.status;
 
-    final pause = TaskPauseModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+    // Optimistic update — use a temp id for now
+    final tempPause = TaskPauseModel(
+      id: '', // will be replaced after DB insert
       taskId: taskId,
       pausedAt: DateTime.now(),
       reason: reason,
@@ -107,23 +110,71 @@ Future<void> initTask({required TaskModel task}) async {
     emit(
       state.copyWith(
         status: TaskStatus.paused,
-        pauses: [...state.pauses, pause],
+        pauses: [...state.pauses, tempPause],
       ),
     );
+
     try {
+      // pauseTask inserts the row — we need the real id back
+      // so we fetch the latest pause for this task after insert
       await taskDetailsRepo.pauseTask(
         taskId: taskId,
         reason: reason,
         userId: user.id,
       );
+
+      // Fetch the real pause row to get its DB-generated id
+      final freshPauses = await taskRepo.getTaskPauseHistory(taskId: taskId);
+      print('🟡 freshPauses count: ${freshPauses.length}');
+      print('🟡 freshPauses: $freshPauses');
+      // Replace the temp pause with the real one from DB
+      emit(state.copyWith(pauses: freshPauses));
     } catch (e) {
-      emit(state.copyWith(status: oldStatus));
+      // Roll back
+      emit(
+        state.copyWith(
+          status: oldStatus,
+          pauses: state.pauses.where((p) => p.id.isNotEmpty).toList(),
+        ),
+      );
       emit(state.copyWith(error: ErrorHandler.handle(e)));
     }
   }
 
   Future<void> resumeTask(String taskId) async {
-    await updateTaskStatus(taskId: taskId, newStatus: TaskStatus.inProgress);
+    // Find the currently active pause (the one with no resumedAt)
+    final activePause = state.pauses
+        .where((p) => p.resumedAt == null && p.id.isNotEmpty)
+        .lastOrNull; // lastOrNull in case of multiple — pick most recent
+
+    if (activePause == null) {
+      // No active pause found — just update status
+      await updateTaskStatus(taskId: taskId, newStatus: TaskStatus.inProgress);
+      return;
+    }
+
+    final oldStatus = state.status;
+    final now = DateTime.now();
+
+    // Optimistic: mark the active pause as resumed locally
+    final updatedPauses = state.pauses.map((p) {
+      if (p.id == activePause.id) return p.copyWith(resumedAt: now);
+      return p;
+    }).toList();
+
+    emit(state.copyWith(status: TaskStatus.inProgress, pauses: updatedPauses));
+
+    try {
+      // Write resumed_at to task_pauses AND update tasks.status
+      await taskDetailsRepo.resumePause(
+        pauseId: activePause.id,
+        taskId: taskId,
+      );
+    } catch (e) {
+      // Roll back
+      emit(state.copyWith(status: oldStatus, pauses: state.pauses));
+      emit(state.copyWith(error: ErrorHandler.handle(e)));
+    }
   }
 
   Future<void> completeTask(String taskId) async {

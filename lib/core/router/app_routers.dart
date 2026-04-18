@@ -39,7 +39,7 @@ class AppRouter {
         );
       case Routes.taskDetailsInfoScreen:
         return _buildRoute(
-          TaskInfoScreen(task: arguments!['task'], pauses: const []),
+          TaskInfoScreen(task: arguments!['task'], pauses: arguments['pauses']),
           settings,
         );
       case Routes.addReportScreen:

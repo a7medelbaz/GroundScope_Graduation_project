@@ -3,9 +3,9 @@ import 'package:ground_scope/core/networking/supabase_service.dart';
 import 'package:ground_scope/core/shared/data/models/task_model.dart';
 
 class TaskDetailsRemoteDs {
+  const TaskDetailsRemoteDs({required this.supabaseService});
   final SupabaseService supabaseService;
 
-  TaskDetailsRemoteDs({required this.supabaseService});
   Future<void> updateChecklistItem({
     required String itemId,
     required bool isChecked,
@@ -21,7 +21,7 @@ class TaskDetailsRemoteDs {
           })
           .eq('id', itemId);
     } catch (e) {
-      ErrorHandler.handle(e);
+      throw ErrorHandler.handle(e);
     }
   }
 
@@ -42,7 +42,7 @@ class TaskDetailsRemoteDs {
           .update({'status': 'paused'})
           .eq('id', taskId);
     } catch (e) {
-      ErrorHandler.handle(e);
+      throw ErrorHandler.handle(e);
     }
   }
 
@@ -60,8 +60,7 @@ class TaskDetailsRemoteDs {
           .update({'status': 'in_progress'})
           .eq('id', taskId);
     } catch (e) {
-      print("❌ RAW ERROR: $e");
-      ErrorHandler.handle(e);
+      throw ErrorHandler.handle(e);
     }
   }
 
@@ -75,7 +74,7 @@ class TaskDetailsRemoteDs {
           .update({'status': newStatus.dbValue})
           .eq('id', taskId);
     } catch (e) {
-      ErrorHandler.handle(e);
+      throw ErrorHandler.handle(e);
     }
   }
 }

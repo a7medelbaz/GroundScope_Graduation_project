@@ -62,7 +62,9 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
     );
   }
 
-  Future<void> _onResume() => _onStart();
+  Future<void> _onResume() async {
+    await cubit.resumeTask(widget.task.id);
+  }
 
   Future<void> _onPause() async {
     final reason = await PauseReasonBottomSheet.show(context);
@@ -132,11 +134,11 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                       verticalSpacing(24),
                       TaskDetailsTaskMetaSection(task: task),
                       verticalSpacing(24),
-                      _buildPauseHistory(state),
-                      verticalSpacing(24),
                       _buildChecklist(state),
                       verticalSpacing(24),
                       _buildNotes(task),
+                      verticalSpacing(24),
+                      _buildPauseHistory(state),
                     ],
                   ),
                 ),
@@ -153,7 +155,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
     return TaskDetailsQuickActionsRow(
       onInfoTap: () => context.pushNamed(
         Routes.taskDetailsInfoScreen,
-        arguments: {'task': task},
+        arguments: {'task': task, 'pauses': state.pauses},
       ),
       onReportTap: () => context.pushNamed(Routes.addReportScreen),
       taskStatus: state.status!,
