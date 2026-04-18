@@ -4,9 +4,10 @@ import 'package:ground_scope/core/shared/data/models/task_check_list_model.dart'
 import 'package:ground_scope/core/shared/data/models/task_pause_model.dart';
 
 class TaskRemoteDs {
+  const TaskRemoteDs({required this.supabaseService});
+
   final SupabaseService supabaseService;
 
-  TaskRemoteDs({required this.supabaseService});
   Future<List<TaskCheckListModel>> getTaskCheckList({
     required String taskId,
   }) async {
@@ -14,11 +15,16 @@ class TaskRemoteDs {
       final response = await supabaseService.client
           .from('task_checklists')
           .select()
-          .eq('task_id', taskId);
-      final dataList = response as List<dynamic>;
-      return dataList.map((json) => TaskCheckListModel.fromMap(json)).toList();
+          .eq('task_id', taskId)
+          .order('order_index', ascending: true);
+
+      return (response as List<dynamic>)
+          .map(
+            (json) => TaskCheckListModel.fromMap(json as Map<String, dynamic>),
+          )
+          .toList();
     } catch (e) {
-      ErrorHandler.handle(e);
+      throw ErrorHandler.handle(e);
     }
   }
 
@@ -30,16 +36,13 @@ class TaskRemoteDs {
           .from('task_pauses')
           .select()
           .eq('task_id', taskId)
-          .order(
-            'paused_at',
-            ascending: true,
-          ); // ascending so timeline is chronological
-      print('🔵 task_pauses raw response: $response');
+          .order('paused_at', ascending: true);
+
       return (response as List<dynamic>)
           .map((json) => TaskPauseModel.fromMap(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      throw ErrorHandler.handle(e); // ← throw, don't just call
+      throw ErrorHandler.handle(e);
     }
   }
 }
