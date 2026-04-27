@@ -18,10 +18,13 @@ class AppRouter {
   static Route<dynamic> generateRoute(final RouteSettings settings) {
     final arguments = settings.arguments as Map<String, dynamic>?;
     switch (settings.name) {
+      // Auth-----------------------------------------------
       case Routes.onBoardingScreen:
         return _buildRoute(const OnBoardingScreen(), settings);
       case Routes.loginScreen:
         return _buildRoute(const LoginScreen(), settings);
+
+      // Worker-----------------------------------------------
       case Routes.workerScaffold:
         return _buildRoute(const WorkerScaffold(), settings);
       case Routes.taskDetailsScreen:
@@ -38,6 +41,8 @@ class AppRouter {
         return _buildRoute(const AddReportScreen(), settings);
       case Routes.reportsScreen:
         return _buildRoute(const ReportsScreen(), settings);
+
+      // Supervisor-----------------------------------------------
       case Routes.supervisorScaffold:
         return _buildRoute(const SupervisorScaffold(), settings);
       case Routes.adminScreen:
