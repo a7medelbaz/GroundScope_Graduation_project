@@ -28,6 +28,7 @@ class _SupervisorScaffoldState extends State<SupervisorScaffold> {
     return [
       const SupervisorDashboardScreen(),
       const SupervisorReportsScreen(),
+      Container(), // Placeholder for the middle button
       const SupervisorTasksScreen(),
       const SupervisorProfileScreen(),
     ];
@@ -45,6 +46,14 @@ class _SupervisorScaffoldState extends State<SupervisorScaffold> {
       PersistentBottomNavBarItem(
         icon: Icon(Icons.analytics_outlined, size: rr(28), color: activeColor),
         inactiveIcon: Icon(Icons.analytics, size: rr(28), color: inactiveColor),
+      ),
+      PersistentBottomNavBarItem(
+        icon: Icon(Icons.add, size: rr(32), color: Colors.white),
+        activeColorPrimary: AppColors.primary300,
+        inactiveColorPrimary: AppColors.primary300,
+        onPressed: (context) {
+          // Add your action here (e.g., show a bottom sheet)
+        },
       ),
       PersistentBottomNavBarItem(
         icon: Icon(Icons.assignment_outlined, size: rr(28), color: activeColor),
@@ -68,16 +77,20 @@ class _SupervisorScaffoldState extends State<SupervisorScaffold> {
       controller: _controller,
       screens: _buildScreens(),
       items: _navBarItems(context),
-      navBarStyle: NavBarStyle.style9,
+      navBarStyle: NavBarStyle.style15,
+      navBarHeight: rh(70),
+      padding: EdgeInsets.only(top: rh(2), bottom: rh(8)),
       backgroundColor: context.customColors.background.withValues(alpha: 0.95),
-      navBarHeight: rh(60),
-      padding: const EdgeInsets.only(top: 2, bottom: 8),
       decoration: NavBarDecoration(
         colorBehindNavBar: context.customColors.background,
         boxShadow: [
           BoxShadow(
-            color: context.customColors.textPrimary.withValues(alpha: 0.1),
-            blurRadius: 2,
+            color: context.customColors.textPrimary.withValues(alpha: 0.15),
+            // blurRadius: 2,
+            // offset: const Offset(0, -2),
+            blurRadius:
+                15, // <--- Increase this for more "blur" (e.g., from 2 to 15)
+            spreadRadius: 3, // <--- Add this to make the shadow cover more area
             offset: const Offset(0, -2),
           ),
         ],

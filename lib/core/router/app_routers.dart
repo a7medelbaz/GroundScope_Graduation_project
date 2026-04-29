@@ -15,6 +15,15 @@ class AppRouter {
     final arguments = settings.arguments as Map<String, dynamic>?;
 
     switch (settings.name) {
+      // Auth-----------------------------------------------
+      case Routes.onBoardingScreen:
+        return _buildRoute(const OnBoardingScreen(), settings);
+      case Routes.loginScreen:
+        return _buildRoute(const LoginScreen(), settings);
+
+      // Worker-----------------------------------------------
+      case Routes.workerScaffold:
+        return _buildRoute(const WorkerScaffold(), settings);
       case Routes.taskDetailsScreen:
         final task = arguments?['task'];
         return _buildRoute(

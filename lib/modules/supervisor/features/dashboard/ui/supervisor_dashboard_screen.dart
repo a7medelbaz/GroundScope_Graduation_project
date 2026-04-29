@@ -65,7 +65,7 @@ class _DashboardBody extends StatelessWidget {
                 verticalSpacing(20),
                 Text(
                   'Quick Actions',
-                  style: AppTextStyles.font16SemiBold.copyWith(
+                  style: AppTextStyles.font18SemiBold.copyWith(
                     color: cc.textPrimary,
                   ),
                 ),
