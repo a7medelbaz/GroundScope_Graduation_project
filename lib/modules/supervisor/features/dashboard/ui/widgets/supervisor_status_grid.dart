@@ -1,59 +1,16 @@
 import 'package:flutter/material.dart';
-
 import '../../../../../../../core/themes/app_colors.dart';
 import '../../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../../core/utils/extensions/context_ext.dart';
 import '../../../../../../../core/utils/spacing.dart';
-import '../../../../../../core/data/models/task_model.dart';
 import '../../../../../../core/router/routes.dart';
 
 class SupervisorStatsGrid extends StatelessWidget {
   const SupervisorStatsGrid({super.key});
 
   // TODO: replace with real data from SupervisorDashboardCubit
-  static final List<TaskModel> _mockCompletedTasks = List.generate(10, (index) {
-    final now = DateTime.now();
-    return TaskModel(
-      id: 'comp_$index',
-      flightId: 'FL-${100 + index}',
-      flightNumber: 'AI ${500 + index}',
-      serviceTypeId: 'SVC-$index',
-      serviceTypeName: index % 2 == 0 ? 'Refueling' : 'Catering',
-      standCode: 'A${index + 1}',
-      status: TaskStatus.completed,
-      priority: TaskPriority.medium,
-      scheduledStart: now.subtract(Duration(hours: index + 2)),
-      scheduledEnd: now.subtract(Duration(hours: index + 1)),
-      actualStart: now.subtract(Duration(hours: index + 2, minutes: 5)),
-      actualEnd: now.subtract(Duration(hours: index + 1, minutes: 2)),
-      createdAt: now.subtract(const Duration(days: 1)),
-      updatedAt: now.subtract(Duration(hours: index + 1)),
-      checklistTotal: 5,
-      checklistDone: 5,
-    );
-  });
-static final List<TaskModel> _mockDelayedTasks = List.generate(10, (index) {
-  final now = DateTime.now();
-  // Scheduled in the past but status is still inProgress or pending
-  return TaskModel(
-    id: 'delay_$index',
-    flightId: 'FL-${200 + index}',
-    flightNumber: 'QR ${700 + index}',
-    serviceTypeId: 'SVC-$index',
-    serviceTypeName: index % 3 == 0 ? 'Cleaning' : 'Baggage',
-    standCode: 'B${index + 1}',
-    status: index % 2 == 0 ? TaskStatus.inProgress : TaskStatus.pending,
-    priority: index % 5 == 0 ? TaskPriority.critical : TaskPriority.high,
-    scheduledStart: now.subtract(const Duration(minutes: 45)),
-    scheduledEnd: now.subtract(const Duration(minutes: 15)), // Should have ended
-    createdAt: now.subtract(const Duration(hours: 5)),
-    updatedAt: now,
-    notes: 'Awaiting equipment arrival',
-    checklistTotal: 10,
-    checklistDone: 3,
-  );
-});
-  @override
+
+  @override 
   Widget build(BuildContext context) {
     return GridView.count(
       crossAxisCount: 2,
@@ -75,13 +32,12 @@ static final List<TaskModel> _mockDelayedTasks = List.generate(10, (index) {
         _StatCard(
           icon: Icons.check_circle_outline,
           label: 'Completed Tasks',
-          value: '${_mockCompletedTasks.length}',
+          value: '4',
           iconColor: AppColors.green200,
           onTap: () => context.pushNamed(
             Routes.supervisorTaskListScreen,
             arguments: {
               'title': 'Completed Tasks',
-              'tasks': _mockCompletedTasks,
               'accentColor': AppColors.green200,
             },
             rootNavigator: true,
@@ -90,13 +46,12 @@ static final List<TaskModel> _mockDelayedTasks = List.generate(10, (index) {
         _StatCard(
           icon: Icons.access_time_outlined,
           label: 'Delayed Tasks',
-          value: '${_mockDelayedTasks.length}',
+          value: '4',
           iconColor: AppColors.amber200,
           onTap: () => context.pushNamed(
             Routes.supervisorTaskListScreen,
             arguments: {
               'title': 'Delayed Tasks',
-              'tasks': _mockDelayedTasks,
               'accentColor': AppColors.amber200,
             },
             rootNavigator: true,
