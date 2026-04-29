@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../../../core/router/routes.dart';
 import '../../../../../core/shared/data/models/task_model.dart';
 import '../../../../../core/utils/extensions/context_ext.dart';
 import '../../../../../core/utils/spacing.dart';
 import '../../../../../core/widgets/ui/dialogs/app_dialogs.dart';
 import '../logic/cubit/task_details_cubit.dart';
-
 import 'widgets/pause_reason_bottom_sheet.dart';
 import 'widgets/task_action_button.dart';
 import 'widgets/task_details_checklist.dart';
@@ -157,7 +157,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
         Routes.taskDetailsInfoScreen,
         arguments: {'task': task, 'pauses': state.pauses},
       ),
-      onReportTap: () => context.pushNamed(Routes.addReportScreen),
+      onReportTap: () =>
+          context.pushNamed(Routes.addReportScreen, arguments: {'preSelectedTask': task}),
       taskStatus: state.status!,
     );
   }

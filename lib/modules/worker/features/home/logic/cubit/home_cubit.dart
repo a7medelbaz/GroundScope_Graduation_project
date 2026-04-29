@@ -1,23 +1,23 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ground_scope/core/shared/data/repo/task_repo.dart';
+
 import '../../../../../../core/error/models/app_error.dart';
 import '../../../../../../core/service/user_service.dart';
 import '../../../../../../core/shared/data/models/task_model.dart';
 import '../../../../../../core/shared/data/models/unit_model.dart';
 import '../../../../../../core/shared/data/repo/unit_repo.dart';
 
-import '../../data/repo/home_repo.dart';
-
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit({
-    required this.homeRepo,
+    required this.taskRepo,
     required this.unitRepo,
     required this.userService,
   }) : super(HomeInitial());
 
-  final HomeRepo homeRepo;
+  final TaskRepo taskRepo;
   final UnitRepo unitRepo;
   final UserService userService;
   Future<void> init() async {
@@ -31,7 +31,7 @@ class HomeCubit extends Cubit<HomeState> {
       }
 
       final results = await Future.wait([
-        homeRepo.fetchWorkerTasks(unitId: user.unitId!),
+        taskRepo.fetchWorkerTasks(unitId: user.unitId!),
         unitRepo.getUnitData(unitId: user.unitId!),
       ]);
 
@@ -88,7 +88,7 @@ class HomeCubit extends Cubit<HomeState> {
         return;
       }
 
-      final tasks = await homeRepo.fetchWorkerTasks(unitId: user.unitId!);
+      final tasks = await taskRepo.fetchWorkerTasks(unitId: user.unitId!);
       emit(HomeLoaded(unit: currentUnit, tasks: tasks));
     } on AppError catch (e) {
       emit(HomeFailure(error: e));
@@ -105,7 +105,7 @@ class HomeCubit extends Cubit<HomeState> {
       final user = await userService.getUser();
       if (user?.unitId == null) return;
 
-      final tasks = await homeRepo.fetchWorkerTasks(unitId: user!.unitId!);
+      final tasks = await taskRepo.fetchWorkerTasks(unitId: user!.unitId!);
       emit(current.copyWith(tasks: tasks));
     } on AppError catch (e) {
       emit(HomeFailure(error: e));
