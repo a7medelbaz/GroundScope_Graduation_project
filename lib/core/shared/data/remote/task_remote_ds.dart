@@ -1,5 +1,4 @@
 import 'package:ground_scope/core/shared/data/models/task_model.dart';
-
 import '../../../error/types/error_handler.dart';
 import '../../../networking/supabase_service.dart';
 import '../models/task_check_list_model.dart';
