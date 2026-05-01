@@ -155,4 +155,5 @@ class AddReportCubit extends Cubit<AddReportState> {
       );
     }
   }
+  void resetForm() => emit(const AddReportState());
 }

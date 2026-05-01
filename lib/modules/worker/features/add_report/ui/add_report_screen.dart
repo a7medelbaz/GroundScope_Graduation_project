@@ -75,6 +75,7 @@ class _AddReportScreenState extends State<AddReportScreen>
             "Report submitted successfully",
             type: _SnackBarType.success,
           );
+          context.read<AddReportCubit>().resetForm();
         } else if (state.status == AddReportStatus.failure) {
           HapticFeedback.mediumImpact();
           _showMessageSnackBar(
@@ -150,6 +151,7 @@ class _AddReportScreenState extends State<AddReportScreen>
     context.read<AddReportCubit>().submit(
       description: _descController.text.trim(),
     );
+    _descController.dispose();
   }
 }
 
