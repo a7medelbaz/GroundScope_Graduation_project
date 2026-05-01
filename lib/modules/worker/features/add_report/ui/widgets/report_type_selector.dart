@@ -5,7 +5,6 @@ import 'package:ground_scope/core/themes/app_colors.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
-
 import '../../../../../../core/shared/data/models/report_model.dart';
 import '../../logic/cubit/add_report_cubit.dart';
 
@@ -34,7 +33,7 @@ class ReportTypeSelector extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: rw(14), vertical: rh(10)),
             decoration: BoxDecoration(
               color: isSelected
-                  ? AppColors.primary200.withOpacity(0.15)
+                  ? AppColors.primary200.withValues(alpha: .15)
                   : customColors.surfaceVariant,
               borderRadius: BorderRadius.circular(rr(12)),
               border: Border.all(

@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:ground_scope/core/networking/supabase_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -53,9 +52,7 @@ class ReportRemoteDs {
     return (data as List).map((e) => ReportModel.fromMap(e)).toList();
   }
 
-  Future<List<ReportModel>> getMyReports() async {
-    final userId = supabaseService.currentUser!.id;
-
+  Future<List<ReportModel>> getMyReports(String userId) async {
     final data = await supabaseService.client
         .from('reports')
         .select()

@@ -1,6 +1,6 @@
 part of 'add_report_cubit.dart';
 
-enum AddReportStatus { idle, loading, success, failure }
+enum AddReportStatus { idle, loading, success, submitted, failure }
 
 class AddReportState extends Equatable {
   const AddReportState({

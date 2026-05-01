@@ -3,9 +3,9 @@ import 'package:get_it/get_it.dart';
 import 'package:ground_scope/core/shared/data/remote/report_remote_ds.dart';
 import 'package:ground_scope/core/shared/data/repo/report_repo.dart';
 import 'package:ground_scope/core/shared/data/repo/report_repo_impl.dart';
-
 import '../../modules/worker/features/add_report/logic/cubit/add_report_cubit.dart';
 import '../../modules/worker/features/home/logic/cubit/home_cubit.dart';
+import '../../modules/worker/features/reports/logic/cubit/reports_cubit.dart';
 import '../../modules/worker/features/task_details/data/remote/task_details_remote_ds.dart';
 import '../../modules/worker/features/task_details/data/repo/task_details_repo.dart';
 import '../../modules/worker/features/task_details/data/repo/task_details_repo_impl.dart';
@@ -113,9 +113,16 @@ Future<void> setUpDependencies() async {
   getIt.registerFactory<AddReportCubit>(
     () => AddReportCubit(
       reportRepo: getIt<ReportRepo>(),
-
       userService: getIt<UserService>(),
       taskRepo: getIt<TaskRepo>(),
+    ),
+  );
+
+  // Reports DI
+  getIt.registerFactory<ReportsCubit>(
+    () => ReportsCubit(
+      reportRepo: getIt<ReportRepo>(),
+      userService: getIt<UserService>(),
     ),
   );
 }

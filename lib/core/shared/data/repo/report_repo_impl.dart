@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import '../../../../core/shared/data/models/report_model.dart';
 import '../remote/report_remote_ds.dart';
 import 'report_repo.dart';
@@ -33,5 +32,6 @@ class ReportRepoImpl implements ReportRepo {
       reportRemoteDs.getReportsByTask(taskId);
 
   @override
-  Future<List<ReportModel>> getMyReports() => reportRemoteDs.getMyReports();
+  Future<List<ReportModel>> getMyReports(String userId) =>
+      reportRemoteDs.getMyReports(userId);
 }

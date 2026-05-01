@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/modules/worker/features/add_report/logic/cubit/add_report_cubit.dart';
-
+import 'package:ground_scope/modules/worker/features/reports/logic/cubit/reports_cubit.dart';
 import '../../../modules/admin/features/home/admin_screen.dart';
 import '../../../modules/supervisor/core/main_navigation/supervisor_scaffold.dart';
 import '../../../modules/worker/core/main_navigation/ui/worker_scaffold.dart';
@@ -25,6 +25,7 @@ class UserAuthenticatedCheck extends StatelessWidget {
           providers: [
             BlocProvider(create: (_) => getIt<HomeCubit>()..init()),
             BlocProvider(create: (_) => getIt<AddReportCubit>()..fetchTasks()),
+            BlocProvider(create: (_) => getIt<ReportsCubit>()..fetchMyReports()),
           ],
           child: const WorkerScaffold(),
         ),
