@@ -16,9 +16,13 @@ class ImagePickerSection extends StatelessWidget {
       duration: const Duration(milliseconds: 300),
       switchInCurve: Curves.easeOut,
       switchOutCurve: Curves.easeIn,
-      child: state.hasImage
+      child: state.imageFile != null
           ? const AddReportImagePreview(key: ValueKey('preview'))
           : const PickerButtons(key: ValueKey('buttons')),
+      // child: state.hasImage
+      //     // ? const AddReportImagePreview(key: ValueKey('preview'))
+      //     ? const AddReportImagePreview(key: ValueKey('preview'))
+      //     : const PickerButtons(key: ValueKey('buttons')),
     );
   }
 }
