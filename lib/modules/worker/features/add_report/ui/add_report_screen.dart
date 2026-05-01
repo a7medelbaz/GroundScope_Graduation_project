@@ -66,10 +66,10 @@ class _AddReportScreenState extends State<AddReportScreen>
     final customColors = context.customColors;
 
     return BlocListener<AddReportCubit, AddReportState>(
+      listenWhen: (previous, current) => previous.status != current.status,
       listener: (context, state) {
         if (state.status == AddReportStatus.submitted) {
           HapticFeedback.mediumImpact();
-          // context.showSuccessSnackBar("Report submitted successfully");
           _showMessageSnackBar(
             context,
             "Report submitted successfully",
