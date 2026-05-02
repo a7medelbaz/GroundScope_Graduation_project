@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ground_scope/modules/worker/features/add_report/ui/add_report_screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
-
 import '../../../../../core/themes/app_colors.dart';
 import '../../../../../core/utils/extensions/context_ext.dart';
 import '../../../../../core/utils/spacing.dart';
@@ -32,10 +31,12 @@ class _WorkerScaffoldState extends State<WorkerScaffold> {
     final inactiveColor = context.customColors.textSecondary;
 
     return [
+      // Home
       PersistentBottomNavBarItem(
         icon: Icon(Icons.home_outlined, size: rr(28), color: activeColor),
         inactiveIcon: Icon(Icons.home, size: rr(28), color: inactiveColor),
       ),
+      // RReport
       PersistentBottomNavBarItem(
         icon: Icon(Icons.analytics_outlined, size: rr(28), color: activeColor),
         inactiveIcon: Icon(
@@ -44,10 +45,12 @@ class _WorkerScaffoldState extends State<WorkerScaffold> {
           color: inactiveColor,
         ),
       ),
+      // Add Report
       PersistentBottomNavBarItem(
-        icon: Icon(Icons.add, color: activeColor, size: rr(24)),
+        icon: Icon(Icons.add, color: AppColors.white, size: rr(24)),
         inactiveIcon: Icon(Icons.add, color: inactiveColor, size: rr(24)),
       ),
+      // Notifications
       PersistentBottomNavBarItem(
         icon: Icon(
           Icons.notifications_outlined,
@@ -60,6 +63,7 @@ class _WorkerScaffoldState extends State<WorkerScaffold> {
           size: rr(24),
         ),
       ),
+      // Profile
       PersistentBottomNavBarItem(
         icon: Icon(Icons.person_outline, size: rr(28), color: activeColor),
         inactiveIcon: Icon(Icons.person, size: rr(28), color: inactiveColor),

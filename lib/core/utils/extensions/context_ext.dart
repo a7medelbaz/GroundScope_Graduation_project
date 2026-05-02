@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:ground_scope/core/widgets/massage_snack_bar.dart';
 
 import '../../themes/custom_colors.dart';
 
@@ -36,6 +37,7 @@ extension LocaleExt on BuildContext {
 }
 
 // ─── SnackBar ─────────────────────────────────────────────────────────────────
+enum SnackBarType { error, success }
 
 extension SnackBarExt on BuildContext {
   void hideKeyboard() => FocusScope.of(this).unfocus();
@@ -68,6 +70,25 @@ extension SnackBarExt on BuildContext {
         duration: const Duration(seconds: 3),
       ),
     );
+  }
+
+  void showMessageSnackBar(
+    // BuildContext context,
+    String message, {
+    required SnackBarType type,
+  }) {
+    final overlay = Overlay.of(this);
+    late OverlayEntry entry;
+
+    entry = OverlayEntry(
+      builder: (_) => MessageSnackBar(
+        message: message,
+        type: type,
+        onDismiss: () => entry.remove(),
+      ),
+    );
+
+    overlay.insert(entry);
   }
 }
 

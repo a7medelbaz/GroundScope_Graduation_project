@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
-
 import '../../logic/cubit/add_report_cubit.dart';
 import 'replace_options_sheet.dart';
 
@@ -19,12 +18,14 @@ class AddReportImagePreview extends StatelessWidget {
         // Image
         ClipRRect(
           borderRadius: BorderRadius.circular(rr(16)),
-          child: Image.file(
-            state.imageFile!,
-            width: double.infinity,
-            height: rh(200),
-            fit: BoxFit.cover,
-          ),
+          child: state.imageFile == null
+              ? const SizedBox.shrink()
+              : Image.file(
+                  state.imageFile!,
+                  width: double.infinity,
+                  height: rh(200),
+                  fit: BoxFit.cover,
+                ),
         ),
 
         // Top gradient overlay

@@ -1,6 +1,5 @@
 // ── report_repo.dart ──────────────────────────────────────────────────────────
 import 'dart:io';
-
 import '../../../../core/shared/data/models/report_model.dart';
 
 abstract class ReportRepo {
@@ -15,5 +14,5 @@ abstract class ReportRepo {
   });
 
   Future<List<ReportModel>> getReportsByTask(String taskId);
-  Future<List<ReportModel>> getMyReports();
+  Future<List<ReportModel>> getMyReports(String userId);
 }

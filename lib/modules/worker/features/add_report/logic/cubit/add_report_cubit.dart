@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/error/models/app_error.dart';
@@ -7,7 +6,6 @@ import 'package:ground_scope/core/service/user_service.dart';
 import 'package:ground_scope/core/shared/data/repo/report_repo.dart';
 import 'package:ground_scope/core/shared/data/repo/task_repo.dart';
 import 'package:image_picker/image_picker.dart';
-
 import '../../../../../../core/shared/data/models/report_model.dart';
 import '../../../../../../core/shared/data/models/task_model.dart';
 
@@ -145,7 +143,7 @@ class AddReportCubit extends Cubit<AddReportState> {
         imageFile: state.imageFile,
       );
 
-      emit(state.copyWith(status: AddReportStatus.success));
+      emit(state.copyWith(status: AddReportStatus.submitted));
     } on AppError catch (e) {
       emit(state.copyWith(status: AddReportStatus.failure, error: e));
     } catch (_) {
@@ -157,4 +155,5 @@ class AddReportCubit extends Cubit<AddReportState> {
       );
     }
   }
+  void resetForm() => emit(const AddReportState());
 }

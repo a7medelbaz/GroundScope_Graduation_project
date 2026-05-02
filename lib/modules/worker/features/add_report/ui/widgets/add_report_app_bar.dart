@@ -8,22 +8,27 @@ class AddReportAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final customColors = context.customColors;
+
     return SliverToBoxAdapter(
       child: Padding(
         padding: EdgeInsets.only(
-          top: rw(56),
+          top: rh(56),
           left: rw(20),
           right: rw(20),
-          bottom: rw(16),
+          bottom: rh(16),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
+          alignment: Alignment.center,
           children: [
-            IconButton(
-              icon: const Icon(Icons.arrow_back, size: 24),
-              onPressed: context.pop,
+            // ── Centered title ──────────────────────────────────────────────
+            Text(
+              'Add Report',
+              style: AppTextStyles.font20ExtraBold.copyWith(
+                color: customColors.textPrimary,
+              ),
             ),
-            const Text('Add Report', style: AppTextStyles.font22SemiBold),
+            
           ],
         ),
       ),

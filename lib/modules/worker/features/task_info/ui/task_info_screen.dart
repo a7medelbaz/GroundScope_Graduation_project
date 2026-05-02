@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'widgets/task_info_header.dart';
-
 import '../../../../../core/shared/data/models/task_model.dart';
 import '../../../../../core/shared/data/models/task_pause_model.dart';
 import '../../../../../core/themes/app_colors.dart';
