@@ -1,61 +1,105 @@
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/extensions/context_extensions.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ground_scope/core/router/routes.dart';
+import 'package:ground_scope/core/themes/app_colors.dart';
+import 'package:ground_scope/core/themes/app_text_styles.dart';
+import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
-import 'package:ground_scope/modules/worker/features/reports/data/models/report_model.dart';
-import '../../../../../core/router/routes.dart';
-import '../../../../../core/themes/app_text_styles.dart';
-import '../../../core/widgets/info_summary_card.dart';
+import '../logic/cubit/reports_cubit.dart';
+import 'widgets/report_card.dart';
+import 'widgets/reports_empty_state.dart';
+import 'widgets/reports_filter_strip.dart';
+import 'widgets/reports_app_bar.dart';
 
 class ReportsScreen extends StatelessWidget {
   const ReportsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final newReport = ReportModel(
-      title: 'Flight BA2490 - A380 PushBack',
-      description: 'Daily status update',
-      date: DateTime.now(), // Pass it here
-      hourlyData: {},
-      images: [],
-    );
-    return SafeArea(
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            verticalSpacing(25),
-            Text(
-              'Reports',
-              style: AppTextStyles.font20Bold,
-              textAlign: TextAlign.center,
-            ),
-            verticalSpacing(16),
-            InfoSummaryTile(
-              report: newReport,
-              onTap: () {
-                context.pushNamed(
-                  Routes.reportDetailsScreen,
-                  arguments: {
-                    'report':
-                        newReport, // This is the key 'report' being passed
-                  },
-                );
-              },
-            ),
-            // ReportCard(
-            //   report: newReport,
-            //   onTap: () {
-            //     context.pushNamed(
-            //       Routes.reportDetailsScreen,
-            //       arguments: {
-            //         'report':
-            //             newReport, // This is the key 'report' being passed
-            //       },
-            //     );
-            //   },
-            // ),
-          ],
-        ),
+    return  SafeArea(
+      top: false,
+      child: Column(
+        children: [
+          const ReportsAppBar(),
+          const ReportsFilterStrip(),
+          Expanded(child: _Body()),
+        ],
       ),
+    );
+  }
+}
+
+class _Body extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ReportsCubit, ReportsState>(
+      builder: (context, state) {
+        if (state.status == ReportsStatus.initial ||
+            state.status == ReportsStatus.loading) {
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.primary200),
+          );
+        }
+
+        if (state.status == ReportsStatus.failure) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.cloud_off_rounded,
+                  size: rf(48),
+                  color: context.customColors.textDisabled,
+                ),
+                verticalSpacing(12),
+                Text(
+                  state.error?.messageKey ?? 'Something went wrong',
+                  style: AppTextStyles.font14Light.copyWith(
+                    color: context.customColors.textSecondary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                verticalSpacing(8),
+                TextButton.icon(
+                  onPressed: () =>
+                      context.read<ReportsCubit>().fetchMyReports(),
+                  icon: const Icon(Icons.refresh_rounded),
+                  label: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        }
+
+        
+        final reports = state.filteredReports;
+
+        if (reports.isEmpty) {
+          return ReportsEmptyState(isFiltered: state.selectedFilter != null);
+        }
+
+        return RefreshIndicator(
+          color: AppColors.primary200,
+          backgroundColor: context.customColors.background,
+          onRefresh: () => context.read<ReportsCubit>().fetchMyReports(),
+          child: ListView.builder(
+            padding: EdgeInsets.fromLTRB(rw(20), rh(12), rw(20), rh(24)),
+            physics: const AlwaysScrollableScrollPhysics(),
+            itemCount: reports.length,
+            itemBuilder: (context, i) => GestureDetector(
+              onTap: () => context.pushNamed(
+                Routes.reportsDetailsScreen,
+                arguments: {
+                  'report': reports[i],
+                  'cubit': context.read<ReportsCubit>(),
+                },
+                rootNavigator: true,
+              ),
+              child: ReportCard(report: reports[i]),
+            ),
+          ),
+        );
+      },
     );
   }
 }

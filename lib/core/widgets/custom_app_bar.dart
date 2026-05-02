@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../extensions/context_extensions.dart';
+
 import '../themes/app_text_styles.dart';
+import '../utils/extensions/context_ext.dart';
 import '../utils/spacing.dart';
 
 class CustomAppBar extends StatelessWidget {
@@ -11,10 +12,7 @@ class CustomAppBar extends StatelessWidget {
   @override
   Widget build(final BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: responsiveWidth(16),
-        vertical: responsiveHeight(24),
-      ),
+      padding: EdgeInsets.symmetric(horizontal: rw(16), vertical: rh(24)),
       child: Row(
         children: [
           GestureDetector(

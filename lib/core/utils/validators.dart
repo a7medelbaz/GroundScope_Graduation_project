@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+
 import '../utils/regex.dart';
 
 class Validators {
@@ -25,9 +26,9 @@ class Validators {
       return 'auth.validation.required'.tr();
     }
 
-    if (!AppRegex.hasLowerCase(value)) {
-      return 'auth.validation.password_validation_1'.tr();
-    }
+    // if (!AppRegex.hasLowerCase(value)) {
+    //   return 'auth.validation.password_validation_1'.tr();
+    // }
 
     if (!AppRegex.hasUpperCase(value)) {
       return 'auth.validation.password_validation_2'.tr();
