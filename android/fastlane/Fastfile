@@ -4,8 +4,7 @@ platform :android do
   desc "Distribute production build to Firebase"
   lane :release_to_firebase do
     sh "flutter clean"
-    sh "flutter build apk --release --flavor production --target lib/main_production.dart --no-tree-shake-icons"
-
+    sh "flutter build apk --release --flavor production --target lib/main_prod.dart --no-tree-shake-icons"
     # List of testers
     testers_list = [
       "aelbaz0189@gmail.com",
