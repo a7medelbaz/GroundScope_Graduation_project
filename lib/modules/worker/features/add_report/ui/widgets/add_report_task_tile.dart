@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:ground_scope/core/shared/data/models/task_model.dart';
+import 'package:ground_scope/core/themes/app_font_weight.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
+import 'package:ground_scope/core/utils/task_ui_helpers.dart';
 
 // ─── Status Style Model ───────────────────────────────────────────────────────
 
 class _StatusStyle {
-  const _StatusStyle({
-    required this.color,
-    required this.icon,
-    required this.label,
-  });
+  const _StatusStyle({required this.icon, required this.label});
 
-  final Color color;
   final IconData icon;
   final String label;
 }
+
+_StatusStyle _statusStyle(TaskStatus status) => switch (status) {
+  TaskStatus.pending    => const _StatusStyle(icon: Icons.schedule_rounded,        label: 'PENDING'),
+  TaskStatus.assigned   => const _StatusStyle(icon: Icons.assignment_ind_rounded,  label: 'ASSIGNED'),
+  TaskStatus.inProgress => const _StatusStyle(icon: Icons.play_circle_rounded,     label: 'IN PROGRESS'),
+  TaskStatus.paused     => const _StatusStyle(icon: Icons.pause_circle_rounded,    label: 'PAUSED'),
+  TaskStatus.completed  => const _StatusStyle(icon: Icons.check_circle_rounded,    label: 'COMPLETED'),
+  TaskStatus.cancelled  => const _StatusStyle(icon: Icons.cancel_rounded,          label: 'CANCELLED'),
+};
 
 // ─── Main Tile ────────────────────────────────────────────────────────────────
 
@@ -25,58 +31,24 @@ class AddReportTaskTile extends StatelessWidget {
 
   final TaskModel task;
 
-  _StatusStyle _getStatusStyle(TaskStatus status) {
-    return switch (status) {
-      TaskStatus.pending => const _StatusStyle(
-        color: Color(0xFFF59E0B),
-        icon: Icons.schedule_rounded,
-        label: 'PENDING',
-      ),
-      TaskStatus.assigned => const _StatusStyle(
-        color: Color(0xFF6366F1),
-        icon: Icons.assignment_ind_rounded,
-        label: 'ASSIGNED',
-      ),
-      TaskStatus.inProgress => const _StatusStyle(
-        color: Color(0xFF3B82F6),
-        icon: Icons.play_circle_rounded,
-        label: 'IN PROGRESS',
-      ),
-      TaskStatus.paused => const _StatusStyle(
-        color: Color(0xFFF97316),
-        icon: Icons.pause_circle_rounded,
-        label: 'PAUSED',
-      ),
-      TaskStatus.completed => const _StatusStyle(
-        color: Color(0xFF22C55E),
-        icon: Icons.check_circle_rounded,
-        label: 'COMPLETED',
-      ),
-      TaskStatus.cancelled => const _StatusStyle(
-        color: Color(0xFFEF4444),
-        icon: Icons.cancel_rounded,
-        label: 'CANCELLED',
-      ),
-    };
-  }
-
   @override
   Widget build(BuildContext context) {
     final customColors = context.customColors;
     final status = task.status ?? TaskStatus.pending;
-    final style = _getStatusStyle(status);
+    final style = _statusStyle(status);
+    final color = TaskUiHelpers.statusColor(status, context);
 
     return Container(
       decoration: BoxDecoration(
         color: customColors.surface,
         borderRadius: BorderRadius.circular(rr(16)),
         border: Border.all(
-          color: style.color.withValues(alpha: 0.25),
+          color: color.withValues(alpha: 0.25),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: style.color.withValues(alpha: 0.06),
+            color: color.withValues(alpha: 0.06),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -95,7 +67,7 @@ class AddReportTaskTile extends StatelessWidget {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [style.color, style.color.withValues(alpha: 0.3)],
+                    colors: [color, color.withValues(alpha: 0.3)],
                   ),
                 ),
               ),
@@ -126,7 +98,7 @@ class AddReportTaskTile extends StatelessWidget {
                             ),
                           ),
                           horizontalSpacing(10),
-                          _StatusBadge(style: style),
+                          _StatusBadge(style: style, color: color),
                         ],
                       ),
 
@@ -138,18 +110,13 @@ class AddReportTaskTile extends StatelessWidget {
                           Text(
                             'SERVICE',
                             style: AppTextStyles.font12Light.copyWith(
-                              color: style.color.withValues(alpha: 0.8),
-                              fontSize: rr(10),
-                              fontWeight: FontWeight.w700,
+                              color: color.withValues(alpha: 0.8),
+                              fontSize: rf(10),
+                              fontWeight: AppFontWeight.bold,
                               letterSpacing: 0.8,
                             ),
                           ),
                           horizontalSpacing(6),
-                          // Text(
-                          //   task.serviceTypeIcon ?? '🔧',
-                          //   style: AppTextStyles.font12Light,
-                          // ),
-                          // horizontalSpacing(4),
                           Expanded(
                             child: Text(
                               task.serviceTypeName ?? '—',
@@ -168,7 +135,6 @@ class AddReportTaskTile extends StatelessWidget {
                       // ── Bottom metadata row ─────────────────────────────
                       Row(
                         children: [
-                          // Stand
                           Icon(
                             Icons.location_on_rounded,
                             size: rr(11),
@@ -184,7 +150,6 @@ class AddReportTaskTile extends StatelessWidget {
 
                           horizontalSpacing(12),
 
-                          // Time
                           Icon(
                             Icons.access_time_rounded,
                             size: rr(11),
@@ -214,30 +179,31 @@ class AddReportTaskTile extends StatelessWidget {
 // ─── Status Badge ─────────────────────────────────────────────────────────────
 
 class _StatusBadge extends StatelessWidget {
-  const _StatusBadge({required this.style});
+  const _StatusBadge({required this.style, required this.color});
 
   final _StatusStyle style;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: rw(8), vertical: rh(4)),
       decoration: BoxDecoration(
-        color: style.color.withValues(alpha: 0.10),
+        color: color.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(rr(20)),
-        border: Border.all(color: style.color.withValues(alpha: 0.35)),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(style.icon, size: rr(11), color: style.color),
+          Icon(style.icon, size: rr(11), color: color),
           horizontalSpacing(4),
           Text(
             style.label,
             style: AppTextStyles.font12SemiBold.copyWith(
-              color: style.color,
-              fontSize: rr(10),
-              fontWeight: FontWeight.bold,
+              color: color,
+              fontSize: rf(10),
+              fontWeight: AppFontWeight.bold,
               letterSpacing: 0.5,
             ),
           ),

@@ -90,6 +90,7 @@ class ReportModel {
     required this.description,
     required this.severity,
     required this.status,
+    this.imageUrl,
     this.acknowledgedBy,
     this.acknowledgedAt,
     this.resolvedBy,
@@ -105,6 +106,7 @@ class ReportModel {
   final String description;
   final ReportSeverity severity;
   final ReportStatus status;
+  final String? imageUrl;
   final String? acknowledgedBy;
   final DateTime? acknowledgedAt;
   final String? resolvedBy;
@@ -121,6 +123,7 @@ class ReportModel {
       description: map['description'],
       severity: ReportSeverity.fromString(map['severity']),
       status: ReportStatus.fromString(map['status']),
+      imageUrl: map['image_url'],
       acknowledgedBy: map['acknowledged_by'],
       acknowledgedAt: map['acknowledged_at'] != null
           ? DateTime.parse(map['acknowledged_at'])

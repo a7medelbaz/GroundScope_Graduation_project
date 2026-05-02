@@ -68,6 +68,7 @@ class _AddReportScreenState extends State<AddReportScreen>
       listener: (context, state) {
         if (state.status == AddReportStatus.submitted) {
           HapticFeedback.mediumImpact();
+          _descController.clear();
           context.showMessageSnackBar(
             "Report submitted successfully",
             type: SnackBarType.success,
@@ -147,7 +148,6 @@ class _AddReportScreenState extends State<AddReportScreen>
     context.read<AddReportCubit>().submit(
       description: _descController.text.trim(),
     );
-    _descController.dispose();
   }
 }
 
