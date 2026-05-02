@@ -46,11 +46,19 @@ jobs:
       - name: Flutter Pub Get
         run: flutter pub get
 
-      # --- START OF EDITED SECTION ---
-      - name: Create Development Google Services JSON
-        run: echo '${{ secrets.GOOGLE_SERVICES_PRODUCTION }}' > android/app/src/development/google-services.json
+      # ROOT FIX 1: Generate the missing keystore so the 'debug' signing works on GitHub
+      - name: Generate Debug Keystore
+        run: |
+          mkdir -p ~/.android
+          keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
 
-      # --- END OF EDITED SECTION ---
+      # ROOT FIX 2: Recreate the Firebase config files from your GitHub Secrets
+      - name: Create Google Services JSON files
+        run: |
+          mkdir -p android/app/src/development
+          mkdir -p android/app/src/production
+          echo "${{ secrets.GOOGLE_SERVICES_DEVELOPMENT }}" > android/app/src/development/google-services.json
+          echo "${{ secrets.GOOGLE_SERVICES_PRODUCTION }}" > android/app/src/production/google-services.json
 
       - name: Setup Ruby & Fastlane
         uses: ruby/setup-ruby@v1
