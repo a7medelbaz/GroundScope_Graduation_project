@@ -46,6 +46,14 @@ jobs:
       - name: Flutter Pub Get
         run: flutter pub get
 
+      # --- START OF EDITED SECTION ---
+      - name: Create Development Google Services JSON
+        run: echo '${{ secrets.GOOGLE_SERVICES_PRODUCTION }}' > android/app/src/development/google-services.json
+
+      - name: Create Production Google Services JSON
+        run: echo '${{ secrets.GOOGLE_SERVICES_PRODUCTION }}' > android/app/src/production/google-services.json
+      # --- END OF EDITED SECTION ---
+
       - name: Setup Ruby & Fastlane
         uses: ruby/setup-ruby@v1
         with:
