@@ -8,6 +8,7 @@ class Routes {
   static const String taskDetailsInfoScreen = '/taskDetailsInfoScreen';
   static const String addReportScreen = '/addReportScreen';
   static const String reportsScreen = '/reportsScreen';
+  static const String reportsDetailsScreen = '/reportsDetailsScreen';
 
   // ########## Supervisor
   static const String supervisorScaffold = '/supervisorScaffold';

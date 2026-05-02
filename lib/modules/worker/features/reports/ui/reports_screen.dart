@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ground_scope/core/router/routes.dart';
 import 'package:ground_scope/core/themes/app_colors.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
@@ -85,7 +86,17 @@ class _Body extends StatelessWidget {
             padding: EdgeInsets.fromLTRB(rw(20), rh(12), rw(20), rh(24)),
             physics: const AlwaysScrollableScrollPhysics(),
             itemCount: reports.length,
-            itemBuilder: (_, i) => ReportCard(report: reports[i]),
+            itemBuilder: (context, i) => GestureDetector(
+              onTap: () => context.pushNamed(
+                Routes.reportsDetailsScreen,
+                arguments: {
+                  'report': reports[i],
+                  'cubit': context.read<ReportsCubit>(),
+                },
+                rootNavigator: true,
+              ),
+              child: ReportCard(report: reports[i]),
+            ),
           ),
         );
       },

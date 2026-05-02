@@ -4,8 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/di/dependency_injection.dart';
 import 'package:ground_scope/core/router/routes.dart';
 import 'package:ground_scope/core/shared/data/models/task_model.dart';
+import 'package:ground_scope/core/shared/data/models/report_model.dart';
 import 'package:ground_scope/modules/worker/features/add_report/logic/cubit/add_report_cubit.dart';
+import 'package:ground_scope/modules/worker/features/reports/logic/cubit/reports_cubit.dart';
 import 'package:ground_scope/modules/worker/features/add_report/ui/add_report_screen.dart';
+import 'package:ground_scope/modules/worker/features/reports/ui/report_details_screen.dart';
 import 'package:ground_scope/modules/worker/features/task_details/logic/cubit/task_details_cubit.dart';
 import 'package:ground_scope/modules/worker/features/task_details/ui/task_details_screen.dart';
 import 'package:ground_scope/modules/worker/features/task_info/ui/task_info_screen.dart';
@@ -54,6 +57,16 @@ class AppRouter {
           BlocProvider(
             create: (context) => getIt<AddReportCubit>()..fetchTasks(),
             child: AddReportScreen(preSelectedTask: task),
+          ),
+          settings,
+        );
+      case Routes.reportsDetailsScreen:
+        final report = arguments?['report'] as ReportModel;
+        final cubit = arguments?['cubit'] as ReportsCubit;
+        return _buildRoute(
+          BlocProvider.value(
+            value: cubit,
+            child: ReportDetailsScreen(report: report),
           ),
           settings,
         );
