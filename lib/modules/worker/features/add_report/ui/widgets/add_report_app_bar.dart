@@ -9,7 +9,6 @@ class AddReportAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final customColors = context.customColors;
-    final canPop = Navigator.canPop(context);
 
     return SliverToBoxAdapter(
       child: Padding(
@@ -19,37 +18,17 @@ class AddReportAppBar extends StatelessWidget {
           right: rw(20),
           bottom: rh(16),
         ),
-        child: Row(
+        child: Stack(
+          alignment: Alignment.center,
           children: [
-            if (canPop)
-              GestureDetector(
-                onTap: context.pop,
-                child: Container(
-                  width: rw(40),
-                  height: rw(40),
-                  decoration: BoxDecoration(
-                    color: customColors.surfaceVariant,
-                    borderRadius: BorderRadius.circular(rr(12)),
-                    border: Border.all(color: customColors.border),
-                  ),
-                  child: Icon(
-                    Icons.arrow_back_ios_new_rounded,
-                    size: rf(16),
-                    color: customColors.iconPrimary,
-                  ),
-                ),
-              )
-            else
-              SizedBox(width: rw(40)),
-            const Spacer(),
+            // ── Centered title ──────────────────────────────────────────────
             Text(
               'Add Report',
-              style: AppTextStyles.font18SemiBold.copyWith(
+              style: AppTextStyles.font20ExtraBold.copyWith(
                 color: customColors.textPrimary,
               ),
             ),
-            const Spacer(),
-            SizedBox(width: rw(40)),
+            
           ],
         ),
       ),
