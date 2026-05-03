@@ -3,9 +3,15 @@ default_platform(:android)
 platform :android do
   desc "Distribute production build to Firebase"
   lane :release_to_firebase do
-    sh "flutter clean"
-    sh "flutter build apk --release --flavor production --target lib/main_prod.dart --no-tree-shake-icons"
-    # List of testers
+
+    # ✅ FIX: Fastlane runs from android/ directory. Flutter MUST run from the
+    # project root (one level up) because pubspec.yaml, .env, and lib/ are there.
+    # Using ENV["PROJECT_ROOT"] passed from the workflow guarantees the correct path.
+    project_root = ENV["PROJECT_ROOT"] || File.expand_path("../..", __FILE__)
+
+    sh "flutter clean", chdir: project_root
+    sh "flutter build apk --release --flavor production --target lib/main_prod.dart --no-tree-shake-icons", chdir: project_root
+
     testers_list = [
       "aelbaz0189@gmail.com",
       "m9stafa05@gmail.com",
@@ -18,15 +24,12 @@ platform :android do
       "walidaim2@gmail.com"
     ]
 
-    # Convert array to comma-separated string
-    testers_string = testers_list.join(", ")
-
     firebase_app_distribution(
       app: "1:818314557158:android:d245cd4330120925842d27",
       firebase_cli_token: ENV["FIREBASE_CLI_TOKEN"],
       android_artifact_type: "APK",
-      android_artifact_path: "../build/app/outputs/flutter-apk/app-production-release.apk",
-      testers: testers_string,
+      android_artifact_path: "#{project_root}/build/app/outputs/flutter-apk/app-production-release.apk",
+      testers: testers_list.join(", "),
       release_notes: "test this version of the app"
     )
   end
