@@ -42,17 +42,18 @@ jobs:
         with:
           channel: stable
 
-      # ✅ FIX 1: Create the .env file from GitHub Secret BEFORE any Flutter command
-      # Your pubspec.yaml declares .env as an asset for flutter_dotenv.
-      # It's gitignored so CI never has it — we recreate it here from a secret.
-      # Go to: GitHub repo → Settings → Secrets → Actions → New secret
-      # Name: ENV_FILE
-      # Value: paste the entire contents of your local .env file
       - name: Create .env file
         run: |
           cat > .env << 'EOF'
-          ${{ secrets.ENV_FILE}}
+          ${{ secrets.ENV_FILE }}
           EOF
+
+      - name: Create Google Services JSON file
+        run: |
+          mkdir -p android/app/src/production
+          cat > android/app/src/production/google-services.json << 'ENDJSON'
+          ${{ secrets.GOOGLE_SERVICES_PRODUCTION }}
+          ENDJSON
 
       - name: Flutter Pub Get
         run: flutter pub get
@@ -68,13 +69,6 @@ jobs:
             -keyalg RSA -keysize 2048 -validity 10000 \
             -dname "CN=Android Debug,O=Android,C=US"
 
-      - name: Create Google Services JSON files
-        run: |
-          mkdir -p android/app/src/development
-          mkdir -p android/app/src/production
-          echo "${{ secrets.GOOGLE_SERVICES_DEVELOPMENT }}" > android/app/src/development/google-services.json
-          echo "${{ secrets.GOOGLE_SERVICES_PRODUCTION }}" > android/app/src/production/google-services.json
-
       - name: Setup Ruby & Fastlane
         uses: ruby/setup-ruby@v1
         with:
@@ -85,7 +79,6 @@ jobs:
       - name: Build and Distribute App to Firebase
         env:
           FIREBASE_CLI_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
-          # ✅ FIX 2: Pass the project root path so Fastlane knows where to run Flutter from
           PROJECT_ROOT: ${{ github.workspace }}
         run: bundle exec fastlane android release_to_firebase
         working-directory: android
