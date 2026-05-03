@@ -16,8 +16,7 @@ jobs:
       - name: Cache Flutter dependencies
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.pub-cache
+          path: ~/.pub-cache
           key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
           restore-keys: |
             ${{ runner.os }}-pub-
@@ -43,16 +42,32 @@ jobs:
         with:
           channel: stable
 
+      # ✅ FIX 1: Create the .env file from GitHub Secret BEFORE any Flutter command
+      # Your pubspec.yaml declares .env as an asset for flutter_dotenv.
+      # It's gitignored so CI never has it — we recreate it here from a secret.
+      # Go to: GitHub repo → Settings → Secrets → Actions → New secret
+      # Name: ENV_FILE
+      # Value: paste the entire contents of your local .env file
+      - name: Create .env file
+        run: |
+          cat > .env << 'EOF'
+          ${{ secrets.ENV_FILE}}
+          EOF
+
       - name: Flutter Pub Get
         run: flutter pub get
 
-      # ROOT FIX 1: Generate the missing keystore so the 'debug' signing works on GitHub
       - name: Generate Debug Keystore
         run: |
           mkdir -p ~/.android
-          keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          keytool -genkey -v \
+            -keystore ~/.android/debug.keystore \
+            -storepass android \
+            -alias androiddebugkey \
+            -keypass android \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US"
 
-      # ROOT FIX 2: Recreate the Firebase config files from your GitHub Secrets
       - name: Create Google Services JSON files
         run: |
           mkdir -p android/app/src/development
@@ -70,8 +85,9 @@ jobs:
       - name: Build and Distribute App to Firebase
         env:
           FIREBASE_CLI_TOKEN: ${{ secrets.FIREBASE_CLI_TOKEN }}
-        run: |
-          bundle exec fastlane android release_to_firebase
+          # ✅ FIX 2: Pass the project root path so Fastlane knows where to run Flutter from
+          PROJECT_ROOT: ${{ github.workspace }}
+        run: bundle exec fastlane android release_to_firebase
         working-directory: android
 
       - name: Upload APK Artifact
