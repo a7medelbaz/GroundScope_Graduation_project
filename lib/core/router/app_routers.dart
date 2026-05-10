@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ground_scope/core/auth/data/models/user_date.dart';
 import 'package:ground_scope/core/di/dependency_injection.dart';
 import 'package:ground_scope/core/router/routes.dart';
 import 'package:ground_scope/core/shared/data/models/task_model.dart';
@@ -8,6 +9,9 @@ import 'package:ground_scope/core/shared/data/models/report_model.dart';
 import 'package:ground_scope/modules/worker/features/add_report/logic/cubit/add_report_cubit.dart';
 import 'package:ground_scope/modules/worker/features/reports/logic/cubit/reports_cubit.dart';
 import 'package:ground_scope/modules/worker/features/add_report/ui/add_report_screen.dart';
+import 'package:ground_scope/modules/worker/features/profile/data/models/unit_member_model.dart';
+import 'package:ground_scope/modules/worker/features/profile/ui/manager_and_members_screen.dart';
+import 'package:ground_scope/modules/worker/features/profile/ui/member_detail_screen.dart';
 import 'package:ground_scope/modules/worker/features/reports/ui/report_details_screen.dart';
 import 'package:ground_scope/modules/worker/features/task_details/logic/cubit/task_details_cubit.dart';
 import 'package:ground_scope/modules/worker/features/task_details/ui/task_details_screen.dart';
@@ -70,6 +74,25 @@ class AppRouter {
           ),
           settings,
         );
+
+      // Worker Profile routes ─────────────────────────────────────────────
+      case Routes.workerManagerAndMembersScreen:
+        final manager = arguments?['manager'] as UserModel?;
+        final members =
+            (arguments?['members'] as List?)?.cast<UnitMemberModel>() ?? [];
+        if (manager == null) return _buildRoute(const SizedBox.shrink(), settings);
+        return _buildRoute(
+          ManagerAndMembersScreen(manager: manager, members: members),
+          settings,
+        );
+
+      case Routes.workerMemberDetailScreen:
+        final member = arguments?['member'] as UnitMemberModel?;
+        if (member == null) {
+          return _buildRoute(const SizedBox.shrink(), settings);
+        }
+        return _buildRoute(MemberDetailScreen(member: member), settings);
+
       default:
         return _buildRoute(
           Scaffold(
