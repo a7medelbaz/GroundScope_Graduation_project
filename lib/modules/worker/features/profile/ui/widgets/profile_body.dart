@@ -33,7 +33,7 @@ class ProfileBody extends StatelessWidget {
       backgroundColor: cc.background,
       onRefresh: () async {
         if (unitId != null) {
-          await context.read<ProfileCubit>().loadProfile(unitId!);
+          await context.read<ProfileCubit>().loadProfile(unitId: unitId!);
         }
       },
       child: ListView(

@@ -31,7 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _userModel = authState.userModel;
       _unitId = authState.userModel.unitId;
       if (_unitId != null) {
-        context.read<ProfileCubit>().loadProfile(_unitId!);
+        context.read<ProfileCubit>().loadProfile(unitId: _unitId!);
       }
     }
   }
@@ -78,7 +78,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           TextButton.icon(
                             onPressed: () => context
                                 .read<ProfileCubit>()
-                                .loadProfile(_unitId!),
+                                .loadProfile(unitId: _unitId!),
                             icon: const Icon(
                               Icons.refresh_rounded,
                               color: AppColors.primary200,

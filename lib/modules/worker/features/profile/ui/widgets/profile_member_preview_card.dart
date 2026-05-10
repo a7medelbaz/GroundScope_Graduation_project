@@ -5,7 +5,7 @@ import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
 
-import '../../data/models/unit_member_model.dart';
+import 'package:ground_scope/core/shared/data/models/unit_member_model.dart';
 
 class ProfileMemberPreviewCard extends StatelessWidget {
   const ProfileMemberPreviewCard({

@@ -5,7 +5,7 @@ import 'package:ground_scope/core/themes/app_font_weight.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
-import 'package:ground_scope/modules/worker/features/profile/data/models/unit_member_model.dart';
+import 'package:ground_scope/core/shared/data/models/unit_member_model.dart';
 import 'package:ground_scope/modules/worker/features/profile/ui/widgets/nav_button.dart';
 
 class MemberDetailScreenHeader extends StatelessWidget {

@@ -7,7 +7,7 @@ import 'package:ground_scope/core/utils/spacing.dart';
 import 'package:ground_scope/core/widgets/info_card.dart';
 import 'package:ground_scope/core/widgets/info_row_data.dart';
 
-import '../../data/models/unit_profile_model.dart';
+import 'package:ground_scope/core/shared/data/models/unit_profile_model.dart';
 
 class ProfileUnitInfoSection extends StatelessWidget {
   const ProfileUnitInfoSection({super.key, required this.unit});

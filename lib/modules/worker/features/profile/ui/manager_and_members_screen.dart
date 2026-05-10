@@ -7,7 +7,7 @@ import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
 import 'package:ground_scope/modules/worker/features/profile/ui/widgets/members_screen_header.dart';
 
-import '../data/models/unit_member_model.dart';
+import 'package:ground_scope/core/shared/data/models/unit_member_model.dart';
 import 'widgets/member_list_card.dart';
 import 'widgets/unit_manager_detail_card.dart';
 

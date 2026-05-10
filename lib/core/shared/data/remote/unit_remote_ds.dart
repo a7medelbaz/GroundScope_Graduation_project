@@ -2,6 +2,7 @@ import 'package:ground_scope/core/error/models/app_error.dart';
 import 'package:ground_scope/core/error/types/error_handler.dart';
 import 'package:ground_scope/core/networking/supabase_service.dart';
 import 'package:ground_scope/core/shared/data/models/unit_model.dart';
+import 'package:ground_scope/core/shared/data/models/unit_profile_model.dart';
 
 class UnitRemoteDs {
   const UnitRemoteDs({required this.supabaseService});
@@ -19,6 +20,19 @@ class UnitRemoteDs {
         throw AppError.unauthorized("Unit not found with ID: $unitId");
       }
       return UnitModel.fromJson(response);
+    } catch (e) {
+      throw ErrorHandler.handle(e);
+    }
+  }
+
+  Future<UnitProfileModel> fetchUnitById(String unitId) async {
+    try {
+      final response = await supabaseService.client
+          .from('units')
+          .select('*, service_types(name)')
+          .eq('id', unitId)
+          .single();
+      return UnitProfileModel.fromMap(response);
     } catch (e) {
       throw ErrorHandler.handle(e);
     }

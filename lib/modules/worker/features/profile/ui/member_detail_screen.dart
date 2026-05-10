@@ -7,7 +7,7 @@ import 'package:ground_scope/core/widgets/info_card.dart';
 import 'package:ground_scope/core/widgets/info_row_data.dart';
 import 'package:ground_scope/modules/worker/features/profile/ui/widgets/member_detail_screen_header.dart';
 
-import '../data/models/unit_member_model.dart';
+import 'package:ground_scope/core/shared/data/models/unit_member_model.dart';
 
 class MemberDetailScreen extends StatelessWidget {
   const MemberDetailScreen({super.key, required this.member});
