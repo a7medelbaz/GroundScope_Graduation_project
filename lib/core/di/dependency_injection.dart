@@ -5,6 +5,7 @@ import 'package:ground_scope/core/shared/data/repo/report_repo.dart';
 import 'package:ground_scope/core/shared/data/repo/report_repo_impl.dart';
 import '../../modules/worker/features/add_report/logic/cubit/add_report_cubit.dart';
 import '../../modules/worker/features/home/logic/cubit/home_cubit.dart';
+import '../../modules/worker/features/profile/logic/cubit/profile_cubit.dart';
 import '../../modules/worker/features/reports/logic/cubit/reports_cubit.dart';
 import '../../modules/worker/features/task_details/data/remote/task_details_remote_ds.dart';
 import '../../modules/worker/features/task_details/data/repo/task_details_repo.dart';
@@ -24,6 +25,9 @@ import '../shared/data/repo/flight_repo.dart';
 import '../shared/data/repo/flight_repo_impl.dart';
 import '../shared/data/repo/task_repo.dart';
 import '../shared/data/repo/task_repo_impl.dart';
+import '../shared/data/remote/unit_member_remote_ds.dart';
+import '../shared/data/repo/unit_member_repo.dart';
+import '../shared/data/repo/unit_member_repo_impl.dart';
 import '../shared/data/repo/unit_repo.dart';
 import '../shared/data/repo/unit_repo_impl.dart';
 
@@ -124,5 +128,16 @@ Future<void> setUpDependencies() async {
       reportRepo: getIt<ReportRepo>(),
       userService: getIt<UserService>(),
     ),
+  );
+
+  // Profile DI
+  getIt.registerLazySingleton<UnitMemberRemoteDs>(
+    () => UnitMemberRemoteDs(supabaseService: getIt<SupabaseService>()),
+  );
+  getIt.registerLazySingleton<UnitMemberRepo>(
+    () => UnitMemberRepoImpl(unitMemberRemoteDs: getIt<UnitMemberRemoteDs>()),
+  );
+  getIt.registerFactory<ProfileCubit>(
+    () => ProfileCubit(getIt<UnitRepo>(), getIt<UnitMemberRepo>()),
   );
 }
