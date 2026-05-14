@@ -117,6 +117,7 @@ lib/
 │       ├── info_card.dart
 │       ├── info_row_data.dart         # Key-value row
 │       ├── notification_button.dart
+│       ├── massage_snack_bar.dart
 │       ├── dialogs/
 │       │   ├── app_dialogs.dart
 │       │   └── custom_dialog.dart
@@ -131,7 +132,7 @@ lib/
 │   │   │       └── ui/worker_scaffold.dart   # PersistentTabView with 5 tabs
 │   │   └── features/
 │   │       ├── home/             # Tab 0 — task list + unit info
-│   │       ├── reports/          # Tab 1 — worker's submitted reports
+│   │       ├── reports/          # Tab 1 — worker's submitted reports (report_details_screen.dart pushed via Routes.reportsDetailsScreen)
 │   │       ├── add_report/       # Tab 2 — report submission form (also pushable as route)
 │   │       ├── notifications/    # Tab 3
 │   │       ├── profile/          # Tab 4
@@ -144,7 +145,7 @@ lib/
 │   │       ├── dashboard/        # Supervisor overview
 │   │       ├── tasks/            # Task management
 │   │       ├── units/            # Unit/team management
-│   │       ├── reports/          # All worker reports
+│   │       ├── reports/          # All worker reports (UI stub — data/ folder exists but is empty)
 │   │       ├── notifications/
 │   │       └── profile/
 │   │
@@ -205,6 +206,7 @@ class Routes {
   static const String taskDetailsInfoScreen = '/taskDetailsInfoScreen';
   static const String addReportScreen    = '/addReportScreen';
   static const String reportsScreen      = '/reportsScreen';
+  static const String reportsDetailsScreen = '/reportsDetailsScreen';
   static const String supervisorScaffold = '/supervisorScaffold';
   static const String supervisorTaskListScreen = '/supervisorTaskListScreen';
   static const String adminScreen        = '/adminScreen';
