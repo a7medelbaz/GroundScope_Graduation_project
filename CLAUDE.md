@@ -409,3 +409,8 @@ SUPABASE_ANON_KEY=...
 - Don't use raw `Navigator.push` with widget constructors for inter-screen navigation — use named routes.
 - Don't call `context.pop()` unconditionally on screens that can appear as both a tab and a pushed route.
 - Don't inline `TextStyle(...)` or raw `Color(0x...)` values — always use `AppTextStyles` and `AppColors`.
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->
