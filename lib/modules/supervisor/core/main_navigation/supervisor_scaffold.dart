@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:ground_scope/modules/supervisor/core/main_navigation/cubit/supervisor_bottom_nav_cubit.dart';
+import 'package:ground_scope/modules/supervisor/features/dashboard/logic/cubit/supervisor_dashboard_cubit.dart';
+import 'package:ground_scope/modules/supervisor/features/reports/logic/cubit/supervisor_reports_cubit.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import '../../../../../core/themes/app_colors.dart';
 import '../../../../../core/utils/extensions/context_ext.dart';
@@ -28,7 +33,7 @@ class _SupervisorScaffoldState extends State<SupervisorScaffold> {
     return [
       const SupervisorDashboardScreen(),
       const SupervisorReportsScreen(),
-      Container(), // Placeholder for the middle button
+      Container(),
       const SupervisorTasksScreen(),
       const SupervisorProfileScreen(),
     ];
@@ -51,9 +56,7 @@ class _SupervisorScaffoldState extends State<SupervisorScaffold> {
         icon: Icon(Icons.add, size: rr(32), color: Colors.white),
         activeColorPrimary: AppColors.primary300,
         inactiveColorPrimary: AppColors.primary300,
-        onPressed: (context) {
-          // Add your action here (e.g., show a bottom sheet)
-        },
+        onPressed: (context) {},
       ),
       PersistentBottomNavBarItem(
         icon: Icon(Icons.assignment_outlined, size: rr(28), color: activeColor),
@@ -72,30 +75,48 @@ class _SupervisorScaffoldState extends State<SupervisorScaffold> {
 
   @override
   Widget build(BuildContext context) {
-    return PersistentTabView(
-      context,
-      controller: _controller,
-      screens: _buildScreens(),
-      items: _navBarItems(context),
-      navBarStyle: NavBarStyle.style15,
-      navBarHeight: rh(70),
-      padding: EdgeInsets.only(top: rh(2), bottom: rh(8)),
-      backgroundColor: context.customColors.background.withValues(alpha: 0.95),
-      decoration: NavBarDecoration(
-        colorBehindNavBar: context.customColors.background,
-        boxShadow: [
-          BoxShadow(
-            color: context.customColors.textPrimary.withValues(alpha: 0.15),
-            // blurRadius: 2,
-            // offset: const Offset(0, -2),
-            blurRadius:
-                15, // <--- Increase this for more "blur" (e.g., from 2 to 15)
-            spreadRadius: 3, // <--- Add this to make the shadow cover more area
-            offset: const Offset(0, -2),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<SupervisorBottomNavCubit>(
+          create: (_) => SupervisorBottomNavCubit(),
+        ),
+        BlocProvider<SupervisorDashboardCubit>(
+          create: (_) =>
+              GetIt.I<SupervisorDashboardCubit>()..loadDashboard(),
+        ),
+        BlocProvider<SupervisorReportsCubit>(
+          create: (_) =>
+              GetIt.I<SupervisorReportsCubit>()..loadReports(),
+        ),
+      ],
+      child: BlocListener<SupervisorBottomNavCubit, int>(
+        listener: (context, tabIndex) {
+          _controller.jumpToTab(tabIndex);
+        },
+        child: PersistentTabView(
+          context,
+          controller: _controller,
+          screens: _buildScreens(),
+          items: _navBarItems(context),
+          navBarStyle: NavBarStyle.style15,
+          navBarHeight: rh(70),
+          padding: EdgeInsets.only(top: rh(2), bottom: rh(8)),
+          backgroundColor:
+              context.customColors.background.withValues(alpha: 0.95),
+          decoration: NavBarDecoration(
+            colorBehindNavBar: context.customColors.background,
+            boxShadow: [
+              BoxShadow(
+                color: context.customColors.textPrimary.withValues(alpha: 0.15),
+                blurRadius: 15,
+                spreadRadius: 3,
+                offset: const Offset(0, -2),
+              ),
+            ],
           ),
-        ],
+          confineToSafeArea: true,
+        ),
       ),
-      confineToSafeArea: true,
     );
   }
 }

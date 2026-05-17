@@ -62,6 +62,18 @@ class ReportRemoteDs {
     return (data as List).map((e) => ReportModel.fromMap(e)).toList();
   }
 
+  Future<List<ReportModel>> fetchAllReports() async {
+    final data = await supabaseService.client
+        .from('reports')
+        .select()
+        .order('created_at', ascending: false);
+    return (data as List).map((e) => ReportModel.fromMap(e)).toList();
+  }
+
+  Future<void> deleteReport(String id) async {
+    await supabaseService.client.from('reports').delete().eq('id', id);
+  }
+
   Future<String> _uploadReportImage(File file, String taskId) async {
     final userId = supabaseService.currentUser!.id;
     final fileName =

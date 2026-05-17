@@ -34,4 +34,11 @@ class ReportRepoImpl implements ReportRepo {
   @override
   Future<List<ReportModel>> getMyReports(String userId) =>
       reportRemoteDs.getMyReports(userId);
+
+  @override
+  Future<List<ReportModel>> fetchAllReports() =>
+      reportRemoteDs.fetchAllReports();
+
+  @override
+  Future<void> deleteReport(String id) => reportRemoteDs.deleteReport(id);
 }

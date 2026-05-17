@@ -1,7 +1,15 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+
+import '../../../../../../../core/service/user_service.dart';
 import '../../../../../../../core/themes/app_colors.dart';
 import '../../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../../core/utils/spacing.dart';
+import '../../data/repo/supervisor_dashboard_repo.dart';
+import '../../logic/cubit/assign_task_cubit.dart';
+import 'assign_task_bottom_sheet.dart';
 
 class SupervisorQuickActionsRow extends StatelessWidget {
   const SupervisorQuickActionsRow({super.key});
@@ -11,23 +19,27 @@ class SupervisorQuickActionsRow extends StatelessWidget {
     return Column(
       children: [
         _QuickActionButton(
-          icon: Icons.warning_amber_rounded,
-          label: 'Report Incident',
-          backgroundColor: AppColors.primary200,
-          onTap: () {
-            // TODO: navigate to report incident screen
-          },
-        ),
-        verticalSpacing(12),
-        _QuickActionButton(
           icon: Icons.assignment_outlined,
-          label: 'Assign Task',
-          backgroundColor: AppColors.grey700,
-          onTap: () {
-            // TODO: navigate to assign task screen
-          },
+          label: 'supervisor_dashboard.assign_task'.tr(),
+          backgroundColor: AppColors.primary200,
+          onTap: () => _openAssignTask(context),
         ),
       ],
+    );
+  }
+
+  void _openAssignTask(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => BlocProvider(
+        create: (_) => AssignTaskCubit(
+          repo: GetIt.I<SupervisorDashboardRepo>(),
+          userService: GetIt.I<UserService>(),
+        )..loadFormData(),
+        child: const AssignTaskBottomSheet(),
+      ),
     );
   }
 }
@@ -49,6 +61,7 @@ class _QuickActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(rr(14)),
       child: Container(
         width: double.infinity,
         padding: EdgeInsets.symmetric(horizontal: rw(20), vertical: rh(16)),

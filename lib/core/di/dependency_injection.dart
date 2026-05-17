@@ -30,6 +30,11 @@ import '../shared/data/repo/unit_member_repo.dart';
 import '../shared/data/repo/unit_member_repo_impl.dart';
 import '../shared/data/repo/unit_repo.dart';
 import '../shared/data/repo/unit_repo_impl.dart';
+import '../../modules/supervisor/features/dashboard/data/remote/supervisor_dashboard_remote_ds.dart';
+import '../../modules/supervisor/features/dashboard/data/repo/supervisor_dashboard_repo.dart';
+import '../../modules/supervisor/features/dashboard/data/repo/supervisor_dashboard_repo_impl.dart';
+import '../../modules/supervisor/features/dashboard/logic/cubit/supervisor_dashboard_cubit.dart';
+import '../../modules/supervisor/features/reports/logic/cubit/supervisor_reports_cubit.dart';
 
 final getIt = GetIt.instance;
 Future<void> setUpDependencies() async {
@@ -128,6 +133,20 @@ Future<void> setUpDependencies() async {
       reportRepo: getIt<ReportRepo>(),
       userService: getIt<UserService>(),
     ),
+  );
+
+  // Supervisor Dashboard DI
+  getIt.registerLazySingleton<SupervisorDashboardRemoteDs>(
+    () => SupervisorDashboardRemoteDs(supabaseService: getIt<SupabaseService>()),
+  );
+  getIt.registerLazySingleton<SupervisorDashboardRepo>(
+    () => SupervisorDashboardRepoImpl(remoteDs: getIt<SupervisorDashboardRemoteDs>()),
+  );
+  getIt.registerFactory<SupervisorDashboardCubit>(
+    () => SupervisorDashboardCubit(repo: getIt<SupervisorDashboardRepo>()),
+  );
+  getIt.registerFactory<SupervisorReportsCubit>(
+    () => SupervisorReportsCubit(reportRepo: getIt<ReportRepo>()),
   );
 
   // Profile DI
