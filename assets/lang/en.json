@@ -116,7 +116,9 @@
   },
   "supervisor_reports": {
     "title": "Reports",
+    "subtitle": "Monitor all worker reports",
     "no_reports": "No reports found",
+    "no_reports_subtitle": "Worker reports will appear here",
     "load_failed": "Failed to load reports. Please try again.",
     "report_deleted_success": "Report deleted successfully"
   },

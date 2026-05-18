@@ -116,7 +116,9 @@
   },
   "supervisor_reports": {
     "title": "التقارير",
+    "subtitle": "مراقبة تقارير جميع العمال",
     "no_reports": "لا توجد تقارير",
+    "no_reports_subtitle": "ستظهر تقارير العمال هنا",
     "load_failed": "فشل تحميل التقارير. حاول مرة أخرى.",
     "report_deleted_success": "تم حذف التقرير بنجاح"
   },
