@@ -1,5 +1,3 @@
-* [ ] col1col2col3
-
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
@@ -186,6 +184,10 @@ feature/
 
 All services, data sources, repositories, and cubits are registered in `lib/core/di/dependency_injection.dart` and initialised before `runApp()`. Use `getIt<T>()` to resolve. Tab-level cubits (HomeCubit, AddReportCubit, ReportsCubit) are provided in `UserAuthenticatedCheck`'s `MultiBlocProvider`. Feature cubits for pushed routes (TaskDetailsCubit) are provided in `app_routers.dart` via `BlocProvider`.
 
+### Supervisor Tab Switching
+
+`SupervisorBottomNavCubit` (state: `int`) lets any child widget jump to a supervisor tab without holding a reference to `PersistentTabController`. Call `context.read<SupervisorBottomNavCubit>().jumpTo(index)` from any descendant widget; a `BlocListener` in `SupervisorScaffold` calls `_controller.jumpToTab(index)`. Use this pattern instead of passing the controller down the tree.
+
 ### Navigation
 
 `WorkerScaffold` uses `PersistentTabView` (5 tabs). The "Add Report" tab (`index 2`) embeds `AddReportScreen` directly — it is **not** pushed as a route, so `Navigator.canPop(context)` is `false` there. Cross-module and pushed screens use named routes via `Navigator.pushNamed`. Always use the context extension helpers from `context_ext.dart`.
@@ -323,6 +325,7 @@ All user-facing strings must go through `easy_localization` (`.tr()` extension).
 ### Global vs local cubits
 
 - **Global** (app root via `MultiBlocProvider` in `UserAuthenticatedCheck`): `AuthCubit`, `AppSettingsCubit`, `HomeCubit`, `AddReportCubit`, `ReportsCubit`
+- **Supervisor scaffold-level** (provided in `SupervisorScaffold`'s `MultiBlocProvider`): `SupervisorDashboardCubit`, `SupervisorReportsCubit`, `SupervisorBottomNavCubit`
 - **Route-level** (in `app_routers.dart` per-route `BlocProvider`): `TaskDetailsCubit`
 - Never put feature-specific logic in global cubits
 
@@ -352,6 +355,44 @@ AppError.timeout()
 AppError.unauthorized()
 AppError.serverError()
 ```
+
+### Partial-Failure Pattern — `_safeCall<T>()`
+
+When multiple independent parallel queries should resolve individually (partial success > total failure), wrap each in a private `_safeCall<T>()` helper that returns a Dart 3 record instead of throwing:
+
+```dart
+Future<(T?, AppError?)> _safeCall<T>(Future<T> Function() fn) async {
+  try {
+    return (await fn(), null);
+  } on AppError catch (e) {
+    return (null, e);
+  } catch (_) {
+    return (null, AppError.unknown());
+  }
+}
+
+// Collect all results — never throws, each resolves independently:
+final results = await Future.wait<dynamic>([
+  _safeCall<int>(() => repo.fetchCount()),
+  _safeCall<List<X>>(() => repo.fetchList()),
+]);
+final (int? count, AppError? e0) = results[0] as (int?, AppError?);
+```
+
+Use nullable fields on the model to carry partial data. Do **not** use `Future.wait` for independent parallel queries — one failure kills all.
+
+### Session-Expiry Handling
+
+`AppError.isAuthError` returns `true` for `unauthorized` and `forbidden` types. When detected during any dashboard/data load, emit a dedicated `sessionExpired` status instead of `failure`, then handle it in the UI layer via `BlocListener`:
+
+```dart
+// In the BlocConsumer listener:
+if (state.status == DashboardStatus.sessionExpired) {
+  context.read<AuthCubit>().logout(); // clears state → UserAuthenticatedCheck routes to login
+}
+```
+
+Never show a raw error card for an expired session — always redirect to login.
 
 ---
 
