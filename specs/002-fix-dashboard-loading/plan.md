@@ -1,170 +1,110 @@
-# Implementation Plan: Supervisor Dashboard Loading Failure Recovery
+# Audit Plan: Fix Supervisor Dashboard Loading
 
-**Branch**: `features/002-fix-dashboard-loading` | **Date**: 2026-05-18 | **Spec**: [spec.md](./spec.md)
+**Feature**: `specs/002-fix-dashboard-loading/`
+**Constitution**: `specs/002-fix-dashboard-loading/constitution.md`
+**Date**: 2026-05-18
+**Status**: Implementation complete — awaiting approval review
 
-**Input**: Feature specification from `specs/002-fix-dashboard-loading/spec.md`
+---
 
-## Summary
+## 1. Repo Call Audit
 
-The supervisor dashboard uses `Future.wait` to execute 5 Supabase queries in parallel. A single query failure causes the entire dashboard to show an error state, making the screen unusable even when other data is available. Session expiry is misclassified as a generic error, requiring supervisors to force-quit the app. Pull-to-refresh can hang indefinitely if a `sessionExpired` state is emitted.
+All calls are inside `SupervisorDashboardCubit.loadDashboard()`.
 
-The fix replaces `Future.wait` with independently settled calls (`_safeCall<T>()` returning a Dart 3 `(T?, AppError?)` record), adds a `sessionExpired` status to the dashboard state that triggers `AuthCubit.logout()` via a `BlocListener`, guards against concurrent loads, fixes the pull-to-refresh predicate, and makes `DashboardStatsModel` fields nullable to represent partial data.
+| # | Method | Return type | Mode |
+|---|--------|-------------|------|
+| 1 | `repo.fetchActiveUnitsCount()` | `Future<int>` | PARALLEL |
+| 2 | `repo.fetchCompletedTasksTodayCount()` | `Future<int>` | PARALLEL |
+| 3 | `repo.fetchDelayedTasksCount()` | `Future<int>` | PARALLEL |
+| 4 | `repo.fetchReportsTodayCount()` | `Future<int>` | PARALLEL |
+| 5 | `repo.fetchTodaysTasksForSummary()` | `Future<List<Map<String,dynamic>>>` | PARALLEL |
 
-## Technical Context
+All 5 are dispatched simultaneously via `Future.wait<dynamic>([...])`. Each is individually wrapped in `_safeCall<T>()` so a single failure does not abort the others.
 
-**Language/Version**: Dart 3.x / Flutter 3.x (stable)
+No sequential calls exist in the cubit. `_buildSummary()` and `_dominantError()` are pure Dart — no I/O.
 
-**Primary Dependencies**: `flutter_bloc ^9.1.1`, `equatable ^2.0.8`, `supabase_flutter ^2.10.3`, `easy_localization ^3.0.8`, `flutter_screenutil ^5.9.3`
+---
 
-**Storage**: Supabase PostgreSQL (via `SupabaseService` wrapper). No local storage changes in this fix.
+## 2. Constitution Compliance
 
-**Testing**: `make test` (Flutter test runner). No new test files are added by this fix — existing cubit state transitions are the validation target.
+| Rule | Pass? | Notes |
+|------|-------|-------|
+| `_safeCall<T>()` + `Future.wait` for all independent queries | ✅ | All 5 queries |
+| State fields nullable per metric | ✅ | `DashboardStatsModel` fields are `int?` |
+| `sessionExpired` status → UI redirects via `AuthCubit.logout()` | ✅ | `BlocListener` in screen |
+| Never access Supabase directly — always through repo | ✅ | Only `SupervisorDashboardRepo` touched |
+| CLAUDE.md error handling pattern exactly | ✅ | `on AppError` first, then `catch (_)` → `AppError.unknown()` |
 
-**Target Platform**: Android + iOS (Flutter mobile app)
+---
 
-**Project Type**: Mobile app — modular feature fix within an existing Flutter application
+## 3. Findings
 
-**Performance Goals**: Dashboard data (or error state) visible within 5 seconds of screen open; pull-to-refresh always completes within 12 seconds.
+### Finding A — All constitution rules satisfied
 
-**Constraints**: No new named routes, DI registrations, or localization keys. No changes outside the 5 files identified in research. `DashboardStatsModel` field change must be backward-compatible at the UI layer.
+The current cubit implementation meets every rule in the constitution. No violations.
 
-**Scale/Scope**: 5 files changed, 1 new enum value, 1 new private helper method, 4 nullable field changes. Contained entirely within `lib/modules/supervisor/features/dashboard/`.
+### Finding B — Pull-to-refresh uses correct terminal predicate
 
-## Constitution Check
-
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
-
-| Principle | Status | Notes |
-|-----------|--------|-------|
-| I. Modular Role-Based Architecture | ✅ PASS | All changes are inside `modules/supervisor/features/dashboard/`. No cross-module imports. |
-| II. Repository Pattern | ✅ PASS | Cubit calls `repo.*` methods only. `_safeCall<T>()` wraps repo calls — no Supabase access in cubit. |
-| III. BLoC/Cubit State Management | ✅ PASS | New `sessionExpired` status added to `DashboardStatus`. Session redirect triggered via `BlocListener` calling `AuthCubit.logout()`. All exceptions caught and emitted as `AppError`. |
-| IV. Responsive UI | ✅ PASS | No new sizing values introduced. Existing `rw/rh/rr/rf` usage unchanged. |
-| V. Localization-First | ✅ PASS | No new strings. Existing `errors.*` keys cover all failure types (research Finding 6). |
-
-**Complexity Tracking**: No violations — no new complexity is introduced.
-
-## Project Structure
-
-### Documentation (this feature)
-
-```text
-specs/002-fix-dashboard-loading/
-├── plan.md              # This file
-├── spec.md              # Feature specification
-├── research.md          # Phase 0 output — 7 technical decisions
-└── tasks.md             # Phase 2 output (generated by /speckit-tasks)
-```
-
-No `contracts/` directory or `quickstart.md` needed — this is an internal state/logic fix with no new public interfaces or external integration tests.
-
-### Source Code (files changed by this feature)
-
-```text
-lib/modules/supervisor/features/dashboard/
-├── data/
-│   └── models/
-│       └── dashboard_stats_model.dart          # CHANGE: 4 fields int → int?
-├── logic/
-│   └── cubit/
-│       ├── supervisor_dashboard_cubit.dart     # CHANGE: _safeCall helper, concurrency guard, session detection
-│       └── supervisor_dashboard_state.dart     # CHANGE: add sessionExpired to DashboardStatus
-└── ui/
-    ├── supervisor_dashboard_screen.dart        # CHANGE: BlocListener for sessionExpired, pull-to-refresh fix
-    └── widgets/
-        └── supervisor_status_grid.dart         # CHANGE: per-field null handling in stat cards
-```
-
-**No changes to**: Routes, DI registrations (`dependency_injection.dart`), localization files (`en.json`/`ar.json`), shared models, or any other module.
-
-## Implementation Design
-
-### Data Model Change — `DashboardStatsModel`
-
-Change all four stat fields from `required int` to `int?`. The existing `'—'` display fallback in the stat grid already handles `null` at the widget level (when `stats == null`); this change extends that to per-field nulls.
-
-```
-Before: required int activeUnits / completedTasksToday / delayedTasks / reportsToday
-After:  int? activeUnits / completedTasksToday / delayedTasks / reportsToday
-```
-
-### State Change — `DashboardStatus`
-
-Add `sessionExpired` to the enum:
-
-```
-enum DashboardStatus { initial, loading, success, failure, sessionExpired }
-```
-
-### Cubit Changes — `SupervisorDashboardCubit`
-
-**1. `_safeCall<T>()` helper** (private, generic):
+The screen's `onRefresh` awaits:
 ```dart
-Future<(T?, AppError?)> _safeCall<T>(Future<T> Function() fn) async {
-  try {
-    return (await fn(), null);
-  } on AppError catch (e) {
-    return (null, e);
-  } catch (_) {
-    return (null, AppError.unknown());
-  }
-}
+stream.firstWhere((s) => s.status != DashboardStatus.loading)
+      .timeout(const Duration(seconds: 12), onTimeout: () => state)
 ```
+This terminates on `success`, `failure`, and `sessionExpired` — any non-loading state. The 12-second timeout ensures the indicator never hangs.
 
-**2. `loadDashboard()` rewrite**:
-- Concurrency guard: `if (state.status == DashboardStatus.loading) return;`
-- Run 5 `_safeCall` wrappers in parallel via `Future.wait`
-- After all settle: check if any error `isAuthError` → emit `sessionExpired`
-- Otherwise: build `DashboardStatsModel` with nullable fields (null where query failed)
-- Dominant error selection for full-screen error: `noInternet` > `internalServer` > `unknown`
-- Emit `success` even when some fields are null (partial data case)
-- Emit `failure` only when all queries fail AND none are auth errors
+### Finding C — Session-expiry redirect path is correct
 
-### Screen Changes — `SupervisorDashboardScreen`
+`BlocConsumer.listener` calls `context.read<AuthCubit>().logout()` when `sessionExpired` is emitted. `AuthCubit.logout()` emits `AuthUnauthenticated` → `UserAuthenticatedCheck` routes to login. No broken dashboard is left on screen.
 
-**1. `BlocListener` for session expiry**:
+### Finding D — Partial data path is correct
+
+When only some queries fail, `DashboardStatsModel` is built with `null` for failed fields, `success` status is still emitted, and the stat grid shows `'—'` for null fields via the double null-safe access (`stats?.field?.toString() ?? '—'`). The full-screen error body only appears when ALL 5 queries fail (`errors.length == 5`).
+
+### Finding E — One subtle gap: `hasData` does not distinguish partial data
+
+`SupervisorDashboardState.hasData` returns `stats != null && taskSummary != null`. In the partial-failure path, `stats` is always set (even with all-null fields) and `taskSummary` falls back to `TaskStatusSummaryModel(total:0, ...)` (not null). So `hasData` is always `true` after any successful path — the full-screen error body is never shown alongside partial data. **This is the intended behaviour**, but it means a supervisor with all-null stats sees an empty stat grid with no explicit "some data unavailable" indicator at the grid level.
+
+---
+
+## 4. Exact Changes Needed
+
+Based on the audit, the implementation is **complete and correct** against every constitution rule.
+
+The only optional improvement (not a constitution violation) is Finding E:
+
+### Optional — Per-field unavailable indicator in stat grid
+
+**File**: `lib/modules/supervisor/features/dashboard/ui/widgets/supervisor_status_grid.dart`
+
+**Current**: Stat cards that have a `null` field value show `'—'` text. No visual distinction from a card that simply loaded `0`.
+
+**Proposed**: Add a subtle warning icon or muted colour to the `'—'` state so supervisors know the value is unavailable rather than genuinely zero.
+
 ```dart
-BlocListener<SupervisorDashboardCubit, SupervisorDashboardState>(
-  listenWhen: (_, s) => s.status == DashboardStatus.sessionExpired,
-  listener: (context, state) {
-    context.read<AuthCubit>().logout();
-  },
-)
+// Current _StatCard value branch:
+value == '—'
+    ? Text('—', style: ...)
+    : Text(value, ...).animate(...)
+
+// Proposed addition — icon alongside '—':
+value == '—'
+    ? Row(children: [
+        Text('—', style: ...),
+        horizontalSpacing(4),
+        Icon(Icons.info_outline_rounded, size: rf(12), color: cc.textHint),
+      ])
+    : Text(value, ...).animate(...)
 ```
 
-**2. Pull-to-refresh predicate fix**:
-```dart
-// Before (hangs on sessionExpired):
-.firstWhere((s) => s.status == DashboardStatus.success || s.status == DashboardStatus.failure)
+**Priority**: Low — not required by constitution; purely a UX improvement.
+**Requires approval before implementation.**
 
-// After (terminates on any non-loading status):
-.firstWhere((s) => s.status != DashboardStatus.loading)
- .timeout(const Duration(seconds: 12), onTimeout: () => state)
-```
+---
 
-### Widget Changes — `supervisor_status_grid.dart`
+## 5. Files Affected by Optional Change
 
-`_StatCard` already shows `'—'` when `stats == null`. Extend this per-field:
-- Each card reads its specific `int?` field
-- If field is `null` → show `'—'` (same placeholder as full-null case)
-- If field has a value → show normally
+| File | Change |
+|------|--------|
+| `lib/modules/supervisor/features/dashboard/ui/widgets/supervisor_status_grid.dart` | Add info icon alongside `'—'` in `_StatCard` |
 
-## Phases
-
-### Phase 1 — Data Model (no UI dependency)
-- T001: Change `DashboardStatsModel` fields to `int?`
-- T002: Add `sessionExpired` to `DashboardStatus` enum
-
-### Phase 2 — Cubit Logic
-- T003: Add `_safeCall<T>()` private helper to `SupervisorDashboardCubit`
-- T004: Rewrite `loadDashboard()` with concurrency guard, settled calls, session detection, dominant error
-- T005: Update `loadDashboard()` to build partial `DashboardStatsModel` with nullable fields
-
-### Phase 3 — UI
-- T006: Add `BlocListener` for `sessionExpired` in `supervisor_dashboard_screen.dart`
-- T007: Fix pull-to-refresh predicate and add `.timeout(12s)`
-- T008: Update `supervisor_status_grid.dart` stat cards for per-field null handling
-
-### Phase 4 — Validation
-- T009: Run `flutter analyze` — zero issues
-- T010: Manual smoke test: load with valid session, load with no internet, simulate session expiry
+No other files need changes. All constitution rules are already satisfied by the current implementation.
