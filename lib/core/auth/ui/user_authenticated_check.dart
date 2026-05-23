@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ground_scope/modules/admin/features/dashboard/logic/cubit/admin_dashboard_cubit.dart';
+import 'package:ground_scope/modules/admin/features/dashboard/ui/admin_dashboard_screen.dart';
 import 'package:ground_scope/modules/worker/features/add_report/logic/cubit/add_report_cubit.dart';
 import 'package:ground_scope/modules/worker/features/profile/logic/cubit/profile_cubit.dart';
 import 'package:ground_scope/modules/worker/features/reports/logic/cubit/reports_cubit.dart';
-import '../../../modules/admin/features/home/admin_screen.dart';
 import '../../../modules/supervisor/core/main_navigation/supervisor_scaffold.dart';
 import '../../../modules/worker/core/main_navigation/ui/worker_scaffold.dart';
 import '../../../modules/worker/features/home/logic/cubit/home_cubit.dart';
@@ -32,7 +33,10 @@ class UserAuthenticatedCheck extends StatelessWidget {
           child: const WorkerScaffold(),
         ),
         'supervisor' => const SupervisorScaffold(),
-        'admin' => const AdminScreen(),
+        'admin' => BlocProvider(
+          create: (_) => getIt<AdminDashboardCubit>(),
+          child: const AdminDashboardScreen(),
+        ),
         _ => const OnBoardingScreen(),
       };
     }
