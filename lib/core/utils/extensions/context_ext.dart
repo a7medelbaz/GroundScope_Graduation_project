@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:ground_scope/core/themes/app_colors.dart';
 import 'package:ground_scope/core/widgets/massage_snack_bar.dart';
 
 import '../../themes/custom_colors.dart';
@@ -67,6 +68,16 @@ extension SnackBarExt on BuildContext {
       SnackBar(
         content: Text(message),
         backgroundColor: Colors.green,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  void showInfoSnackBar(final String message) {
+    ScaffoldMessenger.of(this).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.primary200,
         duration: const Duration(seconds: 3),
       ),
     );
