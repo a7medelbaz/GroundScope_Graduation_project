@@ -19,12 +19,7 @@ class AdminSectionHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          title,
-          style: AppTextStyles.font18ExtraBold.copyWith(
-            color: context.customColors.textPrimary,
-          ),
-        ),
+        Text(title, style: AppTextStyles.font16ExtraBold),
         if (seeAllLabel != null && onSeeAll != null)
           GestureDetector(
             onTap: onSeeAll,
