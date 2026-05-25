@@ -3,19 +3,24 @@ import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
 
-class AdminStatCard extends StatelessWidget {
-  const AdminStatCard({
-    super.key,
+class AdminStatCardData {
+  const AdminStatCardData({
     required this.icon,
     required this.count,
     required this.label,
-    this.iconColor,
+    required this.iconColor,
   });
 
   final IconData icon;
   final int count;
   final String label;
-  final Color? iconColor;
+  final Color iconColor;
+}
+
+class AdminStatCard extends StatelessWidget {
+  const AdminStatCard({super.key, required this.data});
+
+  final AdminStatCardData data;
 
   @override
   Widget build(BuildContext context) {
@@ -23,31 +28,31 @@ class AdminStatCard extends StatelessWidget {
       padding: EdgeInsets.all(rw(16)),
       decoration: BoxDecoration(
         color: context.customColors.surface,
-        borderRadius: BorderRadius.circular(rr(12)),
+        borderRadius: BorderRadius.circular(rr(20)),
         border: Border.all(color: context.customColors.border),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Icon(
-                icon,
-                size: rw(24),
-                color: iconColor ?? context.customColors.iconPrimary,
-              ),
-              Text(
-                '$count',
-                style: AppTextStyles.font22ExtraBold.copyWith(
-                  color: context.customColors.textPrimary,
-                ),
-              ),
-            ],
+          Container(
+            width: rw(36),
+            height: rw(36),
+            decoration: BoxDecoration(
+              color: data.iconColor.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(data.icon, size: rw(18), color: data.iconColor),
           ),
-          verticalSpacing(8),
+          verticalSpacing(16),
           Text(
-            label,
+            '${data.count}',
+            style: AppTextStyles.font20ExtraBold.copyWith(
+              color: context.customColors.textPrimary,
+            ),
+          ),
+          verticalSpacing(2),
+          Text(
+            data.label,
             style: AppTextStyles.font12Light.copyWith(
               color: context.customColors.textSecondary,
             ),
