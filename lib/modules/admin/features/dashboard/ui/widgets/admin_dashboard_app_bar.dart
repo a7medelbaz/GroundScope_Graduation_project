@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
+import 'package:ground_scope/modules/admin/core/widgets/admin_settings_sheet.dart';
 
 class AdminDashboardAppBar extends StatelessWidget {
   const AdminDashboardAppBar({super.key, this.adminName});
@@ -36,15 +37,18 @@ class AdminDashboardAppBar extends StatelessWidget {
             ),
           ),
           Icon(
-            Icons.notifications_outlined,
+            Icons.notifications_sharp,
             size: rw(24),
             color: context.customColors.iconPrimary,
           ),
           horizontalSpacing(16),
-          Icon(
-            Icons.person_outline_rounded,
-            size: rw(24),
-            color: context.customColors.iconPrimary,
+          GestureDetector(
+            onTap: () => showAdminSettingsSheet(context),
+            child: Icon(
+              Icons.settings_outlined,
+              size: rw(24),
+              color: context.customColors.iconPrimary,
+            ),
           ),
         ],
       ),
