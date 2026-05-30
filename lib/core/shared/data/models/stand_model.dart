@@ -18,12 +18,12 @@ class StandModel {
 
   factory StandModel.fromMap(Map<String, dynamic> map) {
     return StandModel(
-      id: map['id'],
-      code: map['code'],
-      terminal: map['terminal'],
+      id: map['id']?.toString() ?? '',
+      code: map['code']?.toString() ?? '',
+      terminal: map['terminal']?.toString() ?? '',
       compatibleAircraft: (map['compatible_aircraft'] as List?)?.cast<String>(),
-      hasCamera: map['has_camera'],
-      isActive: map['is_active'],
+      hasCamera: map['has_camera'] as bool? ?? false,
+      isActive: map['is_active'] as bool? ?? true,
     );
   }
 }

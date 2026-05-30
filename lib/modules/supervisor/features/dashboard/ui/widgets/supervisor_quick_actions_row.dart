@@ -1,15 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
-
-import '../../../../../../../core/service/user_service.dart';
+import '../../../../../../../core/router/routes.dart';
 import '../../../../../../../core/themes/app_colors.dart';
 import '../../../../../../../core/themes/app_text_styles.dart';
+import '../../../../../../../core/utils/extensions/context_ext.dart';
 import '../../../../../../../core/utils/spacing.dart';
-import '../../data/repo/supervisor_dashboard_repo.dart';
-import '../../logic/cubit/assign_task_cubit.dart';
-import 'assign_task_bottom_sheet.dart';
+import '../../logic/cubit/supervisor_dashboard_cubit.dart';
 
 class SupervisorQuickActionsRow extends StatelessWidget {
   const SupervisorQuickActionsRow({super.key});
@@ -29,17 +26,11 @@ class SupervisorQuickActionsRow extends StatelessWidget {
   }
 
   void _openAssignTask(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => BlocProvider(
-        create: (_) => AssignTaskCubit(
-          repo: GetIt.I<SupervisorDashboardRepo>(),
-          userService: GetIt.I<UserService>(),
-        )..loadFormData(),
-        child: const AssignTaskBottomSheet(),
-      ),
+    final dashboardCubit = context.read<SupervisorDashboardCubit>();
+    context.pushNamed(
+      Routes.supervisorAssignTaskScreen,
+      rootNavigator: true,
+      arguments: {'dashboardCubit': dashboardCubit},
     );
   }
 }

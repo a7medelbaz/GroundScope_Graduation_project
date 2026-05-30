@@ -88,7 +88,7 @@ class SupervisorDashboardRemoteDs {
       final in24h = now.add(const Duration(hours: 24));
       final data = await supabaseService.client
           .from('flights')
-          .select('*, stands(*)')
+          .select('id, flight_number, airline, origin, destination, scheduled_arrival, status, stand_id, api_source')
           .gte('scheduled_arrival', now.toIso8601String())
           .lte('scheduled_arrival', in24h.toIso8601String())
           .not('status', 'in', '(cancelled,departed)')

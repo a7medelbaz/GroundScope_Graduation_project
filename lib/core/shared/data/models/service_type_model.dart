@@ -17,12 +17,12 @@ class ServiceTypeModel {
 
   factory ServiceTypeModel.fromMap(Map<String, dynamic> map) {
     return ServiceTypeModel(
-      id: map['id'],
-      name: map['name'],
-      description: map['description'],
-      defaultDurationMinutes: map['default_duration_minutes'],
-      icon: map['icon'],
-      isActive: map['is_active'],
+      id: map['id']?.toString() ?? '',
+      name: map['name']?.toString() ?? '',
+      description: map['description']?.toString(),
+      defaultDurationMinutes: (map['default_duration_minutes'] as int?) ?? 0,
+      icon: map['icon']?.toString(),
+      isActive: map['is_active'] as bool? ?? true,
     );
   }
 }

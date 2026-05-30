@@ -33,6 +33,7 @@ import '../shared/data/repo/unit_repo_impl.dart';
 import '../../modules/supervisor/features/dashboard/data/remote/supervisor_dashboard_remote_ds.dart';
 import '../../modules/supervisor/features/dashboard/data/repo/supervisor_dashboard_repo.dart';
 import '../../modules/supervisor/features/dashboard/data/repo/supervisor_dashboard_repo_impl.dart';
+import '../../modules/supervisor/features/dashboard/logic/cubit/assign_task_cubit.dart';
 import '../../modules/supervisor/features/dashboard/logic/cubit/supervisor_dashboard_cubit.dart';
 import '../../modules/supervisor/features/reports/logic/cubit/supervisor_reports_cubit.dart';
 
@@ -147,6 +148,12 @@ Future<void> setUpDependencies() async {
   );
   getIt.registerFactory<SupervisorReportsCubit>(
     () => SupervisorReportsCubit(reportRepo: getIt<ReportRepo>()),
+  );
+  getIt.registerFactory<AssignTaskCubit>(
+    () => AssignTaskCubit(
+      repo: getIt<SupervisorDashboardRepo>(),
+      userService: getIt<UserService>(),
+    ),
   );
 
   // Profile DI

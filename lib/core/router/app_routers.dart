@@ -4,6 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/auth/data/models/user_date.dart';
 import 'package:ground_scope/core/di/dependency_injection.dart';
 import 'package:ground_scope/core/router/routes.dart';
+import 'package:ground_scope/modules/supervisor/features/dashboard/logic/cubit/assign_task_cubit.dart';
+import 'package:ground_scope/modules/supervisor/features/dashboard/logic/cubit/supervisor_dashboard_cubit.dart';
+import 'package:ground_scope/modules/supervisor/features/dashboard/ui/assign_task_screen.dart';
 import 'package:ground_scope/core/shared/data/models/task_model.dart';
 import 'package:ground_scope/core/shared/data/models/report_model.dart';
 import 'package:ground_scope/modules/worker/features/add_report/logic/cubit/add_report_cubit.dart';
@@ -92,6 +95,24 @@ class AppRouter {
           return _buildRoute(const SizedBox.shrink(), settings);
         }
         return _buildRoute(MemberDetailScreen(member: member), settings);
+
+      // Supervisor---------------------------------------------
+      case Routes.supervisorAssignTaskScreen:
+        final dashboardCubit =
+            arguments?['dashboardCubit'] as SupervisorDashboardCubit?;
+        return _buildRoute(
+          MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (_) => getIt<AssignTaskCubit>()..loadFormData(),
+              ),
+              if (dashboardCubit != null)
+                BlocProvider.value(value: dashboardCubit),
+            ],
+            child: const AssignTaskScreen(),
+          ),
+          settings,
+        );
 
       default:
         return _buildRoute(

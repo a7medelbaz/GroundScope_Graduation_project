@@ -20,27 +20,44 @@ class AssignTaskCubit extends Cubit<AssignTaskState> {
 
   Future<void> loadFormData() async {
     emit(state.copyWith(status: AssignTaskStatus.loadingFormData));
-    try {
-      final results = await Future.wait([
-        repo.fetchUpcomingFlights(),
-        repo.fetchAllActiveUnits(),
-        repo.fetchAllServiceTypes(),
-      ]);
 
-      emit(state.copyWith(
-        status: AssignTaskStatus.formReady,
-        flights: results[0] as List<FlightModel>,
-        allUnits: results[1] as List<UnitModel>,
-        serviceTypes: results[2] as List<ServiceTypeModel>,
-        filteredUnits: results[1] as List<UnitModel>,
-      ));
-    } on AppError catch (e) {
-      emit(state.copyWith(status: AssignTaskStatus.failure, error: e));
-    } catch (_) {
+    final results = await Future.wait<dynamic>([
+      _safeCall<List<FlightModel>>(() => repo.fetchUpcomingFlights()),
+      _safeCall<List<UnitModel>>(() => repo.fetchAllActiveUnits()),
+      _safeCall<List<ServiceTypeModel>>(() => repo.fetchAllServiceTypes()),
+    ]);
+
+    final (List<FlightModel>? flights, _) =
+        results[0] as (List<FlightModel>?, AppError?);
+    final (List<UnitModel>? units, AppError? unitsError) =
+        results[1] as (List<UnitModel>?, AppError?);
+    final (List<ServiceTypeModel>? serviceTypes, AppError? serviceTypesError) =
+        results[2] as (List<ServiceTypeModel>?, AppError?);
+
+    if (serviceTypesError != null || unitsError != null) {
       emit(state.copyWith(
         status: AssignTaskStatus.failure,
-        error: AppError.unknown(),
+        error: serviceTypesError ?? unitsError,
       ));
+      return;
+    }
+
+    emit(state.copyWith(
+      status: AssignTaskStatus.formReady,
+      flights: flights ?? [],
+      allUnits: units ?? [],
+      serviceTypes: serviceTypes ?? [],
+      filteredUnits: units ?? [],
+    ));
+  }
+
+  Future<(T?, AppError?)> _safeCall<T>(Future<T> Function() fn) async {
+    try {
+      return (await fn(), null);
+    } on AppError catch (e) {
+      return (null, e);
+    } catch (_) {
+      return (null, AppError.unknown());
     }
   }
 
