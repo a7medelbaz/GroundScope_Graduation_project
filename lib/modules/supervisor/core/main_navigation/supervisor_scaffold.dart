@@ -3,6 +3,7 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import '../../../../../core/themes/app_colors.dart';
 import '../../../../../core/utils/extensions/context_ext.dart';
 import '../../../../../core/utils/spacing.dart';
+import '../../features/add_report/supervisor_add_report_screen.dart';
 import '../../features/dashboard/ui/supervisor_dashboard_screen.dart';
 import '../../features/profile/ui/supervisor_profile_screen.dart';
 import '../../features/reports/ui/supervisor_reports_screen.dart';
@@ -28,7 +29,7 @@ class _SupervisorScaffoldState extends State<SupervisorScaffold> {
     return [
       const SupervisorDashboardScreen(),
       const SupervisorReportsScreen(),
-      Container(), // Placeholder for the middle button
+      const SupervisorAddReportScreen(), // Placeholder for the middle button
       const SupervisorTasksScreen(),
       const SupervisorProfileScreen(),
     ];
@@ -39,22 +40,23 @@ class _SupervisorScaffoldState extends State<SupervisorScaffold> {
     final inactiveColor = context.customColors.textSecondary;
 
     return [
+      // dashboard
       PersistentBottomNavBarItem(
         icon: Icon(Icons.dashboard_outlined, size: rr(28), color: activeColor),
         inactiveIcon: Icon(Icons.dashboard, size: rr(28), color: inactiveColor),
       ),
+      // Report
       PersistentBottomNavBarItem(
         icon: Icon(Icons.analytics_outlined, size: rr(28), color: activeColor),
         inactiveIcon: Icon(Icons.analytics, size: rr(28), color: inactiveColor),
       ),
+      // Add Report
       PersistentBottomNavBarItem(
         icon: Icon(Icons.add, size: rr(32), color: Colors.white),
         activeColorPrimary: AppColors.primary300,
         inactiveColorPrimary: AppColors.primary300,
-        onPressed: (context) {
-          // Add your action here (e.g., show a bottom sheet)
-        },
       ),
+      // Tasks
       PersistentBottomNavBarItem(
         icon: Icon(Icons.assignment_outlined, size: rr(28), color: activeColor),
         inactiveIcon: Icon(
@@ -63,6 +65,7 @@ class _SupervisorScaffoldState extends State<SupervisorScaffold> {
           color: inactiveColor,
         ),
       ),
+      // Profile
       PersistentBottomNavBarItem(
         icon: Icon(Icons.person_outline, size: rr(28), color: activeColor),
         inactiveIcon: Icon(Icons.person, size: rr(28), color: inactiveColor),
