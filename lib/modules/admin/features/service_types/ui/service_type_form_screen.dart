@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/themes/app_colors.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
@@ -82,9 +83,12 @@ class _ServiceTypeFormScreenState extends State<ServiceTypeFormScreen> {
       body: SafeArea(
         child: BlocBuilder<ServiceTypeFormCubit, ServiceTypeFormState>(
           builder: (context, state) {
-            final title = state.isEditMode
+            final isEditMode = state.isEditMode;
+            final title = isEditMode
                 ? 'edit_service_type'.tr()
                 : 'add_service_type'.tr();
+            final submitting =
+                state.status == ServiceTypeFormStatus.submitting;
 
             return Column(
               children: [
@@ -99,51 +103,85 @@ class _ServiceTypeFormScreenState extends State<ServiceTypeFormScreen> {
                       key: _formKey,
                       child: Column(
                         children: [
-                          ServiceTypeFormFields(
-                            nameController: _nameController,
-                            descriptionController: _descriptionController,
-                            durationController: _durationController,
-                            iconController: _iconController,
-                            isActive: _isActive,
-                            onActiveChanged: (val) =>
-                                setState(() => _isActive = val),
-                          ),
-                          verticalSpacing(32),
-                          SizedBox(
-                            width: double.infinity,
-                            height: rh(52),
-                            child: ElevatedButton(
-                              onPressed: state.status ==
-                                      ServiceTypeFormStatus.submitting
-                                  ? null
-                                  : _submit,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primary200,
-                                foregroundColor: AppColors.white,
-                                disabledBackgroundColor:
-                                    AppColors.primary100,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(rr(12)),
-                                ),
+                          _FormHeader(title: title, isEditMode: isEditMode)
+                              .animate(delay: 0.ms)
+                              .fadeIn(duration: 300.ms)
+                              .slideY(
+                                begin: 0.1,
+                                end: 0,
+                                duration: 300.ms,
+                                curve: Curves.easeOut,
                               ),
-                              child: state.status ==
-                                      ServiceTypeFormStatus.submitting
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        color: AppColors.white,
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : Text(
-                                      'save'.tr(),
-                                      style: AppTextStyles.font16SemiBold
-                                          .copyWith(color: AppColors.white),
-                                    ),
+                          verticalSpacing(24),
+                          Container(
+                            padding: EdgeInsets.all(rw(20)),
+                            decoration: BoxDecoration(
+                              color: context.customColors.surface,
+                              borderRadius: BorderRadius.circular(rr(16)),
+                              border: Border.all(
+                                color: context.customColors.border,
+                              ),
                             ),
-                          ),
+                            child: ServiceTypeFormFields(
+                              nameController: _nameController,
+                              descriptionController: _descriptionController,
+                              durationController: _durationController,
+                              iconController: _iconController,
+                              isActive: _isActive,
+                              onActiveChanged: (val) =>
+                                  setState(() => _isActive = val),
+                            ),
+                          )
+                              .animate(delay: 80.ms)
+                              .fadeIn(duration: 300.ms)
+                              .slideY(
+                                begin: 0.1,
+                                end: 0,
+                                duration: 300.ms,
+                                curve: Curves.easeOut,
+                              ),
+                          verticalSpacing(28),
+                          Opacity(
+                            opacity: submitting ? 0.6 : 1.0,
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: rh(56),
+                              child: ElevatedButton(
+                                onPressed: submitting ? null : _submit,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primary200,
+                                  foregroundColor: AppColors.white,
+                                  disabledBackgroundColor: AppColors.primary100,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(rr(16)),
+                                  ),
+                                ),
+                                child: submitting
+                                    ? SizedBox(
+                                        width: rw(20),
+                                        height: rw(20),
+                                        child: const CircularProgressIndicator(
+                                          color: AppColors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : Text(
+                                        'save'.tr(),
+                                        style: AppTextStyles.font16SemiBold
+                                            .copyWith(color: AppColors.white),
+                                      ),
+                              ),
+                            ),
+                          )
+                              .animate(delay: 160.ms)
+                              .fadeIn(duration: 300.ms)
+                              .slideY(
+                                begin: 0.1,
+                                end: 0,
+                                duration: 300.ms,
+                                curve: Curves.easeOut,
+                              ),
                           verticalSpacing(16),
                         ],
                       ),
@@ -178,6 +216,53 @@ class _ServiceTypeFormScreenState extends State<ServiceTypeFormScreen> {
           const SizedBox(width: 48),
         ],
       ),
+    );
+  }
+}
+
+class _FormHeader extends StatelessWidget {
+  const _FormHeader({required this.title, required this.isEditMode});
+
+  final String title;
+  final bool isEditMode;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          width: rw(64),
+          height: rw(64),
+          decoration: BoxDecoration(
+            color: AppColors.primary50,
+            borderRadius: BorderRadius.circular(rr(20)),
+          ),
+          child: Icon(
+            isEditMode
+                ? Icons.edit_outlined
+                : Icons.add_circle_outline_rounded,
+            size: rw(32),
+            color: AppColors.primary200,
+          ),
+        ),
+        verticalSpacing(12),
+        Text(
+          title,
+          style: AppTextStyles.font18SemiBold.copyWith(
+            color: context.customColors.textPrimary,
+          ),
+        ),
+        verticalSpacing(4),
+        Text(
+          isEditMode
+              ? 'edit_service_type'.tr()
+              : 'add_first_service_type'.tr(),
+          style: AppTextStyles.font12Light.copyWith(
+            color: context.customColors.textSecondary,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 }

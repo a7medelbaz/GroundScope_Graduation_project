@@ -66,7 +66,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   }
 
   Widget _buildStatsSection(BuildContext context, AdminDashboardState state) {
-    state = state.copyWith(status: AdminDashboardStatus.success);
     return switch (state.status) {
       AdminDashboardStatus.initial ||
       AdminDashboardStatus.loading => const AdminDashboardStatsShimmer(),

@@ -148,7 +148,13 @@ Future<void> setUpDependencies() async {
 
   // Admin DI
   getIt.registerFactory<AdminDashboardCubit>(
-    () => AdminDashboardCubit(getIt<UserService>()),
+    () => AdminDashboardCubit(
+      getIt<UserService>(),
+      getIt<FlightRepo>(),
+      getIt<TaskRepo>(),
+      getIt<ReportRepo>(),
+      getIt<UnitRepo>(),
+    ),
   );
   getIt.registerFactory<ServiceTypesListCubit>(
     () => ServiceTypesListCubit(getIt<ServiceTypeRepo>()),

@@ -27,4 +27,7 @@ class TaskRepoImpl implements TaskRepo {
   Future<List<TaskPauseModel>> getTaskPauseHistory({required String taskId}) {
     return taskRemoteDs.getTaskPauseHistory(taskId: taskId);
   }
+
+  @override
+  Future<int> countPendingTasks() => taskRemoteDs.countPendingTasks();
 }

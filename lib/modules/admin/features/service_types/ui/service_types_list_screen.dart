@@ -1,20 +1,22 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/router/routes.dart';
 import 'package:ground_scope/core/themes/app_colors.dart';
+import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
 import 'package:ground_scope/core/widgets/error_screen.dart';
 import 'package:ground_scope/core/widgets/ui/dialogs/app_dialogs.dart';
-import 'package:ground_scope/core/widgets/ui/loaders/overlay_loader.dart';
 import 'package:ground_scope/core/shared/data/models/service_type_model.dart';
 import 'package:ground_scope/modules/admin/features/service_types/logic/cubit/service_types_list_cubit.dart';
 import 'package:ground_scope/modules/admin/features/service_types/ui/widgets/service_type_empty_state.dart';
 import 'package:ground_scope/modules/admin/features/service_types/ui/widgets/service_type_filter_chips.dart';
 import 'package:ground_scope/modules/admin/features/service_types/ui/widgets/service_type_list_tile.dart';
 import 'package:ground_scope/modules/admin/features/service_types/ui/widgets/service_type_search_bar.dart';
-import 'package:ground_scope/modules/admin/features/service_types/ui/widgets/service_type_usage_section.dart';
+import 'package:ground_scope/modules/admin/features/service_types/ui/widgets/service_type_skeleton_tile.dart';
+import 'package:ground_scope/modules/admin/features/service_types/ui/widgets/service_type_usage_sheet.dart';
 
 class ServiceTypesListScreen extends StatefulWidget {
   const ServiceTypesListScreen({super.key});
@@ -70,28 +72,11 @@ class _ServiceTypesListScreenState extends State<ServiceTypesListScreen> {
 
   void _showUsageBottomSheet(ServiceTypeModel model) {
     final cubit = context.read<ServiceTypesListCubit>();
-    showModalBottomSheet(
+    showServiceTypeUsageSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: context.customColors.background,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(rr(20))),
-      ),
-      builder: (_) => FutureBuilder(
-        future: cubit.getUsage(model.id),
-        builder: (ctx, snapshot) {
-          if (!snapshot.hasData) {
-            return Padding(
-              padding: EdgeInsets.all(rw(48)),
-              child: const Center(child: CircularProgressIndicator()),
-            );
-          }
-          return ServiceTypeUsageSection(
-            model: model,
-            usage: snapshot.data!,
-          );
-        },
-      ),
+      model: model,
+      usageFuture: cubit.getUsage(model.id),
+      onEdit: () => _navigateToForm(model: model),
     );
   }
 
@@ -99,6 +84,14 @@ class _ServiceTypesListScreenState extends State<ServiceTypesListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.customColors.background,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _navigateToForm(),
+        backgroundColor: AppColors.primary200,
+        foregroundColor: AppColors.white,
+        icon: const Icon(Icons.add),
+        label: Text('add_service_type'.tr(), style: AppTextStyles.font14SemiBold),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
         child: Column(
           children: [
@@ -108,10 +101,7 @@ class _ServiceTypesListScreenState extends State<ServiceTypesListScreen> {
                 builder: (context, state) {
                   if (state.status == ServiceTypesListStatus.loading &&
                       state.all.isEmpty) {
-                    return const OverlayLoader(
-                      isLoading: true,
-                      child: SizedBox.expand(),
-                    );
+                    return _buildSkeletonList();
                   }
 
                   if (state.status == ServiceTypesListStatus.failure &&
@@ -121,62 +111,64 @@ class _ServiceTypesListScreenState extends State<ServiceTypesListScreen> {
                     );
                   }
 
-                  return OverlayLoader(
-                    isLoading: state.status == ServiceTypesListStatus.loading,
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: rw(20)),
-                          child: Column(
-                            children: [
-                              verticalSpacing(12),
-                              ServiceTypeSearchBar(
-                                controller: _searchController,
-                                onChanged: context
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: rw(20)),
+                        child: Column(
+                          children: [
+                            verticalSpacing(12),
+                            ServiceTypeSearchBar(
+                              controller: _searchController,
+                              onChanged: context
+                                  .read<ServiceTypesListCubit>()
+                                  .onSearchChanged,
+                            ),
+                            verticalSpacing(12),
+                            Align(
+                              alignment: AlignmentDirectional.centerStart,
+                              child: ServiceTypeFilterChips(
+                                selected: state.filter,
+                                onSelected: context
                                     .read<ServiceTypesListCubit>()
-                                    .onSearchChanged,
+                                    .onFilterChanged,
                               ),
-                              verticalSpacing(12),
-                              Align(
-                                alignment: AlignmentDirectional.centerStart,
-                                child: ServiceTypeFilterChips(
-                                  selected: state.filter,
-                                  onSelected: context
-                                      .read<ServiceTypesListCubit>()
-                                      .onFilterChanged,
+                            ),
+                            verticalSpacing(12),
+                          ],
+                        ),
+                      ).animate().fadeIn(duration: 300.ms),
+                      Expanded(
+                        child: state.filtered.isEmpty
+                            ? ServiceTypeEmptyState(
+                                onAdd: () => _navigateToForm(),
+                              )
+                            : ListView.builder(
+                                padding: EdgeInsets.fromLTRB(
+                                  rw(20),
+                                  rh(4),
+                                  rw(20),
+                                  rh(80),
                                 ),
+                                itemCount: state.filtered.length,
+                                itemBuilder: (_, index) {
+                                  final model = state.filtered[index];
+                                  final delay = Duration(
+                                    milliseconds: (index * 40).clamp(0, 300),
+                                  );
+                                  return ServiceTypeListTile(
+                                    model: model,
+                                    onEdit: () => _navigateToForm(model: model),
+                                    onViewUsage: () =>
+                                        _showUsageBottomSheet(model),
+                                    onToggleActive: (_) =>
+                                        _handleToggleActive(model),
+                                    animationDelay: delay,
+                                  );
+                                },
                               ),
-                              verticalSpacing(12),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: state.filtered.isEmpty
-                              ? ServiceTypeEmptyState(
-                                  onAdd: () => _navigateToForm(),
-                                )
-                              : ListView.builder(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: rw(20),
-                                    vertical: rh(4),
-                                  ),
-                                  itemCount: state.filtered.length,
-                                  itemBuilder: (_, index) {
-                                    final model = state.filtered[index];
-                                    return ServiceTypeListTile(
-                                      model: model,
-                                      onEdit: () =>
-                                          _navigateToForm(model: model),
-                                      onViewUsage: () =>
-                                          _showUsageBottomSheet(model),
-                                      onToggleActive: (_) =>
-                                          _handleToggleActive(model),
-                                    );
-                                  },
-                                ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   );
                 },
               ),
@@ -184,6 +176,14 @@ class _ServiceTypesListScreenState extends State<ServiceTypesListScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSkeletonList() {
+    return ListView.builder(
+      padding: EdgeInsets.fromLTRB(rw(20), rh(16), rw(20), rh(80)),
+      itemCount: 6,
+      itemBuilder: (context, _) => const ServiceTypeSkeletonTile(),
     );
   }
 
@@ -199,16 +199,12 @@ class _ServiceTypesListScreenState extends State<ServiceTypesListScreen> {
           const Spacer(),
           Text(
             'service_types'.tr(),
-            style: TextStyle(
-              fontSize: rf(18),
-              fontWeight: FontWeight.w600,
+            style: AppTextStyles.font18SemiBold.copyWith(
+              color: context.customColors.textPrimary,
             ),
           ),
           const Spacer(),
-          IconButton(
-            icon: const Icon(Icons.add, color: AppColors.primary200),
-            onPressed: () => _navigateToForm(),
-          ),
+          const SizedBox(width: 48),
         ],
       ),
     );

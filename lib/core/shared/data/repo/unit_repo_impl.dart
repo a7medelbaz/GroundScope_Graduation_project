@@ -32,4 +32,7 @@ class UnitRepoImpl implements UnitRepo {
       ErrorHandler.handle(e);
     }
   }
+
+  @override
+  Future<int> countActiveUnits() => unitRemoteDs.countActiveUnits();
 }

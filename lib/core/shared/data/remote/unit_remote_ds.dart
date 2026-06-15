@@ -8,6 +8,18 @@ class UnitRemoteDs {
   const UnitRemoteDs({required this.supabaseService});
 
   final SupabaseService supabaseService;
+  Future<int> countActiveUnits() async {
+    try {
+      final data = await supabaseService.client
+          .from('units')
+          .select('id')
+          .inFilter('status', ['available', 'busy']);
+      return (data as List).length;
+    } catch (e) {
+      throw ErrorHandler.handle(e);
+    }
+  }
+
   Future<UnitModel> fetchUnitData(String unitId) async {
     try {
       final response = await supabaseService.client

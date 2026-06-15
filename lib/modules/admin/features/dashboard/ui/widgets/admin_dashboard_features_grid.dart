@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:ground_scope/core/router/routes.dart';
 import 'package:ground_scope/core/themes/app_colors.dart';
+import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
 import 'package:ground_scope/modules/admin/core/widgets/admin_feature_card.dart';
 
@@ -15,44 +16,44 @@ class AdminDashboardFeaturesGrid extends StatelessWidget {
         title: 'service_types',
         icon: Icons.build_circle_outlined,
         route: Routes.adminServiceTypesScreen,
-
         iconColor: AppColors.primary200,
         subtitle: 'manage_service_types'.tr(),
+        isAvailable: true,
       ),
       AdminFeatureCardData(
         title: 'stands',
         icon: Icons.local_parking_outlined,
-
         iconColor: AppColors.blue200,
         subtitle: 'manage_stands'.tr(),
+        isAvailable: false,
       ),
       AdminFeatureCardData(
         title: 'units',
         icon: Icons.local_shipping_outlined,
-
         iconColor: AppColors.green200,
         subtitle: 'manage_units'.tr(),
+        isAvailable: false,
       ),
       AdminFeatureCardData(
         title: 'users',
         icon: Icons.people_outline_rounded,
-
         iconColor: AppColors.amber200,
         subtitle: 'manage_users'.tr(),
+        isAvailable: false,
       ),
       AdminFeatureCardData(
         title: 'flights',
         icon: Icons.flight_outlined,
-
         iconColor: AppColors.secondary200,
         subtitle: 'manage_flights'.tr(),
+        isAvailable: false,
       ),
       AdminFeatureCardData(
         title: 'reports',
         icon: Icons.bar_chart_outlined,
-
         iconColor: AppColors.primary300,
         subtitle: 'manage_reports'.tr(),
+        isAvailable: false,
       ),
     ];
 
@@ -71,8 +72,14 @@ class AdminDashboardFeaturesGrid extends StatelessWidget {
         final delay = Duration(milliseconds: 400 + (index * 50).clamp(0, 300));
         return AdminFeatureCard(
           data: feature,
-          onTap: () => Navigator.pushNamed(context, feature.route!),
           animationDelay: delay,
+          onTap: () {
+            if (feature.route != null) {
+              context.pushNamed(feature.route!);
+            } else {
+              context.showInfoSnackBar('coming_soon'.tr());
+            }
+          },
         );
       },
     );
