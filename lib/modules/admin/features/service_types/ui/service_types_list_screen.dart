@@ -41,7 +41,7 @@ class _ServiceTypesListScreenState extends State<ServiceTypesListScreen> {
   }
 
   Future<void> _navigateToForm({ServiceTypeModel? model}) async {
-    final result = await context.pushNamed<bool>(
+    final result = await context.pushNamed(
       Routes.adminServiceTypeFormScreen,
       arguments: model != null ? {'model': model} : null,
     );
