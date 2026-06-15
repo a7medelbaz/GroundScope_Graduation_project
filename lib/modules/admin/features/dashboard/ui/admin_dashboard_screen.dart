@@ -1,14 +1,15 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ground_scope/core/themes/app_text_styles.dart';
-import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
 import 'package:ground_scope/modules/admin/core/widgets/admin_section_header.dart';
 import 'package:ground_scope/modules/admin/features/dashboard/logic/cubit/admin_dashboard_cubit.dart';
 import 'package:ground_scope/modules/admin/features/dashboard/ui/widgets/admin_dashboard_app_bar.dart';
 import 'package:ground_scope/modules/admin/features/dashboard/ui/widgets/admin_dashboard_features_grid.dart';
 import 'package:ground_scope/modules/admin/features/dashboard/ui/widgets/admin_dashboard_quick_stats_grid.dart';
+import 'package:ground_scope/modules/admin/features/dashboard/ui/widgets/admin_dashboard_stats_error.dart';
+import 'package:ground_scope/modules/admin/features/dashboard/ui/widgets/admin_dashboard_stats_shimmer.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -36,22 +37,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   child: AdminDashboardAppBar(adminName: state.adminName),
                 ),
                 SliverPadding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: rw(20),
-                    vertical: rh(8),
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: rw(20)),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
-                      Text(
-                        'todays_overview'.tr(),
-                        style: AppTextStyles.font14Light.copyWith(
-                          color: context.customColors.textSecondary,
-                        ),
-                      ),
+                      verticalSpacing(8),
+                      AdminSectionHeader(
+                        title: 'todays_overview'.tr(),
+                      ).animate(delay: 300.ms).fadeIn(duration: 300.ms),
                       verticalSpacing(12),
-                      const AdminDashboardQuickStatsGrid(),
-                      verticalSpacing(24),
-                      AdminSectionHeader(title: 'management'.tr()),
+                      _buildStatsSection(context, state),
+                      verticalSpacing(28),
+                      AdminSectionHeader(
+                        title: 'management'.tr(),
+                        seeAllLabel: null,
+                      ).animate(delay: 350.ms).fadeIn(duration: 300.ms),
                       verticalSpacing(12),
                       const AdminDashboardFeaturesGrid(),
                       verticalSpacing(24),
@@ -64,5 +63,22 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildStatsSection(BuildContext context, AdminDashboardState state) {
+    state = state.copyWith(status: AdminDashboardStatus.success);
+    return switch (state.status) {
+      AdminDashboardStatus.initial ||
+      AdminDashboardStatus.loading => const AdminDashboardStatsShimmer(),
+      AdminDashboardStatus.failure => AdminDashboardStatsError(
+        onRetry: () => context.read<AdminDashboardCubit>().load(),
+      ),
+      AdminDashboardStatus.success => AdminDashboardQuickStatsGrid(
+        activeFlights: state.activeFlightsCount,
+        pendingTasks: state.pendingTasksCount,
+        openReports: state.openReportsCount,
+        activeUnits: state.activeUnitsCount,
+      ),
+    };
   }
 }
