@@ -13,7 +13,7 @@ class FlightsRemoteDs {
       final data = await supabaseService.client
           .from('flights')
           .select('id')
-          .inFilter('status', ['active', 'scheduled'])
+          .inFilter('status', ['scheduled', 'landed', 'in_service', 'ready'])
           .gte('scheduled_arrival', '${today}T00:00:00')
           .lte('scheduled_arrival', '${today}T23:59:59');
       return (data as List).length;

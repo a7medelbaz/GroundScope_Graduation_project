@@ -29,12 +29,23 @@ class AdminDashboardCubit extends Cubit<AdminDashboardState> {
     emit(state.copyWith(status: AdminDashboardStatus.loading));
     try {
       final user = await _userService.getUser();
-
       final results = await Future.wait([
-        _flightRepo.countActiveFlightsToday(),
-        _taskRepo.countPendingTasks(),
-        _reportRepo.countOpenReports(),
-        _unitRepo.countActiveUnits(),
+        _flightRepo.countActiveFlightsToday().catchError((e) {
+          debugPrint('FLIGHT: $e');
+          return 0;
+        }),
+        _taskRepo.countPendingTasks().catchError((e) {
+          debugPrint('TASK: $e');
+          return 0;
+        }),
+        _reportRepo.countOpenReports().catchError((e) {
+          debugPrint('REPORT: $e');
+          return 0;
+        }),
+        _unitRepo.countActiveUnits().catchError((e) {
+          debugPrint('UNIT: $e');
+          return 0;
+        }),
       ]);
 
       emit(
