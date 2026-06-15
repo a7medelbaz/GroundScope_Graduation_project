@@ -62,6 +62,18 @@ class ReportRemoteDs {
     return (data as List).map((e) => ReportModel.fromMap(e)).toList();
   }
 
+  Future<int> countOpenReports() async {
+    try {
+      final data = await supabaseService.client
+          .from('reports')
+          .select('id')
+          .eq('status', 'open');
+      return (data as List).length;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<String> _uploadReportImage(File file, String taskId) async {
     final userId = supabaseService.currentUser!.id;
     final fileName =

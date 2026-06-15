@@ -1,8 +1,14 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ground_scope/core/shared/data/remote/report_remote_ds.dart';
+import 'package:ground_scope/core/shared/data/remote/service_type_remote_ds.dart';
 import 'package:ground_scope/core/shared/data/repo/report_repo.dart';
 import 'package:ground_scope/core/shared/data/repo/report_repo_impl.dart';
+import 'package:ground_scope/core/shared/data/repo/service_type_repo.dart';
+import 'package:ground_scope/core/shared/data/repo/service_type_repo_impl.dart';
+import 'package:ground_scope/modules/admin/features/dashboard/logic/cubit/admin_dashboard_cubit.dart';
+import 'package:ground_scope/modules/admin/features/service_types/logic/cubit/service_type_form_cubit.dart';
+import 'package:ground_scope/modules/admin/features/service_types/logic/cubit/service_types_list_cubit.dart';
 import '../../modules/worker/features/add_report/logic/cubit/add_report_cubit.dart';
 import '../../modules/worker/features/home/logic/cubit/home_cubit.dart';
 import '../../modules/worker/features/profile/logic/cubit/profile_cubit.dart';
@@ -70,6 +76,16 @@ Future<void> setUpDependencies() async {
     () => ReportRepoImpl(reportRemoteDs: getIt<ReportRemoteDs>()),
   );
 
+  // #ServiceType DI
+  getIt.registerLazySingleton<ServiceTypeRemoteDs>(
+    () => ServiceTypeRemoteDs(supabaseService: getIt<SupabaseService>()),
+  );
+  getIt.registerLazySingleton<ServiceTypeRepo>(
+    () => ServiceTypeRepoImpl(
+      serviceTypeRemoteDs: getIt<ServiceTypeRemoteDs>(),
+    ),
+  );
+
   /// Auth DI
   getIt.registerLazySingleton<AuthRemoteDs>(
     () => AuthRemoteDs(supabaseService: getIt<SupabaseService>()),
@@ -128,6 +144,23 @@ Future<void> setUpDependencies() async {
       reportRepo: getIt<ReportRepo>(),
       userService: getIt<UserService>(),
     ),
+  );
+
+  // Admin DI
+  getIt.registerFactory<AdminDashboardCubit>(
+    () => AdminDashboardCubit(
+      getIt<UserService>(),
+      getIt<FlightRepo>(),
+      getIt<TaskRepo>(),
+      getIt<ReportRepo>(),
+      getIt<UnitRepo>(),
+    ),
+  );
+  getIt.registerFactory<ServiceTypesListCubit>(
+    () => ServiceTypesListCubit(getIt<ServiceTypeRepo>()),
+  );
+  getIt.registerFactory<ServiceTypeFormCubit>(
+    () => ServiceTypeFormCubit(getIt<ServiceTypeRepo>()),
   );
 
   // Profile DI

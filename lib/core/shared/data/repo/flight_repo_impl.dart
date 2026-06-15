@@ -7,6 +7,10 @@ class FlightRepoImpl implements FlightRepo {
 
   FlightRepoImpl({required this.flightsRemoteDs});
   @override
+  Future<int> countActiveFlightsToday() =>
+      flightsRemoteDs.countActiveFlightsToday();
+
+  @override
   Future<FlightModel> fetchFlightData({required String flightId}) {
     final flightData = flightsRemoteDs.fetchFlightById(flightId);
 

@@ -7,4 +7,5 @@ abstract class TaskRepo {
   Future<List<TaskModel>> fetchWorkerTasks({required String unitId});
   Future<List<TaskCheckListModel>> getTaskCheckList({required String taskId});
   Future<List<TaskPauseModel>> getTaskPauseHistory({required String taskId});
+  Future<int> countPendingTasks();
 }

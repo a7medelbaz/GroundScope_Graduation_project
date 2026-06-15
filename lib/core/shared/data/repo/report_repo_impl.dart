@@ -34,4 +34,7 @@ class ReportRepoImpl implements ReportRepo {
   @override
   Future<List<ReportModel>> getMyReports(String userId) =>
       reportRemoteDs.getMyReports(userId);
+
+  @override
+  Future<int> countOpenReports() => reportRemoteDs.countOpenReports();
 }

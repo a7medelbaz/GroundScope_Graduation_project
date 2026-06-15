@@ -9,6 +9,18 @@ class TaskRemoteDs {
 
   final SupabaseService supabaseService;
 
+  Future<int> countPendingTasks() async {
+    try {
+      final data = await supabaseService.client
+          .from('tasks')
+          .select('id')
+          .inFilter('status', ['pending', 'in_progress']);
+      return (data as List).length;
+    } catch (e) {
+      throw ErrorHandler.handle(e);
+    }
+  }
+
   Future<List<TaskModel>> fetchWorkerTasks(String unitId) async {
     try {
       final response = await supabaseService.client
