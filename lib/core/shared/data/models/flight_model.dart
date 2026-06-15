@@ -2,26 +2,27 @@ import 'stand_model.dart';
 
 enum FlightStatus {
   scheduled,
-  delayed,
-  arrived,
+  landed,
+  inService,
+  ready,
   departed,
   cancelled;
 
-  static FlightStatus fromString(String value) {
-    return switch (value) {
-      'scheduled' => FlightStatus.scheduled,
-      'delayed' => FlightStatus.delayed,
-      'arrived' => FlightStatus.arrived,
-      'departed' => FlightStatus.departed,
-      'cancelled' => FlightStatus.cancelled,
-      _ => FlightStatus.scheduled,
-    };
-  }
+  static FlightStatus fromString(String value) => switch (value) {
+    'scheduled' => FlightStatus.scheduled,
+    'landed' => FlightStatus.landed,
+    'in_service' => FlightStatus.inService,
+    'ready' => FlightStatus.ready,
+    'departed' => FlightStatus.departed,
+    'cancelled' => FlightStatus.cancelled,
+    _ => FlightStatus.scheduled,
+  };
 
   String get label => switch (this) {
     FlightStatus.scheduled => 'Scheduled',
-    FlightStatus.delayed => 'Delayed',
-    FlightStatus.arrived => 'Arrived',
+    FlightStatus.landed => 'Landed',
+    FlightStatus.inService => 'In Service',
+    FlightStatus.ready => 'Ready',
     FlightStatus.departed => 'Departed',
     FlightStatus.cancelled => 'Cancelled',
   };

@@ -46,91 +46,63 @@ class _AdminFeatureCardState extends State<AdminFeatureCard> {
   @override
   Widget build(BuildContext context) {
     final iconColor = widget.data.iconColor ?? AppColors.primary200;
-    return Opacity(
-          opacity: widget.data.isAvailable ? 1.0 : 0.4,
-          child: GestureDetector(
-            onTapDown: (_) => setState(() => _scale = 0.97),
-            onTapUp: (_) {
-              setState(() => _scale = 1.0);
-              widget.onTap();
-            },
-            onTapCancel: () => setState(() => _scale = 1.0),
-            child: AnimatedScale(
-              scale: _scale,
-              duration: const Duration(milliseconds: 100),
-              child: Stack(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(rw(18)),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(rr(20)),
-                      border: Border.all(color: context.customColors.border),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: rw(55),
-                          height: rw(55),
-                          decoration: BoxDecoration(
-                            color: iconColor.withValues(alpha: 0.12),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            widget.data.icon,
-                            size: rw(32),
-                            color: iconColor,
-                          ),
-                        ),
-                        verticalSpacing(12),
-                        Text(
-                          widget.data.title.tr(),
-                          style: AppTextStyles.font14SemiBold.copyWith(
-                            color: context.customColors.textPrimary,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        verticalSpacing(3),
-                        Text(
-                          widget.data.subtitle ?? 'manage'.tr(),
-                          style: AppTextStyles.font12Light.copyWith(
-                            color: context.customColors.textSecondary,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
+    return GestureDetector(
+          onTapDown: (_) => setState(() => _scale = 0.97),
+          onTapUp: (_) {
+            setState(() => _scale = 1.0);
+            widget.onTap();
+          },
+          onTapCancel: () => setState(() => _scale = 1.0),
+          child: AnimatedScale(
+            scale: _scale,
+            duration: const Duration(milliseconds: 100),
+            child: Stack(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(rw(18)),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(rr(20)),
+                    border: Border.all(color: context.customColors.border),
                   ),
-                  if (!widget.data.isAvailable)
-                    Positioned(
-                      top: rh(8),
-                      right: rw(8),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: rw(7),
-                          vertical: rh(2),
-                        ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: rw(55),
+                        height: rw(55),
                         decoration: BoxDecoration(
-                          color: context.customColors.surfaceVariant,
-                          borderRadius: BorderRadius.circular(rr(20)),
-                          border: Border.all(
-                            color: context.customColors.border,
-                            width: 0.5,
-                          ),
+                          color: iconColor.withValues(alpha: 0.12),
+                          shape: BoxShape.circle,
                         ),
-                        child: Text(
-                          'soon'.tr(),
-                          style: AppTextStyles.font12Light.copyWith(
-                            color: context.customColors.textSecondary,
-                          ),
+                        child: Icon(
+                          widget.data.icon,
+                          size: rw(32),
+                          color: iconColor,
                         ),
                       ),
-                    ),
-                ],
-              ),
+                      verticalSpacing(12),
+                      Text(
+                        widget.data.title.tr(),
+                        style: AppTextStyles.font14SemiBold.copyWith(
+                          color: context.customColors.textPrimary,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      verticalSpacing(3),
+                      Text(
+                        widget.data.subtitle ?? 'manage'.tr(),
+                        style: AppTextStyles.font12Light.copyWith(
+                          color: context.customColors.textSecondary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         )
