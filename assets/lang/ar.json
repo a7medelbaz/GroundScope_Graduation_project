@@ -193,5 +193,30 @@
       "currently_using_dark_theme": "أنت تستخدم الوضع الداكن حالياً",
       "currently_using_light_theme": "أنت تستخدم الوضع الفاتح حالياً"
     }
-  }
+  },
+  "stands": "المواقف",
+  "add_stand": "إضافة موقف",
+  "edit_stand": "تعديل الموقف",
+  "stand_code": "رمز الموقف",
+  "stand_terminal": "الصالة",
+  "stand_compatible_aircraft": "الطائرات المتوافقة",
+  "stand_aircraft_hint": "مثال: B737, A320, A380",
+  "stand_active": "نشط",
+  "search_stands": "البحث بالرمز أو الصالة...",
+  "no_stands_found": "لا توجد مواقف",
+  "add_first_stand": "أضف أول موقف للبدء",
+  "stand_saved_successfully": "تم حفظ الموقف بنجاح",
+  "stand_in_use_message": "يوجد رحلات نشطة على هذا الموقف. قد يؤثر تعطيله على العمليات. هل تريد المتابعة؟",
+  "active_flights_today": "الرحلات النشطة اليوم",
+  "no_aircraft": "لا توجد طائرات محددة",
+  "no_aircraft_assigned": "لا توجد طائرات متوافقة",
+  "stand_flights_count": "الرحلات",
+  "scheduled_flights": "الرحلات المجدولة (7 أيام القادمة)",
+  "no_flights_for_stand": "لا توجد رحلات مجدولة\nلهذا الموقف",
+  "scheduled": "مجدولة",
+  "landed": "هبطت",
+  "in_service": "قيد الخدمة",
+  "ready": "جاهزة",
+  "departed": "غادرت",
+  "cancelled": "ملغاة"
 }

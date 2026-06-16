@@ -192,5 +192,30 @@
       "currently_using_dark_theme": "Currently using dark theme",
       "currently_using_light_theme": "Currently using light theme"
     }
-  }
+  },
+  "stands": "Stands",
+  "add_stand": "Add Stand",
+  "edit_stand": "Edit Stand",
+  "stand_code": "Stand Code",
+  "stand_terminal": "Terminal",
+  "stand_compatible_aircraft": "Compatible Aircraft",
+  "stand_aircraft_hint": "e.g. B737, A320, A380",
+  "stand_active": "Active",
+  "search_stands": "Search by code or terminal...",
+  "no_stands_found": "No stands found",
+  "add_first_stand": "Add your first stand to get started",
+  "stand_saved_successfully": "Stand saved successfully",
+  "stand_in_use_message": "This stand has active flights assigned. Deactivating it may affect operations. Continue?",
+  "active_flights_today": "Active flights today",
+  "no_aircraft": "No aircraft specified",
+  "no_aircraft_assigned": "No compatible aircraft assigned",
+  "stand_flights_count": "Flights",
+  "scheduled_flights": "Scheduled Flights (next 7 days)",
+  "no_flights_for_stand": "No flights scheduled\nfor this stand",
+  "scheduled": "Scheduled",
+  "landed": "Landed",
+  "in_service": "In Service",
+  "ready": "Ready",
+  "departed": "Departed",
+  "cancelled": "Cancelled"
 }

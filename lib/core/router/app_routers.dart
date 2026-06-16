@@ -14,6 +14,11 @@ import 'package:ground_scope/modules/admin/features/service_types/logic/cubit/se
 import 'package:ground_scope/modules/admin/features/service_types/logic/cubit/service_types_list_cubit.dart';
 import 'package:ground_scope/modules/admin/features/service_types/ui/service_type_form_screen.dart';
 import 'package:ground_scope/modules/admin/features/service_types/ui/service_types_list_screen.dart';
+import 'package:ground_scope/modules/admin/features/stands/logic/cubit/stand_form_cubit.dart';
+import 'package:ground_scope/modules/admin/features/stands/logic/cubit/stands_list_cubit.dart';
+import 'package:ground_scope/modules/admin/features/stands/ui/stand_form_screen.dart';
+import 'package:ground_scope/modules/admin/features/stands/ui/stands_list_screen.dart';
+import 'package:ground_scope/core/shared/data/models/stand_model.dart';
 import 'package:ground_scope/modules/worker/features/add_report/logic/cubit/add_report_cubit.dart';
 import 'package:ground_scope/modules/worker/features/add_report/ui/add_report_screen.dart';
 import 'package:ground_scope/modules/worker/features/profile/ui/manager_and_members_screen.dart';
@@ -131,6 +136,29 @@ class AppRouter {
               return cubit;
             },
             child: const ServiceTypeFormScreen(),
+          ),
+          settings,
+        );
+
+      case Routes.adminStandsScreen:
+        return _buildRoute(
+          BlocProvider(
+            create: (_) => getIt<StandsListCubit>()..load(),
+            child: const StandsListScreen(),
+          ),
+          settings,
+        );
+
+      case Routes.adminStandFormScreen:
+        final model = arguments?['model'] as StandModel?;
+        return _buildRoute(
+          BlocProvider(
+            create: (_) {
+              final cubit = getIt<StandFormCubit>();
+              if (model != null) cubit.initForEdit(model);
+              return cubit;
+            },
+            child: const StandFormScreen(),
           ),
           settings,
         );
