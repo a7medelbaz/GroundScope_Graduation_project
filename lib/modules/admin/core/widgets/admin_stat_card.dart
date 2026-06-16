@@ -57,6 +57,7 @@ class AdminStatCard extends StatelessWidget {
               color: context.customColors.textSecondary,
             ),
           ),
+          verticalSpacing(2),
         ],
       ),
     );
