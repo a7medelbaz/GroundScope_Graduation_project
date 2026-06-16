@@ -17,5 +17,11 @@ class Routes {
   static const String supervisorTaskListScreen = '/supervisorTaskListScreen';
 
   // ########## Admin
-  static const String adminScreen = '/adminScreen';
+  static const String adminDashboardScreen = '/adminDashboardScreen';
+  static const String adminServiceTypesScreen = '/adminServiceTypesScreen';
+  static const String adminServiceTypeFormScreen = '/adminServiceTypeFormScreen';
+  static const String adminStandsScreen = '/adminStandsScreen';
+  static const String adminStandFormScreen = '/adminStandFormScreen';
+  static const String adminFlightsScreen = '/adminFlightsScreen';
+  static const String adminFlightDetailScreen = '/adminFlightDetailScreen';
 }

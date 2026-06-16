@@ -1,8 +1,19 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ground_scope/core/shared/data/remote/report_remote_ds.dart';
+import 'package:ground_scope/core/shared/data/remote/service_type_remote_ds.dart';
+import 'package:ground_scope/core/shared/data/remote/stand_remote_ds.dart';
 import 'package:ground_scope/core/shared/data/repo/report_repo.dart';
 import 'package:ground_scope/core/shared/data/repo/report_repo_impl.dart';
+import 'package:ground_scope/core/shared/data/repo/service_type_repo.dart';
+import 'package:ground_scope/core/shared/data/repo/service_type_repo_impl.dart';
+import 'package:ground_scope/core/shared/data/repo/stand_repo.dart';
+import 'package:ground_scope/core/shared/data/repo/stand_repo_impl.dart';
+import 'package:ground_scope/modules/admin/features/dashboard/logic/cubit/admin_dashboard_cubit.dart';
+import 'package:ground_scope/modules/admin/features/service_types/logic/cubit/service_type_form_cubit.dart';
+import 'package:ground_scope/modules/admin/features/service_types/logic/cubit/service_types_list_cubit.dart';
+import 'package:ground_scope/modules/admin/features/stands/logic/cubit/stand_form_cubit.dart';
+import 'package:ground_scope/modules/admin/features/stands/logic/cubit/stands_list_cubit.dart';
 import '../../modules/worker/features/add_report/logic/cubit/add_report_cubit.dart';
 import '../../modules/worker/features/home/logic/cubit/home_cubit.dart';
 import '../../modules/worker/features/profile/logic/cubit/profile_cubit.dart';
@@ -18,6 +29,7 @@ import '../auth/logic/cubit/auth_cubit.dart';
 import '../networking/supabase_service.dart';
 import '../service/secure_storage.dart';
 import '../service/user_service.dart';
+import '../shared/data/remote/aviation_stack_remote_ds.dart';
 import '../shared/data/remote/flights_remote_ds.dart';
 import '../shared/data/remote/task_remote_ds.dart';
 import '../shared/data/remote/unit_remote_ds.dart';
@@ -30,6 +42,8 @@ import '../shared/data/repo/unit_member_repo.dart';
 import '../shared/data/repo/unit_member_repo_impl.dart';
 import '../shared/data/repo/unit_repo.dart';
 import '../shared/data/repo/unit_repo_impl.dart';
+import '../../modules/admin/features/flights/logic/cubit/flight_import_cubit.dart';
+import '../../modules/admin/features/flights/logic/cubit/flights_list_cubit.dart';
 
 final getIt = GetIt.instance;
 Future<void> setUpDependencies() async {
@@ -70,6 +84,16 @@ Future<void> setUpDependencies() async {
     () => ReportRepoImpl(reportRemoteDs: getIt<ReportRemoteDs>()),
   );
 
+  // #ServiceType DI
+  getIt.registerLazySingleton<ServiceTypeRemoteDs>(
+    () => ServiceTypeRemoteDs(supabaseService: getIt<SupabaseService>()),
+  );
+  getIt.registerLazySingleton<ServiceTypeRepo>(
+    () => ServiceTypeRepoImpl(
+      serviceTypeRemoteDs: getIt<ServiceTypeRemoteDs>(),
+    ),
+  );
+
   /// Auth DI
   getIt.registerLazySingleton<AuthRemoteDs>(
     () => AuthRemoteDs(supabaseService: getIt<SupabaseService>()),
@@ -95,6 +119,15 @@ Future<void> setUpDependencies() async {
   );
   getIt.registerLazySingleton<FlightRepo>(
     () => FlightRepoImpl(flightsRemoteDs: getIt<FlightsRemoteDs>()),
+  );
+  getIt.registerLazySingleton<AviationStackRemoteDs>(
+    () => AviationStackRemoteDs(),
+  );
+  getIt.registerFactory<FlightsListCubit>(
+    () => FlightsListCubit(getIt<FlightRepo>()),
+  );
+  getIt.registerFactory<FlightImportCubit>(
+    () => FlightImportCubit(getIt<AviationStackRemoteDs>(), getIt<FlightRepo>()),
   );
 
   // Task Details DI
@@ -128,6 +161,37 @@ Future<void> setUpDependencies() async {
       reportRepo: getIt<ReportRepo>(),
       userService: getIt<UserService>(),
     ),
+  );
+
+  // Admin DI
+  getIt.registerFactory<AdminDashboardCubit>(
+    () => AdminDashboardCubit(
+      getIt<UserService>(),
+      getIt<FlightRepo>(),
+      getIt<TaskRepo>(),
+      getIt<ReportRepo>(),
+      getIt<UnitRepo>(),
+    ),
+  );
+  getIt.registerFactory<ServiceTypesListCubit>(
+    () => ServiceTypesListCubit(getIt<ServiceTypeRepo>()),
+  );
+  getIt.registerFactory<ServiceTypeFormCubit>(
+    () => ServiceTypeFormCubit(getIt<ServiceTypeRepo>()),
+  );
+
+  // #Stand DI
+  getIt.registerLazySingleton<StandRemoteDs>(
+    () => StandRemoteDs(supabaseService: getIt<SupabaseService>()),
+  );
+  getIt.registerLazySingleton<StandRepo>(
+    () => StandRepoImpl(standRemoteDs: getIt<StandRemoteDs>()),
+  );
+  getIt.registerFactory<StandsListCubit>(
+    () => StandsListCubit(getIt<StandRepo>()),
+  );
+  getIt.registerFactory<StandFormCubit>(
+    () => StandFormCubit(getIt<StandRepo>()),
   );
 
   // Profile DI

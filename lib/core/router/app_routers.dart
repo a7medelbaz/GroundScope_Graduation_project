@@ -4,18 +4,35 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/auth/data/models/user_date.dart';
 import 'package:ground_scope/core/di/dependency_injection.dart';
 import 'package:ground_scope/core/router/routes.dart';
-import 'package:ground_scope/core/shared/data/models/task_model.dart';
 import 'package:ground_scope/core/shared/data/models/report_model.dart';
-import 'package:ground_scope/modules/worker/features/add_report/logic/cubit/add_report_cubit.dart';
-import 'package:ground_scope/modules/worker/features/reports/logic/cubit/reports_cubit.dart';
-import 'package:ground_scope/modules/worker/features/add_report/ui/add_report_screen.dart';
+import 'package:ground_scope/core/shared/data/models/service_type_model.dart';
+import 'package:ground_scope/core/shared/data/models/task_model.dart';
 import 'package:ground_scope/core/shared/data/models/unit_member_model.dart';
+import 'package:ground_scope/modules/admin/features/dashboard/logic/cubit/admin_dashboard_cubit.dart';
+import 'package:ground_scope/modules/admin/features/dashboard/ui/admin_dashboard_screen.dart';
+import 'package:ground_scope/modules/admin/features/service_types/logic/cubit/service_type_form_cubit.dart';
+import 'package:ground_scope/modules/admin/features/service_types/logic/cubit/service_types_list_cubit.dart';
+import 'package:ground_scope/modules/admin/features/service_types/ui/service_type_form_screen.dart';
+import 'package:ground_scope/modules/admin/features/service_types/ui/service_types_list_screen.dart';
+import 'package:ground_scope/modules/admin/features/stands/logic/cubit/stand_form_cubit.dart';
+import 'package:ground_scope/modules/admin/features/stands/logic/cubit/stands_list_cubit.dart';
+import 'package:ground_scope/modules/admin/features/stands/ui/stand_form_screen.dart';
+import 'package:ground_scope/modules/admin/features/stands/ui/stands_list_screen.dart';
+import 'package:ground_scope/core/shared/data/models/flight_model.dart';
+import 'package:ground_scope/core/shared/data/models/stand_model.dart';
+import 'package:ground_scope/modules/admin/features/flights/logic/cubit/flights_list_cubit.dart';
+import 'package:ground_scope/modules/admin/features/flights/ui/flight_detail_screen.dart';
+import 'package:ground_scope/modules/admin/features/flights/ui/flights_list_screen.dart';
+import 'package:ground_scope/modules/worker/features/add_report/logic/cubit/add_report_cubit.dart';
+import 'package:ground_scope/modules/worker/features/add_report/ui/add_report_screen.dart';
 import 'package:ground_scope/modules/worker/features/profile/ui/manager_and_members_screen.dart';
 import 'package:ground_scope/modules/worker/features/profile/ui/member_detail_screen.dart';
+import 'package:ground_scope/modules/worker/features/reports/logic/cubit/reports_cubit.dart';
 import 'package:ground_scope/modules/worker/features/reports/ui/report_details_screen.dart';
 import 'package:ground_scope/modules/worker/features/task_details/logic/cubit/task_details_cubit.dart';
 import 'package:ground_scope/modules/worker/features/task_details/ui/task_details_screen.dart';
 import 'package:ground_scope/modules/worker/features/task_info/ui/task_info_screen.dart';
+
 import '../../modules/worker/core/main_navigation/ui/worker_scaffold.dart';
 import '../auth/ui/login_screen.dart';
 import '../onboarding/ui/on_boarding_screen.dart';
@@ -80,7 +97,8 @@ class AppRouter {
         final manager = arguments?['manager'] as UserModel?;
         final members =
             (arguments?['members'] as List?)?.cast<UnitMemberModel>() ?? [];
-        if (manager == null) return _buildRoute(const SizedBox.shrink(), settings);
+        if (manager == null)
+          return _buildRoute(const SizedBox.shrink(), settings);
         return _buildRoute(
           ManagerAndMembersScreen(manager: manager, members: members),
           settings,
@@ -92,6 +110,82 @@ class AppRouter {
           return _buildRoute(const SizedBox.shrink(), settings);
         }
         return _buildRoute(MemberDetailScreen(member: member), settings);
+
+      // Admin-----------------------------------------------
+      case Routes.adminDashboardScreen:
+        return _buildRoute(
+          BlocProvider(
+            create: (_) => getIt<AdminDashboardCubit>()..load(),
+            child: const AdminDashboardScreen(),
+          ),
+          settings,
+        );
+
+      case Routes.adminServiceTypesScreen:
+        return _buildRoute(
+          BlocProvider(
+            create: (_) => getIt<ServiceTypesListCubit>(),
+            child: const ServiceTypesListScreen(),
+          ),
+          settings,
+        );
+
+      case Routes.adminServiceTypeFormScreen:
+        final model = arguments?['model'] as ServiceTypeModel?;
+        return _buildRoute(
+          BlocProvider(
+            create: (_) {
+              final cubit = getIt<ServiceTypeFormCubit>();
+              if (model != null) cubit.initForEdit(model);
+              return cubit;
+            },
+            child: const ServiceTypeFormScreen(),
+          ),
+          settings,
+        );
+
+      case Routes.adminStandsScreen:
+        return _buildRoute(
+          BlocProvider(
+            create: (_) => getIt<StandsListCubit>()..load(),
+            child: const StandsListScreen(),
+          ),
+          settings,
+        );
+
+      case Routes.adminStandFormScreen:
+        final model = arguments?['model'] as StandModel?;
+        return _buildRoute(
+          BlocProvider(
+            create: (_) {
+              final cubit = getIt<StandFormCubit>();
+              if (model != null) cubit.initForEdit(model);
+              return cubit;
+            },
+            child: const StandFormScreen(),
+          ),
+          settings,
+        );
+
+      case Routes.adminFlightsScreen:
+        return _buildRoute(
+          BlocProvider(
+            create: (_) => getIt<FlightsListCubit>()..load(),
+            child: const FlightsListScreen(),
+          ),
+          settings,
+        );
+
+      case Routes.adminFlightDetailScreen:
+        final flight = arguments?['flight'] as FlightModel;
+        final cubit = arguments?['cubit'] as FlightsListCubit;
+        return _buildRoute(
+          BlocProvider.value(
+            value: cubit,
+            child: FlightDetailScreen(flight: flight),
+          ),
+          settings,
+        );
 
       default:
         return _buildRoute(

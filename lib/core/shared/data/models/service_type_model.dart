@@ -25,4 +25,33 @@ class ServiceTypeModel {
       isActive: map['is_active'],
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'description': description,
+      'default_duration_minutes': defaultDurationMinutes,
+      'icon': icon,
+      'is_active': isActive,
+    };
+  }
+
+  ServiceTypeModel copyWith({
+    String? id,
+    String? name,
+    String? description,
+    int? defaultDurationMinutes,
+    String? icon,
+    bool? isActive,
+  }) {
+    return ServiceTypeModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      defaultDurationMinutes:
+          defaultDurationMinutes ?? this.defaultDurationMinutes,
+      icon: icon ?? this.icon,
+      isActive: isActive ?? this.isActive,
+    );
+  }
 }
