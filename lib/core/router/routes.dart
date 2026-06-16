@@ -20,4 +20,6 @@ class Routes {
   static const String adminDashboardScreen = '/adminDashboardScreen';
   static const String adminServiceTypesScreen = '/adminServiceTypesScreen';
   static const String adminServiceTypeFormScreen = '/adminServiceTypeFormScreen';
+  static const String adminStandsScreen = '/adminStandsScreen';
+  static const String adminStandFormScreen = '/adminStandFormScreen';
 }
