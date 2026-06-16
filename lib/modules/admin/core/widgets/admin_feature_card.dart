@@ -82,13 +82,20 @@ class _AdminFeatureCardState extends State<AdminFeatureCard> {
                         ),
                       ),
                       verticalSpacing(12),
-                      Text(
-                        widget.data.title.tr(),
-                        style: AppTextStyles.font14SemiBold.copyWith(
-                          color: context.customColors.textPrimary,
+                      SizedBox(
+                        height: rh(36),
+                        child: Align(
+                          alignment: Alignment.topCenter,
+                          child: Text(
+                            widget.data.title.tr(),
+                            textAlign: TextAlign.center,
+                            style: AppTextStyles.font14SemiBold.copyWith(
+                              color: context.customColors.textPrimary,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
                       verticalSpacing(3),
                       Text(
