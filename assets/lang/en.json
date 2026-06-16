@@ -209,5 +209,13 @@
   "active_flights_today": "Active flights today",
   "no_aircraft": "No aircraft specified",
   "no_aircraft_assigned": "No compatible aircraft assigned",
-  "stand_flights_count": "Flights"
+  "stand_flights_count": "Flights",
+  "scheduled_flights": "Scheduled Flights (next 7 days)",
+  "no_flights_for_stand": "No flights scheduled\nfor this stand",
+  "scheduled": "Scheduled",
+  "landed": "Landed",
+  "in_service": "In Service",
+  "ready": "Ready",
+  "departed": "Departed",
+  "cancelled": "Cancelled"
 }

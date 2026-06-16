@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/error/models/app_error.dart';
+import 'package:ground_scope/core/shared/data/models/flight_model.dart';
 import 'package:ground_scope/core/shared/data/models/stand_model.dart';
 import 'package:ground_scope/core/shared/data/repo/stand_repo.dart';
 
@@ -53,6 +54,9 @@ class StandsListCubit extends Cubit<StandsListState> {
 
   Future<int> getFlightsCount(String standId) =>
       _repo.countFlightsAtStand(standId);
+
+  Future<List<FlightModel>> getFlightsForStand(String standId) =>
+      _repo.fetchFlightsForStand(standId);
 
   void _applyFilters() {
     var list = state.all;

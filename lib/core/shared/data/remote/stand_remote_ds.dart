@@ -1,6 +1,7 @@
 import 'package:ground_scope/core/error/handlers/supabase_error_handler.dart';
 import 'package:ground_scope/core/error/models/app_error.dart';
 import 'package:ground_scope/core/networking/supabase_service.dart';
+import 'package:ground_scope/core/shared/data/models/flight_model.dart';
 import 'package:ground_scope/core/shared/data/models/stand_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -81,6 +82,30 @@ class StandRemoteDs {
           .gte('scheduled_arrival', '${today}T00:00:00')
           .lte('scheduled_arrival', '${today}T23:59:59');
       return (data as List).length;
+    } on PostgrestException catch (e) {
+      throw SupabaseErrorHandler.handle(e);
+    } catch (_) {
+      throw AppError.unknown();
+    }
+  }
+
+  /// Fetches all flights assigned to a specific stand,
+  /// ordered by scheduled_arrival ascending.
+  /// Returns flights for the next 7 days to keep the list relevant.
+  Future<List<FlightModel>> fetchFlightsForStand(String standId) async {
+    try {
+      final now = DateTime.now();
+      final weekLater = now.add(const Duration(days: 7));
+      final data = await supabaseService.client
+          .from('flights')
+          .select()
+          .eq('stand_id', standId)
+          .gte('scheduled_arrival', now.toIso8601String())
+          .lte('scheduled_arrival', weekLater.toIso8601String())
+          .order('scheduled_arrival', ascending: true);
+      return (data as List)
+          .map((e) => FlightModel.fromMap(e as Map<String, dynamic>))
+          .toList();
     } on PostgrestException catch (e) {
       throw SupabaseErrorHandler.handle(e);
     } catch (_) {

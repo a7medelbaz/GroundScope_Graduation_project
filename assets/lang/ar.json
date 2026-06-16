@@ -210,5 +210,13 @@
   "active_flights_today": "الرحلات النشطة اليوم",
   "no_aircraft": "لا توجد طائرات محددة",
   "no_aircraft_assigned": "لا توجد طائرات متوافقة",
-  "stand_flights_count": "الرحلات"
+  "stand_flights_count": "الرحلات",
+  "scheduled_flights": "الرحلات المجدولة (7 أيام القادمة)",
+  "no_flights_for_stand": "لا توجد رحلات مجدولة\nلهذا الموقف",
+  "scheduled": "مجدولة",
+  "landed": "هبطت",
+  "in_service": "قيد الخدمة",
+  "ready": "جاهزة",
+  "departed": "غادرت",
+  "cancelled": "ملغاة"
 }

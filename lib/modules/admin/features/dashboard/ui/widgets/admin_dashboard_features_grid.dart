@@ -23,6 +23,7 @@ class AdminDashboardFeaturesGrid extends StatelessWidget {
       AdminFeatureCardData(
         title: 'stands',
         icon: Icons.local_parking_outlined,
+        route: Routes.adminStandsScreen,
         iconColor: AppColors.blue200,
         subtitle: 'manage_stands'.tr(),
         isAvailable: true,
