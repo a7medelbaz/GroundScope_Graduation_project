@@ -32,6 +32,11 @@ class AppConfig {
   // Supabase Config
   static String get supaBaseUrl => dotenv.env['SUPABASE_URL'] ?? '';
   static String get supaBaseKey => dotenv.env['SUPABASE_ANON_KEY'] ?? '';
+
+  // AviationStack Config
+  static String get aviationStackKey =>
+      dotenv.env['AVIATION_STACK_API_KEY'] ?? '';
+
   // Developer Info
 
   static const String developerName = 'Mustafa Elbaz';

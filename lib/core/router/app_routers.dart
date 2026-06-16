@@ -18,7 +18,11 @@ import 'package:ground_scope/modules/admin/features/stands/logic/cubit/stand_for
 import 'package:ground_scope/modules/admin/features/stands/logic/cubit/stands_list_cubit.dart';
 import 'package:ground_scope/modules/admin/features/stands/ui/stand_form_screen.dart';
 import 'package:ground_scope/modules/admin/features/stands/ui/stands_list_screen.dart';
+import 'package:ground_scope/core/shared/data/models/flight_model.dart';
 import 'package:ground_scope/core/shared/data/models/stand_model.dart';
+import 'package:ground_scope/modules/admin/features/flights/logic/cubit/flights_list_cubit.dart';
+import 'package:ground_scope/modules/admin/features/flights/ui/flight_detail_screen.dart';
+import 'package:ground_scope/modules/admin/features/flights/ui/flights_list_screen.dart';
 import 'package:ground_scope/modules/worker/features/add_report/logic/cubit/add_report_cubit.dart';
 import 'package:ground_scope/modules/worker/features/add_report/ui/add_report_screen.dart';
 import 'package:ground_scope/modules/worker/features/profile/ui/manager_and_members_screen.dart';
@@ -159,6 +163,26 @@ class AppRouter {
               return cubit;
             },
             child: const StandFormScreen(),
+          ),
+          settings,
+        );
+
+      case Routes.adminFlightsScreen:
+        return _buildRoute(
+          BlocProvider(
+            create: (_) => getIt<FlightsListCubit>()..load(),
+            child: const FlightsListScreen(),
+          ),
+          settings,
+        );
+
+      case Routes.adminFlightDetailScreen:
+        final flight = arguments?['flight'] as FlightModel;
+        final cubit = arguments?['cubit'] as FlightsListCubit;
+        return _buildRoute(
+          BlocProvider.value(
+            value: cubit,
+            child: FlightDetailScreen(flight: flight),
           ),
           settings,
         );

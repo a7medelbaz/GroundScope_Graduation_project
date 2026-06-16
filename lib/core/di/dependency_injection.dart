@@ -29,6 +29,7 @@ import '../auth/logic/cubit/auth_cubit.dart';
 import '../networking/supabase_service.dart';
 import '../service/secure_storage.dart';
 import '../service/user_service.dart';
+import '../shared/data/remote/aviation_stack_remote_ds.dart';
 import '../shared/data/remote/flights_remote_ds.dart';
 import '../shared/data/remote/task_remote_ds.dart';
 import '../shared/data/remote/unit_remote_ds.dart';
@@ -41,6 +42,8 @@ import '../shared/data/repo/unit_member_repo.dart';
 import '../shared/data/repo/unit_member_repo_impl.dart';
 import '../shared/data/repo/unit_repo.dart';
 import '../shared/data/repo/unit_repo_impl.dart';
+import '../../modules/admin/features/flights/logic/cubit/flight_import_cubit.dart';
+import '../../modules/admin/features/flights/logic/cubit/flights_list_cubit.dart';
 
 final getIt = GetIt.instance;
 Future<void> setUpDependencies() async {
@@ -116,6 +119,15 @@ Future<void> setUpDependencies() async {
   );
   getIt.registerLazySingleton<FlightRepo>(
     () => FlightRepoImpl(flightsRemoteDs: getIt<FlightsRemoteDs>()),
+  );
+  getIt.registerLazySingleton<AviationStackRemoteDs>(
+    () => AviationStackRemoteDs(),
+  );
+  getIt.registerFactory<FlightsListCubit>(
+    () => FlightsListCubit(getIt<FlightRepo>()),
+  );
+  getIt.registerFactory<FlightImportCubit>(
+    () => FlightImportCubit(getIt<AviationStackRemoteDs>(), getIt<FlightRepo>()),
   );
 
   // Task Details DI

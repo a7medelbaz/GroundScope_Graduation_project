@@ -45,6 +45,7 @@ class AdminDashboardFeaturesGrid extends StatelessWidget {
       AdminFeatureCardData(
         title: 'flights',
         icon: Icons.flight_outlined,
+        route: Routes.adminFlightsScreen,
         iconColor: AppColors.secondary200,
         subtitle: 'manage_flights'.tr(),
         isAvailable: true,
