@@ -17,7 +17,7 @@ class AdminDashboardStatsShimmer extends StatelessWidget {
         mainAxisSpacing: rh(12),
         childAspectRatio: 1.2,
       ),
-      itemCount: 4,
+      itemCount: 5,
       itemBuilder: (context, _) => _ShimmerStatCard()
           .animate(onPlay: (c) => c.repeat())
           .shimmer(duration: 1500.ms, color: context.customColors.surfaceVariant),

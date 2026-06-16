@@ -106,6 +106,7 @@ class _AdminFeatureCardState extends State<AdminFeatureCard> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
+                      verticalSpacing(3),
                     ],
                   ),
                 ),

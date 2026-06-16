@@ -12,12 +12,14 @@ class AdminDashboardQuickStatsGrid extends StatelessWidget {
     required this.pendingTasks,
     required this.openReports,
     required this.activeUnits,
+    required this.flightsNeedingAttention,
   });
 
   final int activeFlights;
   final int pendingTasks;
   final int openReports;
   final int activeUnits;
+  final int flightsNeedingAttention;
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +47,12 @@ class AdminDashboardQuickStatsGrid extends StatelessWidget {
         count: activeUnits,
         icon: Icons.local_shipping_outlined,
         iconColor: AppColors.green200,
+      ),
+      AdminStatCardData(
+        label: 'flights_needing_attention'.tr(),
+        count: flightsNeedingAttention,
+        icon: Icons.warning_amber_rounded,
+        iconColor: AppColors.amber200,
       ),
     ];
 

@@ -22,6 +22,7 @@ class FlightDetailScreen extends StatelessWidget {
     showStandAssignmentSheet(
       context: context,
       flight: flight,
+      cubit: cubit,
       standsFuture: cubit.getAvailableStands(flight),
       onAssign: (stand) => cubit.assignStand(flight: flight, stand: stand),
     );

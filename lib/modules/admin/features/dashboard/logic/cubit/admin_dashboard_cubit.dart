@@ -46,6 +46,10 @@ class AdminDashboardCubit extends Cubit<AdminDashboardState> {
           debugPrint('UNIT: $e');
           return 0;
         }),
+        _flightRepo.countFlightsNeedingAttention().catchError((e) {
+          debugPrint('FLIGHT_WARNING: $e');
+          return 0;
+        }),
       ]);
 
       emit(
@@ -56,6 +60,7 @@ class AdminDashboardCubit extends Cubit<AdminDashboardState> {
           pendingTasksCount: results[1],
           openReportsCount: results[2],
           activeUnitsCount: results[3],
+          flightsNeedingAttentionCount: results[4],
         ),
       );
     } on AppError catch (e) {
