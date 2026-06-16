@@ -18,6 +18,15 @@ enum FlightStatus {
     _ => FlightStatus.scheduled,
   };
 
+  String get toDbString => switch (this) {
+    FlightStatus.scheduled => 'scheduled',
+    FlightStatus.landed => 'landed',
+    FlightStatus.inService => 'in_service',
+    FlightStatus.ready => 'ready',
+    FlightStatus.departed => 'departed',
+    FlightStatus.cancelled => 'cancelled',
+  };
+
   String get label => switch (this) {
     FlightStatus.scheduled => 'Scheduled',
     FlightStatus.landed => 'Landed',
@@ -26,6 +35,14 @@ enum FlightStatus {
     FlightStatus.departed => 'Departed',
     FlightStatus.cancelled => 'Cancelled',
   };
+}
+
+enum FlightType {
+  arrival,
+  departure;
+
+  static FlightType fromString(String? value) =>
+      value == 'departure' ? FlightType.departure : FlightType.arrival;
 }
 
 class FlightModel {
@@ -46,6 +63,7 @@ class FlightModel {
   final int? paxCount;
   final String apiSource;
   final String? externalId;
+  final FlightType flightType;
   final StandModel? stand;
 
   const FlightModel({
@@ -66,6 +84,7 @@ class FlightModel {
     this.paxCount,
     required this.apiSource,
     this.externalId,
+    this.flightType = FlightType.arrival,
     this.stand,
   });
 
@@ -98,6 +117,7 @@ class FlightModel {
       paxCount: map['pax_count'] as int?,
       apiSource: map['api_source']?.toString() ?? 'manual',
       externalId: map['external_id'],
+      flightType: FlightType.fromString(map['flight_type']?.toString()),
       // Supabase returns the joined table as a nested Map
       stand: map['stands'] != null ? StandModel.fromMap(map['stands']) : null,
     );
@@ -113,7 +133,7 @@ class FlightModel {
       'aircraft_type': aircraftType,
       'aircraft_registration': aircraftRegistration,
       'scheduled_arrival': scheduledArrival.toIso8601String(),
-      'status': status.name,
+      'status': status.toDbString,
       'stand_id': standId,
       'api_source': apiSource,
       'external_id': externalId,
@@ -122,6 +142,9 @@ class FlightModel {
       'actual_arrival': actualArrival?.toIso8601String(),
       'scheduled_departure': scheduledDeparture?.toIso8601String(),
       'actual_departure': actualDeparture?.toIso8601String(),
+      'flight_type': flightType == FlightType.departure
+          ? 'departure'
+          : 'arrival',
     };
   }
 }
