@@ -256,5 +256,8 @@
   "search_flights": "Search flight number, airline...",
   "filter_arrivals": "Arrivals",
   "filter_departures": "Departures",
-  "status_updated": "Status updated successfully"
+  "status_updated": "Status updated successfully",
+  "incompatible_aircraft_title": "Aircraft Mismatch",
+  "incompatible_aircraft_message": "This flight operates a {aircraft}, but stand {stand} is configured for: {allowed}.\n\nDo you still want to assign this stand?",
+  "assign_anyway": "Assign Anyway"
 }

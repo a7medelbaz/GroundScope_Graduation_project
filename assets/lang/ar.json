@@ -257,5 +257,8 @@
   "search_flights": "ابحث عن رقم الرحلة أو شركة الطيران...",
   "filter_arrivals": "الواصلة",
   "filter_departures": "المغادرة",
-  "status_updated": "تم تحديث الحالة بنجاح"
+  "status_updated": "تم تحديث الحالة بنجاح",
+  "incompatible_aircraft_title": "تعارض نوع الطائرة",
+  "incompatible_aircraft_message": "هذه الرحلة تستخدم طائرة من نوع {aircraft}، لكن الموقف {stand} مخصص لـ: {allowed}.\n\nهل تريد تعيين الموقف على أي حال؟",
+  "assign_anyway": "تعيين على أي حال"
 }

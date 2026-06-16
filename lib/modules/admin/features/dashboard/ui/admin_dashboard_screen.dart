@@ -77,6 +77,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         pendingTasks: state.pendingTasksCount,
         openReports: state.openReportsCount,
         activeUnits: state.activeUnitsCount,
+        flightsNeedingAttention: state.flightsNeedingAttentionCount,
       ),
     };
   }

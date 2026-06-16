@@ -13,6 +13,8 @@ class FlightsListState extends Equatable {
     this.searchQuery = '',
     this.filter = FlightsFilter.all,
     this.error,
+    this.pendingAssignment,
+    this.assigningStandId,
   });
 
   final FlightsListStatus status;
@@ -22,6 +24,8 @@ class FlightsListState extends Equatable {
   final String searchQuery;
   final FlightsFilter filter;
   final AppError? error;
+  final PendingStandAssignment? pendingAssignment;
+  final String? assigningStandId; // stand being assigned (for loading state)
 
   FlightsListState copyWith({
     FlightsListStatus? status,
@@ -31,6 +35,10 @@ class FlightsListState extends Equatable {
     String? searchQuery,
     FlightsFilter? filter,
     AppError? error,
+    PendingStandAssignment? pendingAssignment,
+    bool clearPendingAssignment = false,
+    String? assigningStandId,
+    bool clearAssigningStandId = false,
   }) {
     return FlightsListState(
       status: status ?? this.status,
@@ -40,10 +48,40 @@ class FlightsListState extends Equatable {
       searchQuery: searchQuery ?? this.searchQuery,
       filter: filter ?? this.filter,
       error: error ?? this.error,
+      pendingAssignment: clearPendingAssignment
+          ? null
+          : pendingAssignment ?? this.pendingAssignment,
+      assigningStandId: clearAssigningStandId
+          ? null
+          : assigningStandId ?? this.assigningStandId,
     );
   }
 
   @override
-  List<Object?> get props =>
-      [status, all, filtered, warningFlights, searchQuery, filter, error];
+  List<Object?> get props => [
+    status,
+    all,
+    filtered,
+    warningFlights,
+    searchQuery,
+    filter,
+    error,
+    pendingAssignment,
+    assigningStandId,
+  ];
+}
+
+class PendingStandAssignment extends Equatable {
+  const PendingStandAssignment({
+    required this.flight,
+    required this.stand,
+    this.incompatibleAircraft,
+  });
+
+  final FlightModel flight;
+  final StandModel stand;
+  final String? incompatibleAircraft; // the aircraft type that didn't match
+
+  @override
+  List<Object?> get props => [flight, stand, incompatibleAircraft];
 }

@@ -10,6 +10,7 @@ class AdminDashboardState extends Equatable {
     this.pendingTasksCount = 0,
     this.openReportsCount = 0,
     this.activeUnitsCount = 0,
+    this.flightsNeedingAttentionCount = 0,
     this.error,
   });
 
@@ -19,6 +20,7 @@ class AdminDashboardState extends Equatable {
   final int pendingTasksCount;
   final int openReportsCount;
   final int activeUnitsCount;
+  final int flightsNeedingAttentionCount;
   final AppError? error;
 
   AdminDashboardState copyWith({
@@ -28,6 +30,7 @@ class AdminDashboardState extends Equatable {
     int? pendingTasksCount,
     int? openReportsCount,
     int? activeUnitsCount,
+    int? flightsNeedingAttentionCount,
     AppError? error,
   }) {
     return AdminDashboardState(
@@ -37,6 +40,8 @@ class AdminDashboardState extends Equatable {
       pendingTasksCount: pendingTasksCount ?? this.pendingTasksCount,
       openReportsCount: openReportsCount ?? this.openReportsCount,
       activeUnitsCount: activeUnitsCount ?? this.activeUnitsCount,
+      flightsNeedingAttentionCount:
+          flightsNeedingAttentionCount ?? this.flightsNeedingAttentionCount,
       error: error ?? this.error,
     );
   }
@@ -49,6 +54,7 @@ class AdminDashboardState extends Equatable {
         pendingTasksCount,
         openReportsCount,
         activeUnitsCount,
+        flightsNeedingAttentionCount,
         error,
       ];
 }

@@ -49,10 +49,49 @@ class FlightsListCubit extends Cubit<FlightsListState> {
     _applyFilters();
   }
 
+  /// Returns true if assignment succeeded.
+  /// Returns false if user confirmation is needed due to an aircraft
+  /// incompatibility — the UI should watch [FlightsListState.pendingAssignment]
+  /// and call [confirmAssignStand] or [cancelPendingAssignment].
   Future<bool> assignStand({
     required FlightModel flight,
     required StandModel stand,
   }) async {
+    if (!stand.isCompatibleWith(flight.aircraftType)) {
+      emit(
+        state.copyWith(
+          pendingAssignment: PendingStandAssignment(
+            flight: flight,
+            stand: stand,
+            incompatibleAircraft: flight.aircraftType,
+          ),
+        ),
+      );
+      return false; // UI handles the confirmation dialog
+    }
+
+    return _doAssignStand(flight: flight, stand: stand);
+  }
+
+  /// Called after user confirms the incompatibility warning.
+  Future<bool> confirmAssignStand() async {
+    final pending = state.pendingAssignment;
+    if (pending == null) return false;
+
+    emit(state.copyWith(clearPendingAssignment: true));
+    return _doAssignStand(flight: pending.flight, stand: pending.stand);
+  }
+
+  /// Cancel pending assignment (user dismissed the dialog).
+  void cancelPendingAssignment() {
+    emit(state.copyWith(clearPendingAssignment: true));
+  }
+
+  Future<bool> _doAssignStand({
+    required FlightModel flight,
+    required StandModel stand,
+  }) async {
+    emit(state.copyWith(assigningStandId: stand.id));
     try {
       await _repo.assignStand(
         flightId: flight.id,
@@ -68,6 +107,8 @@ class FlightsListCubit extends Cubit<FlightsListState> {
     } catch (_) {
       emit(state.copyWith(error: AppError.unknown()));
       return false;
+    } finally {
+      emit(state.copyWith(clearAssigningStandId: true));
     }
   }
 

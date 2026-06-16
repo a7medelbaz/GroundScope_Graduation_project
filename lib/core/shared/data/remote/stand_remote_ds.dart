@@ -71,16 +71,16 @@ class StandRemoteDs {
     }
   }
 
+  /// Counts all active (non-terminal) flights currently assigned to this
+  /// stand. No time filter — a flight with `stand_id` set occupies the
+  /// stand regardless of when its `scheduled_arrival` falls.
   Future<int> countFlightsAtStand(String standId) async {
     try {
-      final today = DateTime.now().toIso8601String().substring(0, 10);
       final data = await supabaseService.client
           .from('flights')
           .select('id')
           .eq('stand_id', standId)
-          .inFilter('status', ['scheduled', 'landed', 'in_service', 'ready'])
-          .gte('scheduled_arrival', '${today}T00:00:00')
-          .lte('scheduled_arrival', '${today}T23:59:59');
+          .inFilter('status', ['scheduled', 'landed', 'in_service', 'ready']);
       return (data as List).length;
     } on PostgrestException catch (e) {
       throw SupabaseErrorHandler.handle(e);
@@ -89,20 +89,19 @@ class StandRemoteDs {
     }
   }
 
-  /// Fetches all flights assigned to a specific stand,
-  /// ordered by scheduled_arrival ascending.
-  /// Returns flights for the next 7 days to keep the list relevant.
+  /// Fetches all flights assigned to a specific stand.
+  /// Shows past, current, and upcoming flights ordered by scheduled_arrival.
+  /// No time filter — if a flight has stand_id set, show it.
   Future<List<FlightModel>> fetchFlightsForStand(String standId) async {
     try {
-      final now = DateTime.now();
-      final weekLater = now.add(const Duration(days: 7));
       final data = await supabaseService.client
           .from('flights')
           .select()
           .eq('stand_id', standId)
-          .gte('scheduled_arrival', now.toIso8601String())
-          .lte('scheduled_arrival', weekLater.toIso8601String())
+          .not('status', 'eq', 'cancelled') // exclude cancelled flights
+          .not('status', 'eq', 'departed') // exclude departed flights
           .order('scheduled_arrival', ascending: true);
+
       return (data as List)
           .map((e) => FlightModel.fromMap(e as Map<String, dynamic>))
           .toList();

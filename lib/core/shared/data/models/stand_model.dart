@@ -41,6 +41,19 @@ class StandModel {
         'is_active': isActive,
       };
 
+  /// Returns true if this stand is compatible with the given aircraft type.
+  /// Returns true if compatibleAircraft is empty (no restriction).
+  bool isCompatibleWith(String? aircraftType) {
+    if (compatibleAircraft.isEmpty) return true;
+    if (aircraftType == null || aircraftType.isEmpty) return true;
+
+    final normalizedType = aircraftType.toUpperCase().trim();
+
+    return compatibleAircraft.any(
+      (type) => type.toUpperCase().trim() == normalizedType,
+    );
+  }
+
   StandModel copyWith({
     String? id,
     String? code,
