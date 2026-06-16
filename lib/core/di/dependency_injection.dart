@@ -3,6 +3,13 @@ import 'package:get_it/get_it.dart';
 import 'package:ground_scope/core/shared/data/remote/report_remote_ds.dart';
 import 'package:ground_scope/core/shared/data/repo/report_repo.dart';
 import 'package:ground_scope/core/shared/data/repo/report_repo_impl.dart';
+import '../../modules/supervisor/features/dashboard/data/remote/dashboard_remote_ds.dart';
+import '../../modules/supervisor/features/dashboard/data/repo/dashboard_repo.dart';
+import '../../modules/supervisor/features/dashboard/data/repo/dashboard_repo_impl.dart';
+import '../../modules/supervisor/features/dashboard/logic/cubit/dashboard_cubit.dart';
+import '../../modules/supervisor/features/reports/logic/cubit/supervisor_reports_cubit.dart';
+import '../../modules/supervisor/features/tasks/logic/cubit/supervisor_task_list_cubit.dart';
+import '../../modules/supervisor/features/units/logic/cubit/units_list_cubit.dart';
 import '../../modules/worker/features/add_report/logic/cubit/add_report_cubit.dart';
 import '../../modules/worker/features/home/logic/cubit/home_cubit.dart';
 import '../../modules/worker/features/profile/logic/cubit/profile_cubit.dart';
@@ -128,6 +135,26 @@ Future<void> setUpDependencies() async {
       reportRepo: getIt<ReportRepo>(),
       userService: getIt<UserService>(),
     ),
+  );
+
+  // Supervisor Dashboard DI
+  getIt.registerLazySingleton<DashboardRemoteDs>(
+    () => DashboardRemoteDs(supabaseService: getIt<SupabaseService>()),
+  );
+  getIt.registerLazySingleton<DashboardRepo>(
+    () => DashboardRepoImpl(dashboardRemoteDs: getIt<DashboardRemoteDs>()),
+  );
+  getIt.registerFactory<DashboardCubit>(
+    () => DashboardCubit(dashboardRepo: getIt<DashboardRepo>()),
+  );
+  getIt.registerFactory<UnitsListCubit>(
+    () => UnitsListCubit(unitRepo: getIt<UnitRepo>()),
+  );
+  getIt.registerFactory<SupervisorTaskListCubit>(
+    () => SupervisorTaskListCubit(taskRepo: getIt<TaskRepo>()),
+  );
+  getIt.registerFactory<SupervisorReportsCubit>(
+    () => SupervisorReportsCubit(reportRepo: getIt<ReportRepo>()),
   );
 
   // Profile DI

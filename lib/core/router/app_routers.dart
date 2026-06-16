@@ -16,6 +16,12 @@ import 'package:ground_scope/modules/worker/features/reports/ui/report_details_s
 import 'package:ground_scope/modules/worker/features/task_details/logic/cubit/task_details_cubit.dart';
 import 'package:ground_scope/modules/worker/features/task_details/ui/task_details_screen.dart';
 import 'package:ground_scope/modules/worker/features/task_info/ui/task_info_screen.dart';
+import '../../modules/supervisor/features/reports/logic/cubit/supervisor_reports_cubit.dart';
+import '../../modules/supervisor/features/reports/ui/supervisor_reports_screen.dart';
+import '../../modules/supervisor/features/tasks/logic/cubit/supervisor_task_list_cubit.dart';
+import '../../modules/supervisor/features/tasks/ui/supervisor_task_list_screen.dart';
+import '../../modules/supervisor/features/units/logic/cubit/units_list_cubit.dart';
+import '../../modules/supervisor/features/units/ui/units_screen.dart';
 import '../../modules/worker/core/main_navigation/ui/worker_scaffold.dart';
 import '../auth/ui/login_screen.dart';
 import '../onboarding/ui/on_boarding_screen.dart';
@@ -92,6 +98,44 @@ class AppRouter {
           return _buildRoute(const SizedBox.shrink(), settings);
         }
         return _buildRoute(MemberDetailScreen(member: member), settings);
+
+      // Supervisor-----------------------------------------------
+      case Routes.supervisorUnitsScreen:
+        return _buildRoute(
+          BlocProvider(
+            create: (_) => getIt<UnitsListCubit>()..loadUnits(),
+            child: const SupervisorUnitsScreen(),
+          ),
+          settings,
+        );
+
+      case Routes.supervisorReportsScreen:
+        return _buildRoute(
+          BlocProvider(
+            create: (_) =>
+                getIt<SupervisorReportsCubit>()..loadReportsToday(),
+            child: const SupervisorReportsScreen(),
+          ),
+          settings,
+        );
+
+      case Routes.supervisorTaskListScreen:
+        final title = arguments?['title'] as String? ?? 'Tasks';
+        final accentColor = arguments?['accentColor'] as Color? ?? Colors.blue;
+        final filterStatus =
+            arguments?['filterStatus'] as TaskStatus? ?? TaskStatus.completed;
+        return _buildRoute(
+          BlocProvider(
+            create: (_) =>
+                getIt<SupervisorTaskListCubit>()..loadTasks(filterStatus),
+            child: SupervisorTaskListScreen(
+              title: title,
+              accentColor: accentColor,
+              filterStatus: filterStatus,
+            ),
+          ),
+          settings,
+        );
 
       default:
         return _buildRoute(

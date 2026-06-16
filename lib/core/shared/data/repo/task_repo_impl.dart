@@ -27,4 +27,15 @@ class TaskRepoImpl implements TaskRepo {
   Future<List<TaskPauseModel>> getTaskPauseHistory({required String taskId}) {
     return taskRemoteDs.getTaskPauseHistory(taskId: taskId);
   }
+
+  @override
+  Future<List<TaskModel>> fetchTasksByStatus(TaskStatus status) async {
+    try {
+      return await taskRemoteDs.fetchTasksByStatus(status);
+    } on AppError {
+      rethrow;
+    } catch (e) {
+      throw AppError.unknown();
+    }
+  }
 }

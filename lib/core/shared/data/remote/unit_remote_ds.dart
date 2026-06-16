@@ -4,6 +4,8 @@ import 'package:ground_scope/core/networking/supabase_service.dart';
 import 'package:ground_scope/core/shared/data/models/unit_model.dart';
 import 'package:ground_scope/core/shared/data/models/unit_profile_model.dart';
 
+
+
 class UnitRemoteDs {
   const UnitRemoteDs({required this.supabaseService});
 
@@ -33,6 +35,20 @@ class UnitRemoteDs {
           .eq('id', unitId)
           .single();
       return UnitProfileModel.fromMap(response);
+    } catch (e) {
+      throw ErrorHandler.handle(e);
+    }
+  }
+
+  Future<List<UnitProfileModel>> fetchAllUnits() async {
+    try {
+      final response = await supabaseService.client
+          .from('units')
+          .select('*, service_types(name)')
+          .order('name', ascending: true);
+      return (response as List)
+          .map((json) => UnitProfileModel.fromMap(json as Map<String, dynamic>))
+          .toList();
     } catch (e) {
       throw ErrorHandler.handle(e);
     }

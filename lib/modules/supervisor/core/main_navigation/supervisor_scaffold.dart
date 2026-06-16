@@ -29,7 +29,7 @@ class _SupervisorScaffoldState extends State<SupervisorScaffold> {
     return [
       const SupervisorDashboardScreen(),
       const SupervisorReportsScreen(),
-      const SupervisorAddReportScreen(), // Placeholder for the middle button
+      const SupervisorAddReportScreen(), 
       const SupervisorTasksScreen(),
       const SupervisorProfileScreen(),
     ];

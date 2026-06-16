@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:ground_scope/core/shared/data/models/task_model.dart';
 import '../../../error/types/error_handler.dart';
 import '../../../networking/supabase_service.dart';
@@ -66,6 +67,30 @@ class TaskRemoteDs {
           .map((json) => TaskPauseModel.fromMap(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
+      throw ErrorHandler.handle(e);
+    }
+  }
+
+  Future<List<TaskModel>> fetchTasksByStatus(TaskStatus status) async {
+    try {
+      final response = await supabaseService.client
+          .from('tasks')
+          .select('''
+            *,
+            service_types (*),
+            flights (
+              *,
+              stands (*)
+            )
+          ''')
+          .eq('status', status.dbValue)
+          .order('scheduled_start', ascending: false);
+
+      return (response as List<dynamic>)
+          .map((json) => TaskModel.fromMap(json as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      debugPrint('❌ fetchTasksByStatus error: $e');
       throw ErrorHandler.handle(e);
     }
   }

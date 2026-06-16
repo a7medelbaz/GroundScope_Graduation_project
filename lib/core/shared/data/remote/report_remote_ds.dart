@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
+import 'package:ground_scope/core/error/types/error_handler.dart';
 import 'package:ground_scope/core/networking/supabase_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -60,6 +62,25 @@ class ReportRemoteDs {
         .order('created_at', ascending: false);
 
     return (data as List).map((e) => ReportModel.fromMap(e)).toList();
+  }
+
+  Future<List<ReportModel>> fetchReportsToday() async {
+    try {
+      final now = DateTime.now().toUtc();
+      final startOfDay =
+          DateTime.utc(now.year, now.month, now.day).toIso8601String();
+
+      final data = await supabaseService.client
+          .from('reports')
+          .select()
+          .gte('created_at', startOfDay)
+          .order('created_at', ascending: false);
+
+      return (data as List).map((e) => ReportModel.fromMap(e)).toList();
+    } catch (e) {
+      debugPrint('❌ fetchReportsToday error: $e');
+      throw ErrorHandler.handle(e);
+    }
   }
 
   Future<String> _uploadReportImage(File file, String taskId) async {

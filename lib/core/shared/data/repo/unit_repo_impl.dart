@@ -29,7 +29,18 @@ class UnitRepoImpl implements UnitRepo {
     } on AppError {
       rethrow;
     } catch (e) {
-      ErrorHandler.handle(e);
+      throw ErrorHandler.handle(e);
+    }
+  }
+
+  @override
+  Future<List<UnitProfileModel>> fetchAllUnits() async {
+    try {
+      return await unitRemoteDs.fetchAllUnits();
+    } on AppError {
+      rethrow;
+    } catch (e) {
+      throw ErrorHandler.handle(e);
     }
   }
 }

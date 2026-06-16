@@ -15,4 +15,5 @@ abstract class ReportRepo {
 
   Future<List<ReportModel>> getReportsByTask(String taskId);
   Future<List<ReportModel>> getMyReports(String userId);
+  Future<List<ReportModel>> fetchReportsToday();
 }
