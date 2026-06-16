@@ -97,8 +97,9 @@ class AppRouter {
         final manager = arguments?['manager'] as UserModel?;
         final members =
             (arguments?['members'] as List?)?.cast<UnitMemberModel>() ?? [];
-        if (manager == null)
+        if (manager == null) {
           return _buildRoute(const SizedBox.shrink(), settings);
+        }
         return _buildRoute(
           ManagerAndMembersScreen(manager: manager, members: members),
           settings,
