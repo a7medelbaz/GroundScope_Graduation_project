@@ -8,12 +8,16 @@ class UnitFormState extends Equatable {
     this.editing,
     this.serviceTypes = const [],
     this.error,
+    this.generatedCredentials,
+    this.credentialsError = false,
   });
 
   final UnitFormStatus status;
   final UnitModel? editing;
   final List<ServiceTypeModel> serviceTypes;
   final AppError? error;
+  final GeneratedCredentials? generatedCredentials;
+  final bool credentialsError;
 
   bool get isEditMode => editing != null;
 
@@ -22,15 +26,20 @@ class UnitFormState extends Equatable {
     UnitModel? editing,
     List<ServiceTypeModel>? serviceTypes,
     AppError? error,
+    GeneratedCredentials? generatedCredentials,
+    bool? credentialsError,
   }) {
     return UnitFormState(
       status: status ?? this.status,
       editing: editing ?? this.editing,
       serviceTypes: serviceTypes ?? this.serviceTypes,
       error: error ?? this.error,
+      generatedCredentials: generatedCredentials ?? this.generatedCredentials,
+      credentialsError: credentialsError ?? this.credentialsError,
     );
   }
 
   @override
-  List<Object?> get props => [status, editing, serviceTypes, error];
+  List<Object?> get props =>
+      [status, editing, serviceTypes, error, generatedCredentials, credentialsError];
 }
