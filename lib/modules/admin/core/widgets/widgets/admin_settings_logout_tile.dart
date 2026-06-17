@@ -53,10 +53,8 @@ class AdminSettingsLogoutTile extends StatelessWidget {
       onConfirm: () {
         // Pop the confirm dialog
         context.pop();
-        // Pop the settings sheet
-        context.pop();
-        // Emit AuthUnauthenticated — UserAuthenticatedCheck handles routing
         getIt<AuthCubit>().logout();
+        context.pop();
       },
     );
   }
