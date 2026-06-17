@@ -11,9 +11,7 @@ class NotificationButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       splashColor: AppColors.white.withAlpha(20),
-      onTap: () {
-        onTap;
-      },
+      onTap: () => onTap(),
       child: Container(
         width: rw(44),
         height: rw(44),

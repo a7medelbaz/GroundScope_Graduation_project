@@ -6,9 +6,13 @@ import 'package:ground_scope/core/themes/app_colors.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
+import 'package:ground_scope/core/di/dependency_injection.dart';
 import 'package:ground_scope/core/widgets/error_screen.dart';
 import 'package:ground_scope/modules/supervisor/core/main_navigation/cubit/supervisor_nav_cubit.dart';
+import 'package:ground_scope/modules/supervisor/features/dashboard/data/models/service_request_model.dart';
+import '../logic/cubit/assign_unit_cubit.dart';
 import '../logic/cubit/dashboard_cubit.dart';
+import 'widgets/assign_unit_bottom_sheet.dart';
 import 'widgets/service_request_card.dart';
 import 'widgets/stats_row.dart';
 import 'widgets/supervisor_header.dart';
@@ -28,6 +32,19 @@ class _SupervisorDashboardScreenState
   void initState() {
     super.initState();
     context.read<DashboardCubit>().loadDashboard();
+  }
+
+  void _openAssignSheet(BuildContext context, ServiceRequestModel request) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => BlocProvider(
+        create: (_) => getIt<AssignUnitCubit>()
+          ..loadAvailableUnits(request.serviceTypeId),
+        child: AssignUnitBottomSheet(request: request),
+      ),
+    );
   }
 
   @override
@@ -86,7 +103,7 @@ class _SupervisorDashboardScreenState
                     ...state.pendingRequests.take(5).map(
                           (r) => ServiceRequestCard(
                             request: r,
-                            onAssignTap: () {},
+                            onAssignTap: () => _openAssignSheet(context, r),
                           ),
                         ),
                   verticalSpacing(24),

@@ -279,5 +279,16 @@
   "good_evening": "مساء النور،",
   "no_active_task": "لا توجد مهمة نشطة",
   "off_shift": "خارج الوردية",
-  "no_results_found": "لا توجد نتائج"
+  "no_results_found": "لا توجد نتائج",
+  "search_by_flight_or_unit": "ابحث برقم الرحلة أو الوحدة...",
+  "filter_all": "الكل",
+  "filter_pending": "قيد الانتظار",
+  "filter_in_progress": "جارٍ التنفيذ",
+  "filter_completed": "مكتملة",
+  "filter_cancelled": "ملغاة",
+  "assign_unit_title": "تعيين وحدة",
+  "search_units": "ابحث عن وحدة...",
+  "assign": "تعيين",
+  "task_assigned": "تم تعيين الوحدة بنجاح",
+  "results": "نتائج"
 }

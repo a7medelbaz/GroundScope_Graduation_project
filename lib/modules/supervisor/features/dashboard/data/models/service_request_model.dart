@@ -17,7 +17,9 @@ class ServiceRequestModel extends Equatable {
   final String id;
   final String flightId;
   final String serviceTypeId;
+  // Maps to tasks.created_by — the user who created/requested the task
   final String requestedBy;
+  // Maps to tasks.assigned_by — the supervisor who assigned it (nullable until assigned)
   final String? assignedSupervisorId;
   final String status;
   final String? notes;
@@ -29,8 +31,8 @@ class ServiceRequestModel extends Equatable {
       id: json['id']?.toString() ?? '',
       flightId: json['flight_id']?.toString() ?? '',
       serviceTypeId: json['service_type_id']?.toString() ?? '',
-      requestedBy: json['requested_by']?.toString() ?? '',
-      assignedSupervisorId: json['assigned_supervisor_id']?.toString(),
+      requestedBy: json['created_by']?.toString() ?? '',
+      assignedSupervisorId: json['assigned_by']?.toString(),
       status: json['status']?.toString() ?? 'pending',
       notes: json['notes']?.toString(),
       createdAt: json['created_at'] != null

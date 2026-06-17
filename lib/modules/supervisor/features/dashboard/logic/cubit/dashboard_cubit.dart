@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/error/models/app_error.dart';
 import 'package:ground_scope/core/service/user_service.dart';
@@ -23,16 +24,30 @@ class DashboardCubit extends Cubit<DashboardState> {
     emit(state.copyWith(status: DashboardStatus.loading));
     try {
       final user = await _userService.getUser();
-      final serviceTypeId = user?.serviceTypeId ?? '';
+      final serviceTypeId = user?.serviceTypeId;
 
-      final results = await Future.wait([
-        _dashboardRepo.fetchTaskStats(serviceTypeId),
-        _dashboardRepo.fetchUnitStats(serviceTypeId),
-        _dashboardRepo.fetchOpenReportCount(serviceTypeId),
-        _dashboardRepo.fetchPendingServiceRequests(serviceTypeId),
-        _dashboardRepo.fetchUnitsPreview(serviceTypeId),
-        _dashboardRepo.fetchServiceTypeName(serviceTypeId),
-      ]);
+      if (serviceTypeId == null || serviceTypeId.isEmpty) {
+        emit(state.copyWith(
+          status: DashboardStatus.failure,
+          error: AppError.unknown('Supervisor service type not configured.'),
+        ));
+        return;
+      }
+
+      final results = await Future.wait(
+        [
+          _dashboardRepo.fetchTaskStats(serviceTypeId),
+          _dashboardRepo.fetchUnitStats(serviceTypeId),
+          _dashboardRepo.fetchOpenReportCount(serviceTypeId),
+          _dashboardRepo.fetchPendingServiceRequests(serviceTypeId),
+          _dashboardRepo.fetchUnitsPreview(serviceTypeId),
+          _dashboardRepo.fetchServiceTypeName(serviceTypeId),
+        ],
+        eagerError: true,
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () => throw AppError.timeout(),
+      );
 
       final taskStats = results[0] as Map<String, int>;
       final unitStats = results[1] as Map<String, int>;
@@ -59,7 +74,8 @@ class DashboardCubit extends Cubit<DashboardState> {
       ));
     } on AppError catch (e) {
       emit(state.copyWith(status: DashboardStatus.failure, error: e));
-    } catch (_) {
+    } catch (e, st) {
+      debugPrint('DashboardCubit.loadDashboard error: $e\n$st');
       emit(state.copyWith(
           status: DashboardStatus.failure, error: AppError.unknown()));
     }

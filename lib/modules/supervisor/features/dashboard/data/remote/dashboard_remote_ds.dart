@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:ground_scope/core/error/handlers/supabase_error_handler.dart';
+import 'package:ground_scope/core/error/models/app_error.dart';
 import 'package:ground_scope/core/networking/supabase_service.dart';
 import 'package:ground_scope/core/shared/data/models/unit_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -23,6 +25,9 @@ class DashboardRemoteDs {
       return stats;
     } on PostgrestException catch (e) {
       throw SupabaseErrorHandler.handle(e);
+    } catch (e, st) {
+      debugPrint('fetchTaskStats error: $e\n$st');
+      throw AppError.unknown(e.toString());
     }
   }
 
@@ -40,36 +45,62 @@ class DashboardRemoteDs {
       return stats;
     } on PostgrestException catch (e) {
       throw SupabaseErrorHandler.handle(e);
+    } catch (e, st) {
+      debugPrint('fetchUnitStats error: $e\n$st');
+      throw AppError.unknown(e.toString());
     }
   }
 
+  /// Counts open reports for this service type.
+  /// Uses a two-step query to avoid PostgREST inner-join filter syntax issues:
+  /// 1. Fetch task IDs belonging to this service type.
+  /// 2. Count open reports whose task_id is in that set.
   Future<int> fetchOpenReportCount(String serviceTypeId) async {
     try {
-      final rows = await _supabaseService.client
+      final taskRows = await _supabaseService.client
+          .from('tasks')
+          .select('id')
+          .eq('service_type_id', serviceTypeId);
+
+      if (taskRows.isEmpty) return 0;
+
+      final taskIds =
+          taskRows.map((r) => r['id'] as String).toList();
+
+      final reportRows = await _supabaseService.client
           .from('reports')
-          .select('id, tasks!inner(service_type_id)')
-          .eq('tasks.service_type_id', serviceTypeId)
+          .select('id')
+          .inFilter('task_id', taskIds)
           .eq('status', 'open');
-      return rows.length;
+
+      return reportRows.length;
     } on PostgrestException catch (e) {
       throw SupabaseErrorHandler.handle(e);
+    } catch (e, st) {
+      debugPrint('fetchOpenReportCount error: $e\n$st');
+      throw AppError.unknown(e.toString());
     }
   }
 
+  // Pending service requests are tasks with status='pending' and no unit assigned yet.
   Future<List<ServiceRequestModel>> fetchPendingServiceRequests(
       String serviceTypeId) async {
     try {
       final rows = await _supabaseService.client
-          .from('flight_service_requests')
+          .from('tasks')
           .select('*, flights(*, stands(*))')
           .eq('service_type_id', serviceTypeId)
           .eq('status', 'pending')
+          .isFilter('unit_id', null)
           .order('created_at', ascending: true);
       return rows
           .map((row) => ServiceRequestModel.fromJson(row))
           .toList();
     } on PostgrestException catch (e) {
       throw SupabaseErrorHandler.handle(e);
+    } catch (e, st) {
+      debugPrint('fetchPendingServiceRequests error: $e\n$st');
+      throw AppError.unknown(e.toString());
     }
   }
 
@@ -86,6 +117,9 @@ class DashboardRemoteDs {
           .toList();
     } on PostgrestException catch (e) {
       throw SupabaseErrorHandler.handle(e);
+    } catch (e, st) {
+      debugPrint('fetchUnitsPreview error: $e\n$st');
+      throw AppError.unknown(e.toString());
     }
   }
 
@@ -99,6 +133,9 @@ class DashboardRemoteDs {
       return row?['name'] as String?;
     } on PostgrestException catch (e) {
       throw SupabaseErrorHandler.handle(e);
+    } catch (e, st) {
+      debugPrint('fetchServiceTypeName error: $e\n$st');
+      throw AppError.unknown(e.toString());
     }
   }
 }

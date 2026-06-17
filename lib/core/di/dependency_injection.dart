@@ -47,7 +47,14 @@ import '../../modules/admin/features/flights/logic/cubit/flights_list_cubit.dart
 import '../../modules/supervisor/features/dashboard/data/remote/dashboard_remote_ds.dart';
 import '../../modules/supervisor/features/dashboard/data/repo/dashboard_repo.dart';
 import '../../modules/supervisor/features/dashboard/data/repo/dashboard_repo_impl.dart';
+import '../../modules/supervisor/features/dashboard/data/remote/assign_unit_remote_ds.dart';
+import '../../modules/supervisor/features/dashboard/data/repo/assign_unit_repo.dart';
+import '../../modules/supervisor/features/dashboard/data/repo/assign_unit_repo_impl.dart';
+import '../../modules/supervisor/features/dashboard/logic/cubit/assign_unit_cubit.dart';
 import '../../modules/supervisor/features/dashboard/logic/cubit/dashboard_cubit.dart';
+import '../../modules/supervisor/features/tasks/data/remote/supervisor_task_remote_ds.dart';
+import '../../modules/supervisor/features/tasks/data/repo/supervisor_task_repo.dart';
+import '../../modules/supervisor/features/tasks/data/repo/supervisor_task_repo_impl.dart';
 import '../../modules/supervisor/features/tasks/logic/cubit/supervisor_tasks_cubit.dart';
 import '../../modules/supervisor/features/units/logic/cubit/supervisor_units_cubit.dart';
 import '../../modules/supervisor/features/reports/logic/cubit/supervisor_reports_cubit.dart';
@@ -226,7 +233,27 @@ Future<void> setUpDependencies() async {
       userService: getIt<UserService>(),
     ),
   );
-  getIt.registerFactory<SupervisorTasksCubit>(() => SupervisorTasksCubit());
+  getIt.registerLazySingleton<AssignUnitRemoteDs>(
+    () => AssignUnitRemoteDs(getIt<SupabaseService>()),
+  );
+  getIt.registerLazySingleton<AssignUnitRepo>(
+    () => AssignUnitRepoImpl(getIt<AssignUnitRemoteDs>()),
+  );
+  getIt.registerFactory<AssignUnitCubit>(
+    () => AssignUnitCubit(
+      repo: getIt<AssignUnitRepo>(),
+      userService: getIt<UserService>(),
+    ),
+  );
+  getIt.registerLazySingleton<SupervisorTaskRemoteDs>(
+    () => SupervisorTaskRemoteDs(getIt<SupabaseService>()),
+  );
+  getIt.registerLazySingleton<SupervisorTaskRepo>(
+    () => SupervisorTaskRepoImpl(getIt<SupervisorTaskRemoteDs>()),
+  );
+  getIt.registerFactory<SupervisorTasksCubit>(
+    () => SupervisorTasksCubit(repo: getIt<SupervisorTaskRepo>()),
+  );
   getIt.registerFactory<SupervisorUnitsCubit>(() => SupervisorUnitsCubit());
   getIt.registerFactory<SupervisorReportsCubit>(() => SupervisorReportsCubit());
   getIt.registerFactory<SupervisorProfileCubit>(() => SupervisorProfileCubit());
