@@ -27,4 +27,5 @@ class Routes {
   static const String adminStandFormScreen = '/adminStandFormScreen';
   static const String adminFlightsScreen = '/adminFlightsScreen';
   static const String adminFlightDetailScreen = '/adminFlightDetailScreen';
+  static const String adminUsersScreen = '/adminUsersScreen';
 }
