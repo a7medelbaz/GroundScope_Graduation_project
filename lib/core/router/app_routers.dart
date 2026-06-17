@@ -33,6 +33,7 @@ import 'package:ground_scope/modules/worker/features/task_details/logic/cubit/ta
 import 'package:ground_scope/modules/worker/features/task_details/ui/task_details_screen.dart';
 import 'package:ground_scope/modules/worker/features/task_info/ui/task_info_screen.dart';
 
+import '../../modules/supervisor/core/main_navigation/supervisor_scaffold.dart';
 import '../../modules/worker/core/main_navigation/ui/worker_scaffold.dart';
 import '../auth/ui/login_screen.dart';
 import '../onboarding/ui/on_boarding_screen.dart';
@@ -52,6 +53,8 @@ class AppRouter {
       // Worker-----------------------------------------------
       case Routes.workerScaffold:
         return _buildRoute(const WorkerScaffold(), settings);
+      case Routes.supervisorScaffold:
+        return _buildRoute(const SupervisorScaffold(), settings);
       case Routes.taskDetailsScreen:
         final task = arguments?['task'];
         return _buildRoute(

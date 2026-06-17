@@ -1,101 +1,103 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
-import '../../../../../core/themes/app_colors.dart';
-import '../../../../../core/utils/extensions/context_ext.dart';
-import '../../../../../core/utils/spacing.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/themes/app_colors.dart';
+import '../../../../core/themes/app_text_styles.dart';
+import '../../../../core/utils/extensions/context_ext.dart';
+import 'cubit/supervisor_nav_cubit.dart';
 import '../../features/dashboard/ui/supervisor_dashboard_screen.dart';
-import '../../features/profile/ui/supervisor_profile_screen.dart';
-import '../../features/reports/ui/supervisor_reports_screen.dart';
 import '../../features/tasks/ui/supervisor_tasks_screen.dart';
+import '../../features/units/ui/supervisor_units_screen.dart';
+import '../../features/reports/ui/supervisor_reports_screen.dart';
+import '../../features/profile/ui/supervisor_profile_screen.dart';
 
-class SupervisorScaffold extends StatefulWidget {
+class SupervisorScaffold extends StatelessWidget {
   const SupervisorScaffold({super.key});
 
   @override
-  State<SupervisorScaffold> createState() => _SupervisorScaffoldState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => SupervisorNavCubit(),
+      child: const _SupervisorScaffoldBody(),
+    );
+  }
 }
 
-class _SupervisorScaffoldState extends State<SupervisorScaffold> {
-  late PersistentTabController _controller;
+class _SupervisorScaffoldBody extends StatefulWidget {
+  const _SupervisorScaffoldBody();
 
   @override
-  void initState() {
-    super.initState();
-    _controller = PersistentTabController(initialIndex: 0);
-  }
+  State<_SupervisorScaffoldBody> createState() =>
+      _SupervisorScaffoldBodyState();
+}
 
-  List<Widget> _buildScreens() {
-    return [
-      const SupervisorDashboardScreen(),
-      const SupervisorReportsScreen(),
-      Container(), // Placeholder for the middle button
-      const SupervisorTasksScreen(),
-      const SupervisorProfileScreen(),
-    ];
-  }
-
-  List<PersistentBottomNavBarItem> _navBarItems(BuildContext context) {
-    final activeColor = AppColors.primary300;
-    final inactiveColor = context.customColors.textSecondary;
-
-    return [
-      PersistentBottomNavBarItem(
-        icon: Icon(Icons.dashboard_outlined, size: rr(28), color: activeColor),
-        inactiveIcon: Icon(Icons.dashboard, size: rr(28), color: inactiveColor),
-      ),
-      PersistentBottomNavBarItem(
-        icon: Icon(Icons.analytics_outlined, size: rr(28), color: activeColor),
-        inactiveIcon: Icon(Icons.analytics, size: rr(28), color: inactiveColor),
-      ),
-      PersistentBottomNavBarItem(
-        icon: Icon(Icons.add, size: rr(32), color: Colors.white),
-        activeColorPrimary: AppColors.primary300,
-        inactiveColorPrimary: AppColors.primary300,
-        onPressed: (context) {
-          // Add your action here (e.g., show a bottom sheet)
-        },
-      ),
-      PersistentBottomNavBarItem(
-        icon: Icon(Icons.assignment_outlined, size: rr(28), color: activeColor),
-        inactiveIcon: Icon(
-          Icons.assignment,
-          size: rr(28),
-          color: inactiveColor,
-        ),
-      ),
-      PersistentBottomNavBarItem(
-        icon: Icon(Icons.person_outline, size: rr(28), color: activeColor),
-        inactiveIcon: Icon(Icons.person, size: rr(28), color: inactiveColor),
-      ),
-    ];
-  }
+class _SupervisorScaffoldBodyState extends State<_SupervisorScaffoldBody> {
+  final List<Widget> _screens = const [
+    SupervisorDashboardScreen(),
+    SupervisorTasksScreen(),
+    SupervisorUnitsScreen(),
+    SupervisorReportsScreen(),
+    SupervisorProfileScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    return PersistentTabView(
-      context,
-      controller: _controller,
-      screens: _buildScreens(),
-      items: _navBarItems(context),
-      navBarStyle: NavBarStyle.style15,
-      navBarHeight: rh(70),
-      padding: EdgeInsets.only(top: rh(2), bottom: rh(8)),
-      backgroundColor: context.customColors.background.withValues(alpha: 0.95),
-      decoration: NavBarDecoration(
-        colorBehindNavBar: context.customColors.background,
-        boxShadow: [
-          BoxShadow(
-            color: context.customColors.textPrimary.withValues(alpha: 0.15),
-            // blurRadius: 2,
-            // offset: const Offset(0, -2),
-            blurRadius:
-                15, // <--- Increase this for more "blur" (e.g., from 2 to 15)
-            spreadRadius: 3, // <--- Add this to make the shadow cover more area
-            offset: const Offset(0, -2),
+    final cc = context.customColors;
+
+    return BlocBuilder<SupervisorNavCubit, SupervisorNavState>(
+      builder: (context, state) {
+        return Scaffold(
+          body: IndexedStack(
+            index: state.currentIndex,
+            children: _screens,
           ),
-        ],
-      ),
-      confineToSafeArea: true,
+          bottomNavigationBar: DecoratedBox(
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(color: cc.border, width: 0.5),
+              ),
+            ),
+            child: BottomNavigationBar(
+              currentIndex: state.currentIndex,
+              onTap: context.read<SupervisorNavCubit>().changeTab,
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: cc.surface,
+              selectedItemColor: AppColors.primary200,
+              unselectedItemColor: AppColors.grey400,
+              selectedLabelStyle: AppTextStyles.font12SemiBold,
+              unselectedLabelStyle: AppTextStyles.font12Light,
+              elevation: 0,
+              items: [
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.dashboard_outlined),
+                  activeIcon: const Icon(Icons.dashboard),
+                  label: 'supervisor_dashboard_title'.tr(),
+                ),
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.check_box_outlined),
+                  activeIcon: const Icon(Icons.check_box),
+                  label: 'supervisor_tasks_title'.tr(),
+                ),
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.local_shipping_outlined),
+                  activeIcon: const Icon(Icons.local_shipping),
+                  label: 'supervisor_units_title'.tr(),
+                ),
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.flag_outlined),
+                  activeIcon: const Icon(Icons.flag),
+                  label: 'supervisor_reports_title'.tr(),
+                ),
+                BottomNavigationBarItem(
+                  icon: const Icon(Icons.account_circle_outlined),
+                  activeIcon: const Icon(Icons.account_circle),
+                  label: 'supervisor_profile_title'.tr(),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

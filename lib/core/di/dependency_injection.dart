@@ -44,6 +44,14 @@ import '../shared/data/repo/unit_repo.dart';
 import '../shared/data/repo/unit_repo_impl.dart';
 import '../../modules/admin/features/flights/logic/cubit/flight_import_cubit.dart';
 import '../../modules/admin/features/flights/logic/cubit/flights_list_cubit.dart';
+import '../../modules/supervisor/features/dashboard/data/remote/dashboard_remote_ds.dart';
+import '../../modules/supervisor/features/dashboard/data/repo/dashboard_repo.dart';
+import '../../modules/supervisor/features/dashboard/data/repo/dashboard_repo_impl.dart';
+import '../../modules/supervisor/features/dashboard/logic/cubit/dashboard_cubit.dart';
+import '../../modules/supervisor/features/tasks/logic/cubit/supervisor_tasks_cubit.dart';
+import '../../modules/supervisor/features/units/logic/cubit/supervisor_units_cubit.dart';
+import '../../modules/supervisor/features/reports/logic/cubit/supervisor_reports_cubit.dart';
+import '../../modules/supervisor/features/profile/logic/cubit/supervisor_profile_cubit.dart';
 
 final getIt = GetIt.instance;
 Future<void> setUpDependencies() async {
@@ -204,4 +212,22 @@ Future<void> setUpDependencies() async {
   getIt.registerFactory<ProfileCubit>(
     () => ProfileCubit(getIt<UnitRepo>(), getIt<UnitMemberRepo>()),
   );
+
+  // === SUPERVISOR MODULE ===
+  getIt.registerLazySingleton<DashboardRemoteDs>(
+    () => DashboardRemoteDs(getIt<SupabaseService>()),
+  );
+  getIt.registerLazySingleton<DashboardRepo>(
+    () => DashboardRepoImpl(getIt<DashboardRemoteDs>()),
+  );
+  getIt.registerFactory<DashboardCubit>(
+    () => DashboardCubit(
+      dashboardRepo: getIt<DashboardRepo>(),
+      userService: getIt<UserService>(),
+    ),
+  );
+  getIt.registerFactory<SupervisorTasksCubit>(() => SupervisorTasksCubit());
+  getIt.registerFactory<SupervisorUnitsCubit>(() => SupervisorUnitsCubit());
+  getIt.registerFactory<SupervisorReportsCubit>(() => SupervisorReportsCubit());
+  getIt.registerFactory<SupervisorProfileCubit>(() => SupervisorProfileCubit());
 }

@@ -1,81 +1,170 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../../core/auth/data/models/user_date.dart';
-import '../../../../../core/auth/logic/cubit/auth_cubit.dart';
-import '../../../../../core/themes/app_colors.dart';
-import '../../../../../core/themes/app_text_styles.dart';
-import '../../../../../core/utils/extensions/context_ext.dart';
-import '../../../../../core/utils/spacing.dart';
-import 'widgets/supervisor_admin_notification_card.dart';
-import 'widgets/supervisor_app_bar.dart';
-import 'widgets/supervisor_live_task_summary.dart';
-import 'widgets/supervisor_quick_actions_row.dart';
-import 'widgets/supervisor_status_grid.dart';
+import 'package:ground_scope/core/auth/logic/cubit/auth_cubit.dart';
+import 'package:ground_scope/core/themes/app_colors.dart';
+import 'package:ground_scope/core/themes/app_text_styles.dart';
+import 'package:ground_scope/core/utils/extensions/context_ext.dart';
+import 'package:ground_scope/core/utils/spacing.dart';
+import 'package:ground_scope/core/widgets/error_screen.dart';
+import 'package:ground_scope/modules/supervisor/core/main_navigation/cubit/supervisor_nav_cubit.dart';
+import '../logic/cubit/dashboard_cubit.dart';
+import 'widgets/service_request_card.dart';
+import 'widgets/stats_row.dart';
+import 'widgets/supervisor_header.dart';
+import 'widgets/unit_status_mini_card.dart';
 
-class SupervisorDashboardScreen extends StatelessWidget {
+class SupervisorDashboardScreen extends StatefulWidget {
   const SupervisorDashboardScreen({super.key});
 
   @override
+  State<SupervisorDashboardScreen> createState() =>
+      _SupervisorDashboardScreenState();
+}
+
+class _SupervisorDashboardScreenState
+    extends State<SupervisorDashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<DashboardCubit>().loadDashboard();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: BlocBuilder<AuthCubit, AuthState>(
-        builder: (context, authState) {
-          if (authState is! AuthSuccess) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          return _DashboardBody(user: authState.userModel);
-        },
+    return BlocBuilder<DashboardCubit, DashboardState>(
+      builder: (context, state) {
+        if (state.status == DashboardStatus.failure) {
+          return ErrorScreen(
+            error: state.error?.messageKey,
+            onRetry: context.read<DashboardCubit>().loadDashboard,
+          );
+        }
+        if (state.status == DashboardStatus.loading ||
+            state.status == DashboardStatus.initial) {
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.primary200),
+          );
+        }
+        return _buildContent(context, state);
+      },
+    );
+  }
+
+  Widget _buildContent(BuildContext context, DashboardState state) {
+    final authState = context.watch<AuthCubit>().state;
+    final userName = authState is AuthSuccess ? authState.userModel.fullName : '';
+
+    return RefreshIndicator(
+      color: AppColors.primary200,
+      onRefresh: context.read<DashboardCubit>().refresh,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SupervisorHeader(
+              userName: userName,
+              serviceTypeName: state.serviceTypeName,
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(rw(16), rh(20), rw(16), rh(24)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  StatsRow(state: state),
+                  verticalSpacing(24),
+                  _SectionHeader(
+                    title: 'service_requests_section'.tr(),
+                    onViewAll: () =>
+                        context.read<SupervisorNavCubit>().changeTab(1),
+                  ),
+                  verticalSpacing(10),
+                  if (state.pendingRequests.isEmpty)
+                    const _EmptySection()
+                  else
+                    ...state.pendingRequests.take(5).map(
+                          (r) => ServiceRequestCard(
+                            request: r,
+                            onAssignTap: () {},
+                          ),
+                        ),
+                  verticalSpacing(24),
+                  _SectionHeader(
+                    title: 'live_unit_status_section'.tr(),
+                    onViewAll: () =>
+                        context.read<SupervisorNavCubit>().changeTab(2),
+                  ),
+                  verticalSpacing(10),
+                  if (state.unitsPreview.isEmpty)
+                    const _EmptySection()
+                  else
+                    ...state.unitsPreview.take(3).map(
+                          (u) => UnitStatusMiniCard(unit: u),
+                        ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _DashboardBody extends StatelessWidget {
-  const _DashboardBody({required this.user});
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({required this.title, this.onViewAll});
 
-  final UserModel user;
+  final String title;
+  final VoidCallback? onViewAll;
 
   @override
   Widget build(BuildContext context) {
     final cc = context.customColors;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        SupervisorAppBar(user: user),
-        Expanded(
-          child: RefreshIndicator(
-            color: AppColors.primary200,
-            onRefresh: () async {
-              await Future.delayed(const Duration(seconds: 1));
-            },
-            child: ListView(
-              padding: EdgeInsets.symmetric(
-                horizontal: rw(10),
-                // vertical: rh(5),
-              ),
-              children: [
-                const SupervisorStatsGrid(),
-                verticalSpacing(20),
-                const SupervisorAdminNotificationCard(),
-                verticalSpacing(20),
-                const SupervisorLiveTaskSummary(),
-                verticalSpacing(20),
-                Text(
-                  'Quick Actions',
-                  style: AppTextStyles.font18SemiBold.copyWith(
-                    color: cc.textPrimary,
-                  ),
-                ),
-                verticalSpacing(12),
-                const SupervisorQuickActionsRow(),
-                verticalSpacing(24),
-              ],
+        Text(
+          title,
+          style:
+              AppTextStyles.font14ExtraBold.copyWith(color: cc.textPrimary),
+        ),
+        if (onViewAll != null)
+          GestureDetector(
+            onTap: onViewAll,
+            child: Text(
+              'view_all'.tr(),
+              style: AppTextStyles.font12SemiBold
+                  .copyWith(color: AppColors.primary200),
             ),
           ),
-        ),
       ],
+    );
+  }
+}
+
+class _EmptySection extends StatelessWidget {
+  const _EmptySection();
+
+  @override
+  Widget build(BuildContext context) {
+    final cc = context.customColors;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: rh(16)),
+      child: Center(
+        child: Column(
+          children: [
+            Icon(Icons.cloud_off_outlined, size: rf(36), color: cc.iconSecondary),
+            verticalSpacing(8),
+            Text(
+              'no_results_found'.tr(),
+              style: AppTextStyles.font14Light.copyWith(color: cc.textHint),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
