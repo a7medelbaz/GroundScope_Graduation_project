@@ -148,6 +148,7 @@ class _StatusBadge extends StatelessWidget {
         ),
       UnitStatus.busy => (AppColors.amber200, 'worker_profile.busy'.tr()),
       UnitStatus.offline => (AppColors.grey400, 'worker_profile.offline'.tr()),
+      UnitStatus.maintenance => (AppColors.red200, 'unit_status_maintenance'.tr()),
     };
 
     return Row(

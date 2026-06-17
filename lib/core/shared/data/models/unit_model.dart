@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:ground_scope/core/shared/data/models/unit_profile_model.dart';
 import 'unit_member_model.dart';
 
 class UnitModel extends Equatable {
@@ -10,8 +11,8 @@ class UnitModel extends Equatable {
   final DateTime? createdAt;
   final String? shiftStartTime;
   final String? shiftEndTime;
-  final List<UnitMemberModel> members;
   final String? serviceTypeName;
+  final List<UnitMemberModel> members;
 
   const UnitModel({
     required this.id,
@@ -22,9 +23,19 @@ class UnitModel extends Equatable {
     this.createdAt,
     this.shiftStartTime,
     this.shiftEndTime,
-    this.members = const [],
     this.serviceTypeName,
+    this.members = const [],
   });
+
+  UnitStatus get unitStatus => UnitStatus.fromString(status);
+
+  String get shiftLabel {
+    final s = shiftStartTime;
+    final e = shiftEndTime;
+    if (s == null || e == null) return '—';
+    String fmt(String t) => t.length >= 5 ? t.substring(0, 5) : t;
+    return '${fmt(s)} – ${fmt(e)}';
+  }
 
   factory UnitModel.fromJson(Map<String, dynamic> json) {
     final membersRaw = json['unit_members'] as List<dynamic>?;
@@ -54,6 +65,41 @@ class UnitModel extends Equatable {
     );
   }
 
+  factory UnitModel.fromMap(Map<String, dynamic> map) {
+    final serviceTypeData = map['service_types'] as Map<String, dynamic>?;
+    final membersRaw = map['unit_members'] as List<dynamic>?;
+
+    String? parseTime(dynamic value) {
+      if (value == null) return null;
+      final str = value.toString();
+      if (str.length >= 5) return str.substring(0, 5);
+      return str;
+    }
+
+    return UnitModel(
+      id: map['id']?.toString() ?? '',
+      name: map['name']?.toString() ?? 'Unknown Unit',
+      serviceTypeId: map['service_type_id']?.toString() ?? '',
+      status: map['status']?.toString() ?? 'offline',
+      compatibleAircraft:
+          (map['compatible_aircraft'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
+      createdAt: map['created_at'] != null
+          ? DateTime.tryParse(map['created_at'].toString())
+          : null,
+      shiftStartTime: parseTime(map['shift_start_time']),
+      shiftEndTime: parseTime(map['shift_end_time']),
+      serviceTypeName: serviceTypeData?['name']?.toString(),
+      members: membersRaw
+              ?.map((m) =>
+                  UnitMemberModel.fromMap(m as Map<String, dynamic>))
+              .toList() ??
+          const [],
+    );
+  }
+
   UnitModel copyWith({
     String? id,
     String? name,
@@ -63,8 +109,8 @@ class UnitModel extends Equatable {
     DateTime? createdAt,
     String? shiftStartTime,
     String? shiftEndTime,
-    List<UnitMemberModel>? members,
     String? serviceTypeName,
+    List<UnitMemberModel>? members,
   }) {
     return UnitModel(
       id: id ?? this.id,
@@ -75,8 +121,8 @@ class UnitModel extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       shiftStartTime: shiftStartTime ?? this.shiftStartTime,
       shiftEndTime: shiftEndTime ?? this.shiftEndTime,
-      members: members ?? this.members,
       serviceTypeName: serviceTypeName ?? this.serviceTypeName,
+      members: members ?? this.members,
     );
   }
 
@@ -93,13 +139,14 @@ class UnitModel extends Equatable {
     };
   }
 
-  String get shiftLabel {
-    final s = shiftStartTime;
-    final e = shiftEndTime;
-    if (s == null || e == null) return '—';
-    String fmt(String t) => t.length >= 5 ? t.substring(0, 5) : t;
-    return '${fmt(s)} – ${fmt(e)}';
-  }
+  Map<String, dynamic> toMap() => {
+        'name': name,
+        'service_type_id': serviceTypeId,
+        'status': status,
+        'compatible_aircraft': compatibleAircraft,
+        'shift_start_time': shiftStartTime,
+        'shift_end_time': shiftEndTime,
+      };
 
   @override
   List<Object?> get props => [
@@ -111,7 +158,7 @@ class UnitModel extends Equatable {
         createdAt,
         shiftStartTime,
         shiftEndTime,
-        members,
         serviceTypeName,
+        members,
       ];
 }

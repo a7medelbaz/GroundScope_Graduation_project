@@ -35,15 +35,15 @@ class AdminStatCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: rw(36),
-            height: rw(36),
+            width: rw(44),
+            height: rw(44),
             decoration: BoxDecoration(
               color: data.iconColor.withValues(alpha: 0.12),
               shape: BoxShape.circle,
             ),
-            child: Icon(data.icon, size: rw(18), color: data.iconColor),
+            child: Icon(data.icon, size: rw(28), color: data.iconColor),
           ),
-          verticalSpacing(16),
+          verticalSpacing(12),
           Text(
             '${data.count}',
             style: AppTextStyles.font20ExtraBold.copyWith(
@@ -56,6 +56,7 @@ class AdminStatCard extends StatelessWidget {
             style: AppTextStyles.font12Light.copyWith(
               color: context.customColors.textSecondary,
             ),
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
