@@ -43,6 +43,7 @@ import 'package:ground_scope/modules/admin/features/users/logic/cubit/user_reset
 import 'package:ground_scope/modules/admin/features/users/logic/cubit/users_list_cubit.dart';
 import 'package:ground_scope/modules/admin/features/users/ui/users_list_screen.dart';
 
+import '../../modules/supervisor/core/main_navigation/supervisor_scaffold.dart';
 import '../../modules/worker/core/main_navigation/ui/worker_scaffold.dart';
 import '../auth/ui/login_screen.dart';
 import '../onboarding/ui/on_boarding_screen.dart';
@@ -62,6 +63,8 @@ class AppRouter {
       // Worker-----------------------------------------------
       case Routes.workerScaffold:
         return _buildRoute(const WorkerScaffold(), settings);
+      case Routes.supervisorScaffold:
+        return _buildRoute(const SupervisorScaffold(), settings);
       case Routes.taskDetailsScreen:
         final task = arguments?['task'];
         return _buildRoute(
@@ -107,8 +110,9 @@ class AppRouter {
         final manager = arguments?['manager'] as UserModel?;
         final members =
             (arguments?['members'] as List?)?.cast<UnitMemberModel>() ?? [];
-        if (manager == null)
+        if (manager == null) {
           return _buildRoute(const SizedBox.shrink(), settings);
+        }
         return _buildRoute(
           ManagerAndMembersScreen(manager: manager, members: members),
           settings,

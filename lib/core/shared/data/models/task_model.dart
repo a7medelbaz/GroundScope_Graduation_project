@@ -1,4 +1,5 @@
 import 'flight_model.dart';
+import 'unit_model.dart';
 
 enum TaskStatus {
   pending('pending'),
@@ -84,6 +85,7 @@ class TaskModel {
     this.serviceTypeIcon,
     // Rich objects
     this.flight,
+    this.unit,
     this.checklistTotal = 0,
     this.checklistDone = 0,
   });
@@ -107,7 +109,8 @@ class TaskModel {
   /// Joined Objects
   final String? serviceTypeName;
   final String? serviceTypeIcon;
-  final FlightModel? flight; // Fixed: Use the actual model
+  final FlightModel? flight;
+  final UnitModel? unit;
 
   /// Checklist
   final int checklistTotal;
@@ -155,8 +158,8 @@ class TaskModel {
     DateTime? updatedAt,
     String? serviceTypeName,
     String? serviceTypeIcon,
-    String? flightNumber,
-    String? standCode,
+    FlightModel? flight,
+    UnitModel? unit,
     int? checklistTotal,
     int? checklistDone,
   }) {
@@ -178,7 +181,8 @@ class TaskModel {
       updatedAt: updatedAt ?? this.updatedAt,
       serviceTypeName: serviceTypeName ?? this.serviceTypeName,
       serviceTypeIcon: serviceTypeIcon ?? this.serviceTypeIcon,
-      flight: flight ?? flight,
+      flight: flight ?? this.flight,
+      unit: unit ?? this.unit,
       checklistTotal: checklistTotal ?? this.checklistTotal,
       checklistDone: checklistDone ?? this.checklistDone,
     );
@@ -187,6 +191,7 @@ class TaskModel {
   factory TaskModel.fromMap(Map<String, dynamic> map) {
     // 1. Extract nested maps from the Supabase join
     final flightMap = map['flights'] as Map<String, dynamic>?;
+    final unitMap = map['units'] as Map<String, dynamic>?;
     final serviceType = map['service_types'] as Map<String, dynamic>?;
 
     return TaskModel(
@@ -218,8 +223,9 @@ class TaskModel {
       serviceTypeName: serviceType?['name'],
       serviceTypeIcon: serviceType?['icon'],
 
-      // 3. Map the nested Flight (which now includes Stands)
+      // 3. Map nested Flight and Unit from joins
       flight: flightMap != null ? FlightModel.fromMap(flightMap) : null,
+      unit: unitMap != null ? UnitModel.fromJson(unitMap) : null,
 
       checklistTotal: map['checklist_total'] ?? 0,
       checklistDone: map['checklist_done'] ?? 0,
