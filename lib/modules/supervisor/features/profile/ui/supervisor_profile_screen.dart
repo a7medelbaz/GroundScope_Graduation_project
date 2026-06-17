@@ -1,41 +1,71 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../../core/auth/logic/cubit/auth_cubit.dart';
-import '../../../../../core/utils/functions/app_setting_method.dart';
-import '../../../../../core/utils/spacing.dart';
-import '../../../../../core/widgets/custom_text_button.dart';
+import 'package:ground_scope/core/themes/app_colors.dart';
+import 'package:ground_scope/core/utils/extensions/context_ext.dart';
+import 'package:ground_scope/core/utils/spacing.dart';
+import 'package:ground_scope/core/widgets/error_screen.dart';
+import '../logic/cubit/supervisor_profile_cubit.dart';
+import 'widgets/profile_header.dart';
+import 'widgets/profile_info_card.dart';
+import 'widgets/supervisor_settings_tiles.dart';
 
-class SupervisorProfileScreen extends StatelessWidget {
+class SupervisorProfileScreen extends StatefulWidget {
   const SupervisorProfileScreen({super.key});
 
   @override
+  State<SupervisorProfileScreen> createState() =>
+      _SupervisorProfileScreenState();
+}
+
+class _SupervisorProfileScreenState extends State<SupervisorProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<SupervisorProfileCubit>().loadProfile();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          CustomTextButton(
-            text: "LogOut ",
-            onPressed: () {
-              context.read<AuthCubit>().logout();
-            },
-          ),
-          verticalSpacing(50),
-          CustomTextButton(
-            text: "Switch Language",
-            onPressed: () {
-              switchLanguage(context);
-            },
-          ),
-          verticalSpacing(50),
-          CustomTextButton(
-            text: "Switch theme",
-            onPressed: () {
-              switchTheme(context);
-            },
-          ),
-          const Center(child: Text('Profile Screen')),
-        ],
+    final cc = context.customColors;
+
+    return Scaffold(
+      backgroundColor: cc.background,
+      body: BlocBuilder<SupervisorProfileCubit, SupervisorProfileState>(
+        builder: (context, state) {
+          if (state.status == SupervisorProfileStatus.loading ||
+              state.status == SupervisorProfileStatus.initial) {
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.primary200),
+            );
+          }
+          if (state.status == SupervisorProfileStatus.failure) {
+            return ErrorScreen(
+              error: state.error?.messageKey,
+              onRetry: () =>
+                  context.read<SupervisorProfileCubit>().loadProfile(),
+            );
+          }
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ProfileHeader(user: state.user!),
+                verticalSpacing(16),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: rw(16)),
+                  child: ProfileInfoCard(
+                    user: state.user!,
+                    unitCount: state.unitCount,
+                    memberCount: state.memberCount,
+                  ),
+                ),
+                verticalSpacing(16),
+                const SupervisorSettingsTiles(),
+                verticalSpacing(32),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

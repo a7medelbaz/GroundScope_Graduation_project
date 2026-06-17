@@ -1,3 +1,5 @@
+import 'flight_model.dart';
+
 enum ReportType {
   issue('issue'),
   delay('delay'),
@@ -16,20 +18,20 @@ enum ReportType {
   }
 
   String get label => switch (this) {
-    ReportType.issue => 'Issue',
-    ReportType.delay => 'Delay',
-    ReportType.damage => 'Damage',
-    ReportType.safety => 'Safety',
-    ReportType.other => 'Other',
-  };
+        ReportType.issue => 'Issue',
+        ReportType.delay => 'Delay',
+        ReportType.damage => 'Damage',
+        ReportType.safety => 'Safety',
+        ReportType.other => 'Other',
+      };
 
   String get icon => switch (this) {
-    ReportType.issue => '⚠️',
-    ReportType.delay => '⏱️',
-    ReportType.damage => '🔧',
-    ReportType.safety => '🛡️',
-    ReportType.other => '📋',
-  };
+        ReportType.issue => '⚠️',
+        ReportType.delay => '⏱️',
+        ReportType.damage => '🔧',
+        ReportType.safety => '🛡️',
+        ReportType.other => '📋',
+      };
 }
 
 enum ReportSeverity {
@@ -49,11 +51,11 @@ enum ReportSeverity {
   }
 
   String get label => switch (this) {
-    ReportSeverity.low => 'Low',
-    ReportSeverity.medium => 'Medium',
-    ReportSeverity.high => 'High',
-    ReportSeverity.critical => 'Critical',
-  };
+        ReportSeverity.low => 'Low',
+        ReportSeverity.medium => 'Medium',
+        ReportSeverity.high => 'High',
+        ReportSeverity.critical => 'Critical',
+      };
 }
 
 enum ReportStatus {
@@ -73,11 +75,11 @@ enum ReportStatus {
   }
 
   String get label => switch (this) {
-    ReportStatus.open => 'Open',
-    ReportStatus.acknowledged => 'Acknowledged',
-    ReportStatus.inProgress => 'In Progress',
-    ReportStatus.resolved => 'Resolved',
-  };
+        ReportStatus.open => 'Open',
+        ReportStatus.acknowledged => 'Acknowledged',
+        ReportStatus.inProgress => 'In Progress',
+        ReportStatus.resolved => 'Resolved',
+      };
 }
 
 class ReportModel {
@@ -96,6 +98,8 @@ class ReportModel {
     this.resolvedBy,
     this.resolvedAt,
     required this.createdAt,
+    this.flight,
+    this.reporterName,
   });
 
   final String id;
@@ -112,8 +116,12 @@ class ReportModel {
   final String? resolvedBy;
   final DateTime? resolvedAt;
   final DateTime createdAt;
+  final FlightModel? flight;
+  final String? reporterName;
 
   factory ReportModel.fromMap(Map<String, dynamic> map) {
+    final flightMap = map['flights'] as Map<String, dynamic>?;
+    final userMap = map['users'] as Map<String, dynamic>?;
     return ReportModel(
       id: map['id'],
       taskId: map['task_id'],
@@ -133,6 +141,46 @@ class ReportModel {
           ? DateTime.parse(map['resolved_at'])
           : null,
       createdAt: DateTime.parse(map['created_at']),
+      flight: flightMap != null ? FlightModel.fromMap(flightMap) : null,
+      reporterName: userMap?['full_name'] as String?,
+    );
+  }
+
+  ReportModel copyWith({
+    String? id,
+    String? taskId,
+    String? flightId,
+    String? reportedBy,
+    ReportType? type,
+    String? description,
+    ReportSeverity? severity,
+    ReportStatus? status,
+    String? imageUrl,
+    String? acknowledgedBy,
+    DateTime? acknowledgedAt,
+    String? resolvedBy,
+    DateTime? resolvedAt,
+    DateTime? createdAt,
+    FlightModel? flight,
+    String? reporterName,
+  }) {
+    return ReportModel(
+      id: id ?? this.id,
+      taskId: taskId ?? this.taskId,
+      flightId: flightId ?? this.flightId,
+      reportedBy: reportedBy ?? this.reportedBy,
+      type: type ?? this.type,
+      description: description ?? this.description,
+      severity: severity ?? this.severity,
+      status: status ?? this.status,
+      imageUrl: imageUrl ?? this.imageUrl,
+      acknowledgedBy: acknowledgedBy ?? this.acknowledgedBy,
+      acknowledgedAt: acknowledgedAt ?? this.acknowledgedAt,
+      resolvedBy: resolvedBy ?? this.resolvedBy,
+      resolvedAt: resolvedAt ?? this.resolvedAt,
+      createdAt: createdAt ?? this.createdAt,
+      flight: flight ?? this.flight,
+      reporterName: reporterName ?? this.reporterName,
     );
   }
 

@@ -127,7 +127,7 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final authState = context.watch<AuthCubit>().state;
     final serviceTypeName = authState is AuthSuccess
-        ? authState.userModel.serviceTypeId
+        ? authState.userModel.role
         : null;
 
     return Container(

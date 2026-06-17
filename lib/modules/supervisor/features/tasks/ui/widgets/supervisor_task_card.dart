@@ -37,8 +37,9 @@ class SupervisorTaskCard extends StatelessWidget {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(rr(16)),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Left accent bar
               Container(
@@ -110,6 +111,7 @@ class SupervisorTaskCard extends StatelessWidget {
                 ),
               ),
             ],
+          ),
           ),
         ),
       ),
