@@ -39,16 +39,50 @@ class UnitMemberModel extends Equatable {
     );
   }
 
+  Map<String, dynamic> toMap() => {
+    'unit_id': unitId,
+    'full_name': fullName,
+    'phone': phone,
+    'national_id': nationalId,
+    'position': position,
+    'image_url': imageUrl,
+    'is_active': isActive,
+  };
+
+  UnitMemberModel copyWith({
+    String? id,
+    String? unitId,
+    String? fullName,
+    String? phone,
+    String? nationalId,
+    String? position,
+    String? imageUrl,
+    bool? isActive,
+    DateTime? createdAt,
+  }) {
+    return UnitMemberModel(
+      id: id ?? this.id,
+      unitId: unitId ?? this.unitId,
+      fullName: fullName ?? this.fullName,
+      phone: phone ?? this.phone,
+      nationalId: nationalId ?? this.nationalId,
+      position: position ?? this.position,
+      imageUrl: imageUrl ?? this.imageUrl,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
   @override
   List<Object?> get props => [
-        id,
-        unitId,
-        fullName,
-        phone,
-        nationalId,
-        position,
-        imageUrl,
-        isActive,
-        createdAt,
-      ];
+    id,
+    unitId,
+    fullName,
+    phone,
+    nationalId,
+    position,
+    imageUrl,
+    isActive,
+    createdAt,
+  ];
 }

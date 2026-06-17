@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:ground_scope/core/shared/data/models/unit_profile_model.dart';
 
 class UnitModel extends Equatable {
   final String id;
@@ -9,6 +10,7 @@ class UnitModel extends Equatable {
   final DateTime? createdAt;
   final String? shiftStartTime;
   final String? shiftEndTime;
+  final String? serviceTypeName;
 
   const UnitModel({
     required this.id,
@@ -19,40 +21,56 @@ class UnitModel extends Equatable {
     this.createdAt,
     this.shiftStartTime,
     this.shiftEndTime,
+    this.serviceTypeName,
   });
+
+  UnitStatus get unitStatus => UnitStatus.fromString(status);
 
   factory UnitModel.fromJson(Map<String, dynamic> json) {
     return UnitModel(
-      // SQL: id uuid (String)
       id: json['id'] as String? ?? '',
-
-      // SQL: name text (String)
       name: json['name'] as String? ?? 'Unknown Unit',
-
-      // SQL: service_type_id uuid (String)
       serviceTypeId: json['service_type_id'] as String? ?? '',
-
-      // SQL: status unit_status (String)
       status: json['status'] as String? ?? 'offline',
-
-      // SQL: compatible_aircraft text[] (List<String>)
-      // We use .toString() to ensure no type errors if the DB returns unexpected types
       compatibleAircraft:
           (json['compatible_aircraft'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           const [],
-
-      // SQL: created_at timestamptz (ISO String)
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'].toString())
           : null,
-
-      // SQL: shift_start_time time (String like "08:00:00")
       shiftStartTime: json['shift_start_time']?.toString(),
-
-      // SQL: shift_end_time time (String like "17:00:00")
       shiftEndTime: json['shift_end_time']?.toString(),
+    );
+  }
+
+  factory UnitModel.fromMap(Map<String, dynamic> map) {
+    final serviceTypeData = map['service_types'] as Map<String, dynamic>?;
+
+    String? parseTime(dynamic value) {
+      if (value == null) return null;
+      final str = value.toString();
+      if (str.length >= 5) return str.substring(0, 5);
+      return str;
+    }
+
+    return UnitModel(
+      id: map['id']?.toString() ?? '',
+      name: map['name']?.toString() ?? 'Unknown Unit',
+      serviceTypeId: map['service_type_id']?.toString() ?? '',
+      status: map['status']?.toString() ?? 'offline',
+      compatibleAircraft:
+          (map['compatible_aircraft'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
+      createdAt: map['created_at'] != null
+          ? DateTime.tryParse(map['created_at'].toString())
+          : null,
+      shiftStartTime: parseTime(map['shift_start_time']),
+      shiftEndTime: parseTime(map['shift_end_time']),
+      serviceTypeName: serviceTypeData?['name']?.toString(),
     );
   }
 
@@ -69,6 +87,39 @@ class UnitModel extends Equatable {
     };
   }
 
+  Map<String, dynamic> toMap() => {
+    'name': name,
+    'service_type_id': serviceTypeId,
+    'status': status,
+    'compatible_aircraft': compatibleAircraft,
+    'shift_start_time': shiftStartTime,
+    'shift_end_time': shiftEndTime,
+  };
+
+  UnitModel copyWith({
+    String? id,
+    String? name,
+    String? serviceTypeId,
+    String? status,
+    List<String>? compatibleAircraft,
+    DateTime? createdAt,
+    String? shiftStartTime,
+    String? shiftEndTime,
+    String? serviceTypeName,
+  }) {
+    return UnitModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      serviceTypeId: serviceTypeId ?? this.serviceTypeId,
+      status: status ?? this.status,
+      compatibleAircraft: compatibleAircraft ?? this.compatibleAircraft,
+      createdAt: createdAt ?? this.createdAt,
+      shiftStartTime: shiftStartTime ?? this.shiftStartTime,
+      shiftEndTime: shiftEndTime ?? this.shiftEndTime,
+      serviceTypeName: serviceTypeName ?? this.serviceTypeName,
+    );
+  }
+
   @override
   List<Object?> get props => [
     id,
@@ -79,5 +130,6 @@ class UnitModel extends Equatable {
     createdAt,
     shiftStartTime,
     shiftEndTime,
+    serviceTypeName,
   ];
 }

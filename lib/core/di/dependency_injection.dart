@@ -44,6 +44,10 @@ import '../shared/data/repo/unit_repo.dart';
 import '../shared/data/repo/unit_repo_impl.dart';
 import '../../modules/admin/features/flights/logic/cubit/flight_import_cubit.dart';
 import '../../modules/admin/features/flights/logic/cubit/flights_list_cubit.dart';
+import '../../modules/admin/features/units/logic/cubit/units_list_cubit.dart';
+import '../../modules/admin/features/units/logic/cubit/unit_detail_cubit.dart';
+import '../../modules/admin/features/units/logic/cubit/unit_form_cubit.dart';
+import '../../modules/admin/features/units/logic/cubit/unit_member_cubit.dart';
 
 final getIt = GetIt.instance;
 Future<void> setUpDependencies() async {
@@ -192,6 +196,20 @@ Future<void> setUpDependencies() async {
   );
   getIt.registerFactory<StandFormCubit>(
     () => StandFormCubit(getIt<StandRepo>()),
+  );
+
+  // Admin Units DI
+  getIt.registerFactory<UnitsListCubit>(
+    () => UnitsListCubit(getIt<UnitRepo>()),
+  );
+  getIt.registerFactory<UnitDetailCubit>(
+    () => UnitDetailCubit(getIt<UnitRepo>(), getIt<UnitMemberRepo>()),
+  );
+  getIt.registerFactory<UnitFormCubit>(
+    () => UnitFormCubit(getIt<UnitRepo>(), getIt<ServiceTypeRepo>()),
+  );
+  getIt.registerFactory<UnitMemberCubit>(
+    () => UnitMemberCubit(getIt<UnitMemberRepo>()),
   );
 
   // Profile DI

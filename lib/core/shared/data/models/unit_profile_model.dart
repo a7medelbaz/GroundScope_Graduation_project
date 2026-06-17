@@ -3,7 +3,8 @@ import 'package:equatable/equatable.dart';
 enum UnitStatus {
   available('available'),
   busy('busy'),
-  offline('offline');
+  offline('offline'),
+  maintenance('maintenance');
 
   final String value;
   const UnitStatus(this.value);
@@ -14,6 +15,13 @@ enum UnitStatus {
       orElse: () => UnitStatus.offline,
     );
   }
+
+  String get label => switch (this) {
+    UnitStatus.available => 'unit_status_available',
+    UnitStatus.busy => 'unit_status_busy',
+    UnitStatus.offline => 'unit_status_offline',
+    UnitStatus.maintenance => 'unit_status_maintenance',
+  };
 }
 
 class UnitProfileModel extends Equatable {
