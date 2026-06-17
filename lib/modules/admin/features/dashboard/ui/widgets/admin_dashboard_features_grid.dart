@@ -38,8 +38,9 @@ class AdminDashboardFeaturesGrid extends StatelessWidget {
       ),
       AdminFeatureCardData(
         title: 'users',
-        icon: Icons.people_outline_rounded,
-        iconColor: AppColors.amber200,
+        icon: Icons.manage_accounts_outlined,
+        route: Routes.adminUsersScreen,
+        iconColor: AppColors.primary200,
         subtitle: 'manage_users'.tr(),
         isAvailable: true,
       ),

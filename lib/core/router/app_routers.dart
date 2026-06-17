@@ -39,6 +39,9 @@ import 'package:ground_scope/modules/worker/features/reports/ui/report_details_s
 import 'package:ground_scope/modules/worker/features/task_details/logic/cubit/task_details_cubit.dart';
 import 'package:ground_scope/modules/worker/features/task_details/ui/task_details_screen.dart';
 import 'package:ground_scope/modules/worker/features/task_info/ui/task_info_screen.dart';
+import 'package:ground_scope/modules/admin/features/users/logic/cubit/user_reset_cubit.dart';
+import 'package:ground_scope/modules/admin/features/users/logic/cubit/users_list_cubit.dart';
+import 'package:ground_scope/modules/admin/features/users/ui/users_list_screen.dart';
 
 import '../../modules/worker/core/main_navigation/ui/worker_scaffold.dart';
 import '../auth/ui/login_screen.dart';
@@ -225,6 +228,22 @@ class AppRouter {
           BlocProvider.value(
             value: cubit,
             child: FlightDetailScreen(flight: flight),
+          ),
+          settings,
+        );
+
+      case Routes.adminUsersScreen:
+        return _buildRoute(
+          MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (_) => getIt<UsersListCubit>()..load(),
+              ),
+              BlocProvider(
+                create: (_) => getIt<UserResetCubit>(),
+              ),
+            ],
+            child: const UsersListScreen(),
           ),
           settings,
         );

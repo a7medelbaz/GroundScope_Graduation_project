@@ -1,20 +1,25 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ground_scope/core/auth/data/models/user_date.dart';
 import 'package:ground_scope/core/error/models/app_error.dart';
+import 'package:ground_scope/core/shared/data/models/generated_credentials.dart';
 import 'package:ground_scope/core/shared/data/models/service_type_model.dart';
 import 'package:ground_scope/core/shared/data/models/unit_model.dart';
 import 'package:ground_scope/core/shared/data/models/unit_profile_model.dart';
 import 'package:ground_scope/core/shared/data/repo/service_type_repo.dart';
 import 'package:ground_scope/core/shared/data/repo/unit_repo.dart';
+import 'package:ground_scope/core/shared/data/repo/user_repo.dart';
+import 'package:ground_scope/core/utils/credentials_generator.dart';
 
 part 'unit_form_state.dart';
 
 class UnitFormCubit extends Cubit<UnitFormState> {
-  UnitFormCubit(this._unitRepo, this._serviceTypeRepo)
+  UnitFormCubit(this._unitRepo, this._serviceTypeRepo, this._userRepo)
       : super(const UnitFormState());
 
   final UnitRepo _unitRepo;
   final ServiceTypeRepo _serviceTypeRepo;
+  final UserRepo _userRepo;
 
   Future<void> init() async {
     try {
@@ -48,8 +53,10 @@ class UnitFormCubit extends Cubit<UnitFormState> {
             shiftEndTime: shiftEndTime,
           ),
         );
+        emit(state.copyWith(status: UnitFormStatus.success));
+        return true;
       } else {
-        await _unitRepo.create(
+        final created = await _unitRepo.create(
           UnitModel(
             id: '',
             name: name,
@@ -60,9 +67,40 @@ class UnitFormCubit extends Cubit<UnitFormState> {
             shiftEndTime: shiftEndTime,
           ),
         );
+
+        // Auto-create unit manager account for the new unit
+        final email = CredentialsGenerator.unitManagerEmail(name);
+        final password = CredentialsGenerator.generatePassword();
+        final fullName = '$name Manager';
+
+        try {
+          await _userRepo.createAccount(
+            fullName: fullName,
+            email: email,
+            password: password,
+            role: UserRole.unitManager,
+            unitId: created.id,
+          );
+          emit(state.copyWith(
+            status: UnitFormStatus.success,
+            generatedCredentials: GeneratedCredentials(
+              email: email,
+              password: password,
+              fullName: fullName,
+              role: UserRole.unitManager,
+              unitName: name,
+            ),
+          ));
+        } catch (_) {
+          // Account creation failed — unit still created successfully
+          emit(state.copyWith(
+            status: UnitFormStatus.success,
+            credentialsError: true,
+          ));
+        }
+
+        return true;
       }
-      emit(state.copyWith(status: UnitFormStatus.success));
-      return true;
     } on AppError catch (e) {
       emit(state.copyWith(status: UnitFormStatus.failure, error: e));
       return false;

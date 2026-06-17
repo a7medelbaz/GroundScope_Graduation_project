@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/shared/data/models/unit_profile_model.dart';
+import 'package:ground_scope/core/shared/ui/widgets/credentials_share_sheet.dart';
 import 'package:ground_scope/core/themes/app_colors.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
@@ -34,8 +35,9 @@ class _UnitFormScreenState extends State<UnitFormScreen> {
       text: editing != null ? editing.compatibleAircraft.join(', ') : '',
     );
     _selectedServiceTypeId = editing?.serviceTypeId;
-    _selectedStatus =
-        editing != null ? UnitStatus.fromString(editing.status) : UnitStatus.available;
+    _selectedStatus = editing != null
+        ? UnitStatus.fromString(editing.status)
+        : UnitStatus.available;
     _shiftStartTime = editing?.shiftStartTime;
     _shiftEndTime = editing?.shiftEndTime;
   }
@@ -81,8 +83,7 @@ class _UnitFormScreenState extends State<UnitFormScreen> {
         .where((s) => s.isNotEmpty)
         .toList();
 
-    final cubit = context.read<UnitFormCubit>();
-    final success = await cubit.submit(
+    await context.read<UnitFormCubit>().submit(
       name: _nameController.text.trim(),
       serviceTypeId: _selectedServiceTypeId!,
       status: _selectedStatus,
@@ -90,14 +91,36 @@ class _UnitFormScreenState extends State<UnitFormScreen> {
       shiftStartTime: _shiftStartTime,
       shiftEndTime: _shiftEndTime,
     );
+    // Navigation is handled by BlocListener
+  }
 
-    if (!mounted) return;
-    if (success) {
+  void _handleSuccess(BuildContext context, UnitFormState state) {
+    if (state.credentialsError) {
+      context.showErrorSnackBar('account_creation_failed_warning'.tr());
+      debugPrint(
+        'Unit created successfully, but failed to create supervisor account for service type: ${state.editing?.serviceTypeId}',
+      );
+      context.pop(true);
+      return;
+    }
+    if (state.generatedCredentials != null) {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        isDismissible: false,
+        enableDrag: false,
+        backgroundColor: Colors.transparent,
+        builder: (_) => CredentialsShareSheet(
+          credentials: state.generatedCredentials!,
+          onDone: () {
+            Navigator.of(context).pop();
+            context.pop(true);
+          },
+        ),
+      );
+    } else {
       context.showSuccessSnackBar('unit_saved_successfully'.tr());
       context.pop(true);
-    } else {
-      final error = cubit.state.error;
-      if (error != null) context.showErrorSnackBar(error.messageKey);
     }
   }
 
@@ -106,7 +129,22 @@ class _UnitFormScreenState extends State<UnitFormScreen> {
     return Scaffold(
       backgroundColor: context.customColors.background,
       body: SafeArea(
-        child: BlocBuilder<UnitFormCubit, UnitFormState>(
+        child: BlocConsumer<UnitFormCubit, UnitFormState>(
+          listenWhen: (prev, curr) =>
+              prev.status != curr.status &&
+              (curr.status == UnitFormStatus.success ||
+                  curr.status == UnitFormStatus.failure),
+          listener: (context, state) {
+            if (state.status == UnitFormStatus.success) {
+              _handleSuccess(context, state);
+            } else if (state.status == UnitFormStatus.failure &&
+                state.error != null) {
+              context.showErrorSnackBar(state.error!.messageKey);
+              debugPrint(
+                'UnitFormScreen: Error saving unit: ${state.error!.messageKey}',
+              );
+            }
+          },
           builder: (context, state) {
             final isEditMode = state.isEditMode;
             final title = isEditMode ? 'edit_unit'.tr() : 'add_unit'.tr();
@@ -118,7 +156,9 @@ class _UnitFormScreenState extends State<UnitFormScreen> {
                 Expanded(
                   child: SingleChildScrollView(
                     padding: EdgeInsets.symmetric(
-                        horizontal: rw(20), vertical: rh(16)),
+                      horizontal: rw(20),
+                      vertical: rh(16),
+                    ),
                     child: Form(
                       key: _formKey,
                       child: Column(
@@ -134,39 +174,44 @@ class _UnitFormScreenState extends State<UnitFormScreen> {
                               .slideY(begin: 0.1, end: 0, duration: 300.ms),
                           verticalSpacing(28),
                           Opacity(
-                            opacity: submitting ? 0.6 : 1.0,
-                            child: SizedBox(
-                              width: double.infinity,
-                              height: rh(56),
-                              child: ElevatedButton(
-                                onPressed: submitting ? null : _submit,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.green200,
-                                  foregroundColor: AppColors.white,
-                                  disabledBackgroundColor:
-                                      AppColors.green200.withValues(alpha: 0.5),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(rr(16)),
+                                opacity: submitting ? 0.6 : 1.0,
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  height: rh(56),
+                                  child: ElevatedButton(
+                                    onPressed: submitting ? null : _submit,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.green200,
+                                      foregroundColor: AppColors.white,
+                                      disabledBackgroundColor: AppColors
+                                          .green200
+                                          .withValues(alpha: 0.5),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          rr(16),
+                                        ),
+                                      ),
+                                    ),
+                                    child: submitting
+                                        ? SizedBox(
+                                            width: rw(20),
+                                            height: rw(20),
+                                            child:
+                                                const CircularProgressIndicator(
+                                                  color: AppColors.white,
+                                                  strokeWidth: 2,
+                                                ),
+                                          )
+                                        : Text(
+                                            'save'.tr(),
+                                            style: AppTextStyles.font16SemiBold
+                                                .copyWith(
+                                                  color: AppColors.white,
+                                                ),
+                                          ),
                                   ),
                                 ),
-                                child: submitting
-                                    ? SizedBox(
-                                        width: rw(20),
-                                        height: rw(20),
-                                        child: const CircularProgressIndicator(
-                                          color: AppColors.white,
-                                          strokeWidth: 2,
-                                        ),
-                                      )
-                                    : Text(
-                                        'save'.tr(),
-                                        style: AppTextStyles.font16SemiBold
-                                            .copyWith(color: AppColors.white),
-                                      ),
-                              ),
-                            ),
-                          )
+                              )
                               .animate(delay: 160.ms)
                               .fadeIn(duration: 300.ms)
                               .slideY(begin: 0.1, end: 0, duration: 300.ms),
@@ -199,8 +244,9 @@ class _UnitFormScreenState extends State<UnitFormScreen> {
           verticalSpacing(8),
           TextFormField(
             controller: _nameController,
-            style: AppTextStyles.font14Light
-                .copyWith(color: context.customColors.textPrimary),
+            style: AppTextStyles.font14Light.copyWith(
+              color: context.customColors.textPrimary,
+            ),
             decoration: _inputDeco(context, hint: 'Fueling Team A'),
             validator: (v) => (v == null || v.trim().isEmpty)
                 ? 'auth.validation.required'.tr()
@@ -210,37 +256,49 @@ class _UnitFormScreenState extends State<UnitFormScreen> {
           _label(context, 'service_type'.tr()),
           verticalSpacing(8),
           DropdownButtonFormField<String>(
-            value: _selectedServiceTypeId,
+            initialValue: _selectedServiceTypeId,
             hint: Text(
               'select_service_type'.tr(),
-              style: AppTextStyles.font14Light
-                  .copyWith(color: context.customColors.textHint),
+              style: AppTextStyles.font14Light.copyWith(
+                color: context.customColors.textHint,
+              ),
             ),
             decoration: _inputDeco(context),
             items: state.serviceTypes
-                .map((st) => DropdownMenuItem(
-                      value: st.id,
-                      child: Text(st.name,
-                          style: AppTextStyles.font14Light.copyWith(
-                              color: context.customColors.textPrimary)),
-                    ))
+                .map(
+                  (st) => DropdownMenuItem(
+                    value: st.id,
+                    child: Text(
+                      st.name,
+                      style: AppTextStyles.font14Light.copyWith(
+                        color: context.customColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                )
                 .toList(),
             onChanged: (v) => setState(() => _selectedServiceTypeId = v),
-            validator: (v) => v == null ? 'auth.validation.required'.tr() : null,
+            validator: (v) =>
+                v == null ? 'auth.validation.required'.tr() : null,
           ),
           verticalSpacing(16),
           _label(context, 'unit_status'.tr()),
           verticalSpacing(8),
           DropdownButtonFormField<UnitStatus>(
-            value: _selectedStatus,
+            initialValue: _selectedStatus,
             decoration: _inputDeco(context),
             items: UnitStatus.values
-                .map((s) => DropdownMenuItem(
-                      value: s,
-                      child: Text(s.label.tr(),
-                          style: AppTextStyles.font14Light.copyWith(
-                              color: context.customColors.textPrimary)),
-                    ))
+                .map(
+                  (s) => DropdownMenuItem(
+                    value: s,
+                    child: Text(
+                      s.label.tr(),
+                      style: AppTextStyles.font14Light.copyWith(
+                        color: context.customColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                )
                 .toList(),
             onChanged: (v) {
               if (v != null) setState(() => _selectedStatus = v);
@@ -251,15 +309,17 @@ class _UnitFormScreenState extends State<UnitFormScreen> {
           verticalSpacing(8),
           TextFormField(
             controller: _aircraftController,
-            style: AppTextStyles.font14Light
-                .copyWith(color: context.customColors.textPrimary),
+            style: AppTextStyles.font14Light.copyWith(
+              color: context.customColors.textPrimary,
+            ),
             decoration: _inputDeco(context, hint: 'unit_aircraft_hint'.tr()),
           ),
           verticalSpacing(4),
           Text(
             'unit_aircraft_hint'.tr(),
-            style: AppTextStyles.font12Light
-                .copyWith(color: context.customColors.textSecondary),
+            style: AppTextStyles.font12Light.copyWith(
+              color: context.customColors.textSecondary,
+            ),
           ),
           verticalSpacing(16),
           _label(context, 'shift_start'.tr()),
@@ -312,8 +372,11 @@ class _UnitFormScreenState extends State<UnitFormScreen> {
                 ),
               ),
             ),
-            Icon(Icons.access_time_rounded,
-                size: rw(18), color: context.customColors.iconSecondary),
+            Icon(
+              Icons.access_time_rounded,
+              size: rw(18),
+              color: context.customColors.iconSecondary,
+            ),
           ],
         ),
       ),
@@ -323,20 +386,24 @@ class _UnitFormScreenState extends State<UnitFormScreen> {
   Widget _label(BuildContext context, String text) {
     return Text(
       text,
-      style: AppTextStyles.font12SemiBold
-          .copyWith(color: context.customColors.textSecondary),
+      style: AppTextStyles.font12SemiBold.copyWith(
+        color: context.customColors.textSecondary,
+      ),
     );
   }
 
   InputDecoration _inputDeco(BuildContext context, {String? hint}) {
     return InputDecoration(
       hintText: hint,
-      hintStyle:
-          AppTextStyles.font14Light.copyWith(color: context.customColors.textHint),
+      hintStyle: AppTextStyles.font14Light.copyWith(
+        color: context.customColors.textHint,
+      ),
       filled: true,
       fillColor: context.customColors.background,
-      contentPadding:
-          EdgeInsets.symmetric(horizontal: rw(16), vertical: rh(14)),
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: rw(16),
+        vertical: rh(14),
+      ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(rr(12)),
         borderSide: BorderSide(color: context.customColors.border),

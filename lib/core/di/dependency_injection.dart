@@ -48,6 +48,11 @@ import '../../modules/admin/features/units/logic/cubit/units_list_cubit.dart';
 import '../../modules/admin/features/units/logic/cubit/unit_detail_cubit.dart';
 import '../../modules/admin/features/units/logic/cubit/unit_form_cubit.dart';
 import '../../modules/admin/features/units/logic/cubit/unit_member_cubit.dart';
+import '../../modules/admin/features/users/logic/cubit/users_list_cubit.dart';
+import '../../modules/admin/features/users/logic/cubit/user_reset_cubit.dart';
+import '../shared/data/remote/user_remote_ds.dart';
+import '../shared/data/repo/user_repo.dart';
+import '../shared/data/repo/user_repo_impl.dart';
 
 final getIt = GetIt.instance;
 Future<void> setUpDependencies() async {
@@ -180,8 +185,22 @@ Future<void> setUpDependencies() async {
   getIt.registerFactory<ServiceTypesListCubit>(
     () => ServiceTypesListCubit(getIt<ServiceTypeRepo>()),
   );
+  // #User DI
+  getIt.registerLazySingleton<UserRemoteDs>(
+    () => UserRemoteDs(getIt<SupabaseService>()),
+  );
+  getIt.registerLazySingleton<UserRepo>(
+    () => UserRepoImpl(getIt<UserRemoteDs>()),
+  );
+  getIt.registerFactory<UsersListCubit>(
+    () => UsersListCubit(getIt<UserRepo>()),
+  );
+  getIt.registerFactory<UserResetCubit>(
+    () => UserResetCubit(getIt<UserRepo>()),
+  );
+
   getIt.registerFactory<ServiceTypeFormCubit>(
-    () => ServiceTypeFormCubit(getIt<ServiceTypeRepo>()),
+    () => ServiceTypeFormCubit(getIt<ServiceTypeRepo>(), getIt<UserRepo>()),
   );
 
   // #Stand DI
@@ -206,7 +225,8 @@ Future<void> setUpDependencies() async {
     () => UnitDetailCubit(getIt<UnitRepo>(), getIt<UnitMemberRepo>()),
   );
   getIt.registerFactory<UnitFormCubit>(
-    () => UnitFormCubit(getIt<UnitRepo>(), getIt<ServiceTypeRepo>()),
+    () => UnitFormCubit(
+        getIt<UnitRepo>(), getIt<ServiceTypeRepo>(), getIt<UserRepo>()),
   );
   getIt.registerFactory<UnitMemberCubit>(
     () => UnitMemberCubit(getIt<UnitMemberRepo>()),
