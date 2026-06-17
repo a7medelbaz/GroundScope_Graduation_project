@@ -16,7 +16,40 @@ class UnitMemberRepoImpl implements UnitMemberRepo {
     } on AppError {
       rethrow;
     } catch (e) {
-      ErrorHandler.handle(e);
+      throw ErrorHandler.handle(e);
+    }
+  }
+
+  @override
+  Future<UnitMemberModel> create(UnitMemberModel model) async {
+    try {
+      return await unitMemberRemoteDs.create(model);
+    } on AppError {
+      rethrow;
+    } catch (e) {
+      throw ErrorHandler.handle(e);
+    }
+  }
+
+  @override
+  Future<UnitMemberModel> update(UnitMemberModel model) async {
+    try {
+      return await unitMemberRemoteDs.update(model);
+    } on AppError {
+      rethrow;
+    } catch (e) {
+      throw ErrorHandler.handle(e);
+    }
+  }
+
+  @override
+  Future<void> deactivate(String memberId) async {
+    try {
+      await unitMemberRemoteDs.deactivate(memberId);
+    } on AppError {
+      rethrow;
+    } catch (e) {
+      throw ErrorHandler.handle(e);
     }
   }
 }

@@ -8,6 +8,13 @@ import 'package:ground_scope/core/shared/data/models/report_model.dart';
 import 'package:ground_scope/core/shared/data/models/service_type_model.dart';
 import 'package:ground_scope/core/shared/data/models/task_model.dart';
 import 'package:ground_scope/core/shared/data/models/unit_member_model.dart';
+import 'package:ground_scope/core/shared/data/models/unit_model.dart';
+import 'package:ground_scope/modules/admin/features/units/logic/cubit/unit_detail_cubit.dart';
+import 'package:ground_scope/modules/admin/features/units/logic/cubit/unit_form_cubit.dart';
+import 'package:ground_scope/modules/admin/features/units/logic/cubit/units_list_cubit.dart';
+import 'package:ground_scope/modules/admin/features/units/ui/unit_detail_screen.dart';
+import 'package:ground_scope/modules/admin/features/units/ui/unit_form_screen.dart';
+import 'package:ground_scope/modules/admin/features/units/ui/units_list_screen.dart';
 import 'package:ground_scope/modules/admin/features/dashboard/logic/cubit/admin_dashboard_cubit.dart';
 import 'package:ground_scope/modules/admin/features/dashboard/ui/admin_dashboard_screen.dart';
 import 'package:ground_scope/modules/admin/features/service_types/logic/cubit/service_type_form_cubit.dart';
@@ -172,6 +179,41 @@ class AppRouter {
           BlocProvider(
             create: (_) => getIt<FlightsListCubit>()..load(),
             child: const FlightsListScreen(),
+          ),
+          settings,
+        );
+
+      case Routes.adminUnitsScreen:
+        return _buildRoute(
+          BlocProvider(
+            create: (_) => getIt<UnitsListCubit>()..load(),
+            child: const UnitsListScreen(),
+          ),
+          settings,
+        );
+
+      case Routes.adminUnitDetailScreen:
+        final unit = (settings.arguments as Map<String, dynamic>)['unit']
+            as UnitModel;
+        return _buildRoute(
+          BlocProvider(
+            create: (_) => getIt<UnitDetailCubit>()..load(unit.id),
+            child: UnitDetailScreen(unit: unit),
+          ),
+          settings,
+        );
+
+      case Routes.adminUnitFormScreen:
+        final formArgs = settings.arguments as Map<String, dynamic>?;
+        final editModel = formArgs?['model'] as UnitModel?;
+        return _buildRoute(
+          BlocProvider(
+            create: (_) {
+              final cubit = getIt<UnitFormCubit>()..init();
+              if (editModel != null) cubit.initForEdit(editModel);
+              return cubit;
+            },
+            child: const UnitFormScreen(),
           ),
           settings,
         );

@@ -30,7 +30,8 @@ class AdminDashboardFeaturesGrid extends StatelessWidget {
       ),
       AdminFeatureCardData(
         title: 'units',
-        icon: Icons.local_shipping_outlined,
+        icon: Icons.groups_outlined,
+        route: Routes.adminUnitsScreen,
         iconColor: AppColors.green200,
         subtitle: 'manage_units'.tr(),
         isAvailable: true,

@@ -18,6 +18,9 @@ class Routes {
 
   // ########## Admin
   static const String adminDashboardScreen = '/adminDashboardScreen';
+  static const String adminUnitsScreen = '/adminUnitsScreen';
+  static const String adminUnitDetailScreen = '/adminUnitDetailScreen';
+  static const String adminUnitFormScreen = '/adminUnitFormScreen';
   static const String adminServiceTypesScreen = '/adminServiceTypesScreen';
   static const String adminServiceTypeFormScreen = '/adminServiceTypeFormScreen';
   static const String adminStandsScreen = '/adminStandsScreen';
