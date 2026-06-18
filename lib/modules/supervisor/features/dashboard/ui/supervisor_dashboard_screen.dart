@@ -30,8 +30,7 @@ class SupervisorDashboardScreen extends StatefulWidget {
       _SupervisorDashboardScreenState();
 }
 
-class _SupervisorDashboardScreenState
-    extends State<SupervisorDashboardScreen> {
+class _SupervisorDashboardScreenState extends State<SupervisorDashboardScreen> {
   @override
   void initState() {
     super.initState();
@@ -48,8 +47,9 @@ class _SupervisorDashboardScreenState
         providers: [
           BlocProvider.value(value: dashboardCubit),
           BlocProvider(
-            create: (_) => getIt<AssignUnitCubit>()
-              ..loadAvailableUnits(request.serviceTypeId),
+            create: (_) =>
+                getIt<AssignUnitCubit>()
+                  ..loadAvailableUnits(request.serviceTypeId),
           ),
         ],
         child: AssignUnitBottomSheet(request: request),
@@ -90,12 +90,15 @@ class _SupervisorDashboardScreenState
   Widget _buildContent(BuildContext context, DashboardState state) {
     final cc = context.customColors;
     final authState = context.watch<AuthCubit>().state;
-    final userName = authState is AuthSuccess ? authState.userModel.fullName : '';
-    final serviceTypeName = state.serviceTypeName ??
+    final userName = authState is AuthSuccess
+        ? authState.userModel.fullName
+        : '';
+    final serviceTypeName =
+        state.serviceTypeName ??
         (authState is AuthSuccess
             ? (authState.userModel.serviceTypeName ??
-                authState.userModel.serviceTypeId ??
-                '')
+                  authState.userModel.serviceTypeId ??
+                  '')
             : '');
 
     return RefreshIndicator(
@@ -118,40 +121,41 @@ class _SupervisorDashboardScreenState
                 children: [
                   Text(
                     'overview'.tr(),
-                    style: AppTextStyles.font16ExtraBold
-                        .copyWith(color: cc.textPrimary),
+                    style: AppTextStyles.font18ExtraBold.copyWith(
+                      color: cc.textPrimary,
+                    ),
                   ),
-                  verticalSpacing(10),
+                  verticalSpacing(18),
                   StatsRow(
                     state: state,
                     onCardTap: [
                       () {
-                        context
-                            .read<SupervisorTasksCubit>()
-                            .setFilter('in_progress');
+                        context.read<SupervisorTasksCubit>().setFilter(
+                          'in_progress',
+                        );
                         context.read<SupervisorNavCubit>().changeTab(1);
                       },
                       () {
-                        context
-                            .read<SupervisorTasksCubit>()
-                            .setFilter('pending');
+                        context.read<SupervisorTasksCubit>().setFilter(
+                          'pending',
+                        );
                         context.read<SupervisorNavCubit>().changeTab(1);
                       },
                       () {
-                        context
-                            .read<SupervisorUnitsCubit>()
-                            .setFilter('available');
+                        context.read<SupervisorUnitsCubit>().setFilter(
+                          'available',
+                        );
                         context.read<SupervisorNavCubit>().changeTab(2);
                       },
                       () {
-                        context
-                            .read<SupervisorReportsCubit>()
-                            .setFilter('open');
+                        context.read<SupervisorReportsCubit>().setFilter(
+                          'open',
+                        );
                         context.read<SupervisorNavCubit>().changeTab(3);
                       },
                     ],
                   ),
-                  verticalSpacing(24),
+                  verticalSpacing(18),
                   _SectionHeader(
                     title: 'service_requests_section'.tr(),
                     onViewAll: () =>
@@ -161,7 +165,9 @@ class _SupervisorDashboardScreenState
                   if (state.pendingRequests.isEmpty)
                     const _EmptySection()
                   else
-                    ...state.pendingRequests.take(5).map(
+                    ...state.pendingRequests
+                        .take(5)
+                        .map(
                           (r) => ServiceRequestCard(
                             request: r,
                             onAssignTap: () => _openAssignSheet(context, r),
@@ -178,9 +184,9 @@ class _SupervisorDashboardScreenState
                   if (state.unitsPreview.isEmpty)
                     const _EmptySection()
                   else
-                    ...state.unitsPreview.take(3).map(
-                          (u) => UnitStatusMiniCard(unit: u),
-                        ),
+                    ...state.unitsPreview
+                        .take(3)
+                        .map((u) => UnitStatusMiniCard(unit: u)),
                 ],
               ),
             ),
@@ -206,16 +212,16 @@ class _SectionHeader extends StatelessWidget {
       children: [
         Text(
           title,
-          style:
-              AppTextStyles.font14ExtraBold.copyWith(color: cc.textPrimary),
+          style: AppTextStyles.font14ExtraBold.copyWith(color: cc.textPrimary),
         ),
         if (onViewAll != null)
           GestureDetector(
             onTap: onViewAll,
             child: Text(
               'view_all'.tr(),
-              style: AppTextStyles.font12SemiBold
-                  .copyWith(color: AppColors.primary200),
+              style: AppTextStyles.font12SemiBold.copyWith(
+                color: AppColors.primary200,
+              ),
             ),
           ),
       ],
@@ -235,7 +241,11 @@ class _EmptySection extends StatelessWidget {
       child: Center(
         child: Column(
           children: [
-            Icon(Icons.cloud_off_outlined, size: rf(36), color: cc.iconSecondary),
+            Icon(
+              Icons.cloud_off_outlined,
+              size: rf(36),
+              color: cc.iconSecondary,
+            ),
             verticalSpacing(8),
             Text(
               'no_results_found'.tr(),
@@ -284,8 +294,9 @@ class _ServiceRequestDetailSheet extends StatelessWidget {
               Expanded(
                 child: Text(
                   request.serviceTypeName ?? 'service_request'.tr(),
-                  style: AppTextStyles.font18ExtraBold
-                      .copyWith(color: cc.textPrimary),
+                  style: AppTextStyles.font18ExtraBold.copyWith(
+                    color: cc.textPrimary,
+                  ),
                 ),
               ),
               IconButton(
@@ -320,8 +331,9 @@ class _ServiceRequestDetailSheet extends StatelessWidget {
             verticalSpacing(8),
             Text(
               'notes'.tr(),
-              style: AppTextStyles.font12SemiBold
-                  .copyWith(color: cc.textSecondary),
+              style: AppTextStyles.font12SemiBold.copyWith(
+                color: cc.textSecondary,
+              ),
             ),
             verticalSpacing(4),
             Text(
@@ -350,12 +362,14 @@ class _SheetRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label,
-              style:
-                  AppTextStyles.font12Light.copyWith(color: cc.textSecondary)),
-          Text(value,
-              style: AppTextStyles.font12SemiBold
-                  .copyWith(color: cc.textPrimary)),
+          Text(
+            label,
+            style: AppTextStyles.font12Light.copyWith(color: cc.textSecondary),
+          ),
+          Text(
+            value,
+            style: AppTextStyles.font12SemiBold.copyWith(color: cc.textPrimary),
+          ),
         ],
       ),
     );

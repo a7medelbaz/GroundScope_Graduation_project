@@ -19,6 +19,7 @@ class StatsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView(
+      padding: const EdgeInsets.all(0),
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
