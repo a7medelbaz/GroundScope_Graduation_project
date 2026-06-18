@@ -410,5 +410,18 @@
   "request_status_assigned": "معين",
   "request_status_in_progress": "قيد التنفيذ",
   "request_status_completed": "مكتمل",
-  "request_status_cancelled": "ملغي"
+  "request_status_cancelled": "ملغي",
+  "create_task": "إنشاء مهمة",
+  "step_1_of_2": "الخطوة 1 من 2 — الجدول والتفاصيل",
+  "step_2_of_2": "الخطوة 2 من 2 — اختيار الوحدة",
+  "schedule": "الجدول الزمني",
+  "priority": "الأولوية",
+  "notes_optional": "ملاحظات (اختياري)",
+  "task_notes_hint": "أضف ملاحظات للوحدة...",
+  "checklist": "قائمة التحقق",
+  "items": "عناصر",
+  "add_checklist_item": "أضف عنصراً...",
+  "next_select_unit": "التالي: اختيار الوحدة",
+  "please_set_valid_times": "يرجى تحديد وقتي البداية والنهاية",
+  "task_summary": "ملخص المهمة"
 }

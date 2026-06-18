@@ -46,33 +46,38 @@ class AssignUnitCubit extends Cubit<AssignUnitState> {
     ));
   }
 
-  Future<void> assign({
+  Future<void> createTask({
     required ServiceRequestModel request,
     required UnitModel unit,
+    required String priority,
     required DateTime scheduledStart,
     required DateTime scheduledEnd,
+    required List<String> checklistItems,
+    String? notes,
   }) async {
     emit(state.copyWith(status: AssignUnitStatus.assigning));
     try {
       final user = await _userService.getUser();
       final assignedBy = user?.id ?? '';
 
-      await _repo.assignUnit(
+      await _repo.createTaskFromRequest(
         requestId:      request.id,
-        unitId:         unit.id,
-        assignedBy:     assignedBy,
         flightId:       request.flightId,
         serviceTypeId:  request.serviceTypeId,
+        unitId:         unit.id,
+        assignedBy:     assignedBy,
+        priority:       priority,
         scheduledStart: scheduledStart,
         scheduledEnd:   scheduledEnd,
-        notes:          request.notes,
+        checklistItems: checklistItems,
+        notes:          notes,
       );
 
       emit(state.copyWith(status: AssignUnitStatus.success));
     } on AppError catch (e) {
       emit(state.copyWith(status: AssignUnitStatus.failure, error: e));
     } catch (e, st) {
-      debugPrint('AssignUnitCubit.assign: $e\n$st');
+      debugPrint('AssignUnitCubit.createTask: $e\n$st');
       emit(state.copyWith(
           status: AssignUnitStatus.failure, error: AppError.unknown()));
     }
