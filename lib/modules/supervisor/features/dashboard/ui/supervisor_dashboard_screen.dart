@@ -11,12 +11,15 @@ import 'package:ground_scope/core/di/dependency_injection.dart';
 import 'package:ground_scope/core/widgets/error_screen.dart';
 import 'package:ground_scope/modules/supervisor/core/main_navigation/cubit/supervisor_nav_cubit.dart';
 import 'package:ground_scope/modules/supervisor/features/dashboard/data/models/service_request_model.dart';
+import 'package:ground_scope/modules/supervisor/features/reports/logic/cubit/supervisor_reports_cubit.dart';
+import 'package:ground_scope/modules/supervisor/features/tasks/logic/cubit/supervisor_tasks_cubit.dart';
+import 'package:ground_scope/modules/supervisor/features/units/logic/cubit/supervisor_units_cubit.dart';
 import '../logic/cubit/assign_unit_cubit.dart';
 import '../logic/cubit/dashboard_cubit.dart';
 import 'widgets/assign_unit_bottom_sheet.dart';
 import 'widgets/service_request_card.dart';
 import 'widgets/stats_row.dart';
-import 'widgets/supervisor_header.dart';
+import 'widgets/supervisor_dashboard_header.dart';
 import 'widgets/unit_status_mini_card.dart';
 
 class SupervisorDashboardScreen extends StatefulWidget {
@@ -27,8 +30,7 @@ class SupervisorDashboardScreen extends StatefulWidget {
       _SupervisorDashboardScreenState();
 }
 
-class _SupervisorDashboardScreenState
-    extends State<SupervisorDashboardScreen> {
+class _SupervisorDashboardScreenState extends State<SupervisorDashboardScreen> {
   @override
   void initState() {
     super.initState();
@@ -45,8 +47,9 @@ class _SupervisorDashboardScreenState
         providers: [
           BlocProvider.value(value: dashboardCubit),
           BlocProvider(
-            create: (_) => getIt<AssignUnitCubit>()
-              ..loadAvailableUnits(request.serviceTypeId),
+            create: (_) =>
+                getIt<AssignUnitCubit>()
+                  ..loadAvailableUnits(request.serviceTypeId),
           ),
         ],
         child: AssignUnitBottomSheet(request: request),
@@ -85,8 +88,18 @@ class _SupervisorDashboardScreenState
   }
 
   Widget _buildContent(BuildContext context, DashboardState state) {
+    final cc = context.customColors;
     final authState = context.watch<AuthCubit>().state;
-    final userName = authState is AuthSuccess ? authState.userModel.fullName : '';
+    final userName = authState is AuthSuccess
+        ? authState.userModel.fullName
+        : '';
+    final serviceTypeName =
+        state.serviceTypeName ??
+        (authState is AuthSuccess
+            ? (authState.userModel.serviceTypeName ??
+                  authState.userModel.serviceTypeId ??
+                  '')
+            : '');
 
     return RefreshIndicator(
       color: AppColors.primary200,
@@ -96,17 +109,53 @@ class _SupervisorDashboardScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SupervisorHeader(
+            SupervisorDashboardHeader(
               userName: userName,
-              serviceTypeName: state.serviceTypeName,
+              serviceTypeName: serviceTypeName,
+              activeTaskCount: state.activeTaskCount,
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(rw(16), rh(20), rw(16), rh(24)),
+              padding: EdgeInsets.fromLTRB(rw(16), rh(16), rw(16), rh(24)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  StatsRow(state: state),
-                  verticalSpacing(24),
+                  Text(
+                    'overview'.tr(),
+                    style: AppTextStyles.font18ExtraBold.copyWith(
+                      color: cc.textPrimary,
+                    ),
+                  ),
+                  verticalSpacing(18),
+                  StatsRow(
+                    state: state,
+                    onCardTap: [
+                      () {
+                        context.read<SupervisorTasksCubit>().setFilter(
+                          'in_progress',
+                        );
+                        context.read<SupervisorNavCubit>().changeTab(1);
+                      },
+                      () {
+                        context.read<SupervisorTasksCubit>().setFilter(
+                          'pending',
+                        );
+                        context.read<SupervisorNavCubit>().changeTab(1);
+                      },
+                      () {
+                        context.read<SupervisorUnitsCubit>().setFilter(
+                          'available',
+                        );
+                        context.read<SupervisorNavCubit>().changeTab(2);
+                      },
+                      () {
+                        context.read<SupervisorReportsCubit>().setFilter(
+                          'open',
+                        );
+                        context.read<SupervisorNavCubit>().changeTab(3);
+                      },
+                    ],
+                  ),
+                  verticalSpacing(18),
                   _SectionHeader(
                     title: 'service_requests_section'.tr(),
                     onViewAll: () =>
@@ -116,7 +165,9 @@ class _SupervisorDashboardScreenState
                   if (state.pendingRequests.isEmpty)
                     const _EmptySection()
                   else
-                    ...state.pendingRequests.take(5).map(
+                    ...state.pendingRequests
+                        .take(5)
+                        .map(
                           (r) => ServiceRequestCard(
                             request: r,
                             onAssignTap: () => _openAssignSheet(context, r),
@@ -133,9 +184,9 @@ class _SupervisorDashboardScreenState
                   if (state.unitsPreview.isEmpty)
                     const _EmptySection()
                   else
-                    ...state.unitsPreview.take(3).map(
-                          (u) => UnitStatusMiniCard(unit: u),
-                        ),
+                    ...state.unitsPreview
+                        .take(3)
+                        .map((u) => UnitStatusMiniCard(unit: u)),
                 ],
               ),
             ),
@@ -161,16 +212,16 @@ class _SectionHeader extends StatelessWidget {
       children: [
         Text(
           title,
-          style:
-              AppTextStyles.font14ExtraBold.copyWith(color: cc.textPrimary),
+          style: AppTextStyles.font14ExtraBold.copyWith(color: cc.textPrimary),
         ),
         if (onViewAll != null)
           GestureDetector(
             onTap: onViewAll,
             child: Text(
               'view_all'.tr(),
-              style: AppTextStyles.font12SemiBold
-                  .copyWith(color: AppColors.primary200),
+              style: AppTextStyles.font12SemiBold.copyWith(
+                color: AppColors.primary200,
+              ),
             ),
           ),
       ],
@@ -190,7 +241,11 @@ class _EmptySection extends StatelessWidget {
       child: Center(
         child: Column(
           children: [
-            Icon(Icons.cloud_off_outlined, size: rf(36), color: cc.iconSecondary),
+            Icon(
+              Icons.cloud_off_outlined,
+              size: rf(36),
+              color: cc.iconSecondary,
+            ),
             verticalSpacing(8),
             Text(
               'no_results_found'.tr(),
@@ -239,8 +294,9 @@ class _ServiceRequestDetailSheet extends StatelessWidget {
               Expanded(
                 child: Text(
                   request.serviceTypeName ?? 'service_request'.tr(),
-                  style: AppTextStyles.font18ExtraBold
-                      .copyWith(color: cc.textPrimary),
+                  style: AppTextStyles.font18ExtraBold.copyWith(
+                    color: cc.textPrimary,
+                  ),
                 ),
               ),
               IconButton(
@@ -275,8 +331,9 @@ class _ServiceRequestDetailSheet extends StatelessWidget {
             verticalSpacing(8),
             Text(
               'notes'.tr(),
-              style: AppTextStyles.font12SemiBold
-                  .copyWith(color: cc.textSecondary),
+              style: AppTextStyles.font12SemiBold.copyWith(
+                color: cc.textSecondary,
+              ),
             ),
             verticalSpacing(4),
             Text(
@@ -305,12 +362,14 @@ class _SheetRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label,
-              style:
-                  AppTextStyles.font12Light.copyWith(color: cc.textSecondary)),
-          Text(value,
-              style: AppTextStyles.font12SemiBold
-                  .copyWith(color: cc.textPrimary)),
+          Text(
+            label,
+            style: AppTextStyles.font12Light.copyWith(color: cc.textSecondary),
+          ),
+          Text(
+            value,
+            style: AppTextStyles.font12SemiBold.copyWith(color: cc.textPrimary),
+          ),
         ],
       ),
     );

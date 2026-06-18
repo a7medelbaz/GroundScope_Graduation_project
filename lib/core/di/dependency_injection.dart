@@ -64,6 +64,7 @@ import '../../modules/supervisor/features/dashboard/logic/cubit/dashboard_cubit.
 import '../../modules/supervisor/features/tasks/data/remote/supervisor_task_remote_ds.dart';
 import '../../modules/supervisor/features/tasks/data/repo/supervisor_task_repo.dart';
 import '../../modules/supervisor/features/tasks/data/repo/supervisor_task_repo_impl.dart';
+import '../../modules/supervisor/features/tasks/logic/cubit/supervisor_task_detail_cubit.dart';
 import '../../modules/supervisor/features/tasks/logic/cubit/supervisor_tasks_cubit.dart';
 import '../../modules/supervisor/features/units/data/remote/supervisor_units_remote_ds.dart';
 import '../../modules/supervisor/features/units/data/repo/supervisor_units_repo.dart';
@@ -301,6 +302,9 @@ Future<void> setUpDependencies() async {
   );
   getIt.registerFactory<SupervisorTasksCubit>(
     () => SupervisorTasksCubit(repo: getIt<SupervisorTaskRepo>()),
+  );
+  getIt.registerFactory<SupervisorTaskDetailCubit>(
+    () => SupervisorTaskDetailCubit(repo: getIt<SupervisorTaskRepo>()),
   );
   getIt.registerLazySingleton<SupervisorUnitsRemoteDs>(
     () => SupervisorUnitsRemoteDs(getIt<SupabaseService>()),
