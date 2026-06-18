@@ -7,6 +7,7 @@ import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/extensions/datetime_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
+import 'package:ground_scope/core/widgets/notification_button.dart';
 import 'package:ground_scope/core/di/dependency_injection.dart';
 import 'package:ground_scope/core/widgets/error_screen.dart';
 import 'package:ground_scope/modules/supervisor/core/main_navigation/cubit/supervisor_nav_cubit.dart';
@@ -16,8 +17,8 @@ import '../logic/cubit/dashboard_cubit.dart';
 import 'widgets/assign_unit_bottom_sheet.dart';
 import 'widgets/service_request_card.dart';
 import 'widgets/stats_row.dart';
-import 'widgets/supervisor_header.dart';
 import 'widgets/unit_status_mini_card.dart';
+import '../../../core/widgets/supervisor_screen_header.dart';
 
 class SupervisorDashboardScreen extends StatefulWidget {
   const SupervisorDashboardScreen({super.key});
@@ -84,6 +85,13 @@ class _SupervisorDashboardScreenState
     );
   }
 
+  String get _greetingKey {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'good_morning';
+    if (hour < 17) return 'good_afternoon';
+    return 'good_evening';
+  }
+
   Widget _buildContent(BuildContext context, DashboardState state) {
     final authState = context.watch<AuthCubit>().state;
     final userName = authState is AuthSuccess ? authState.userModel.fullName : '';
@@ -96,9 +104,12 @@ class _SupervisorDashboardScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SupervisorHeader(
-              userName: userName,
-              serviceTypeName: state.serviceTypeName,
+            SupervisorScreenHeader(
+              icon: Icons.dashboard_outlined,
+              title: userName,
+              subtitle: _greetingKey.tr(),
+              subtitleOnTop: true,
+              trailing: NotificationButton(onTap: () {}),
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(rw(16), rh(20), rw(16), rh(24)),

@@ -11,6 +11,7 @@ import 'package:ground_scope/core/widgets/filter_pills.dart';
 import 'package:ground_scope/core/widgets/search_with_counter.dart';
 import '../logic/cubit/supervisor_tasks_cubit.dart';
 import 'widgets/supervisor_task_card.dart';
+import 'package:ground_scope/modules/supervisor/core/widgets/supervisor_screen_header.dart';
 
 class SupervisorTasksScreen extends StatefulWidget {
   const SupervisorTasksScreen({super.key});
@@ -48,7 +49,23 @@ class _SupervisorTasksScreenState extends State<SupervisorTasksScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _Header(serviceTypeId: _serviceTypeId),
+          BlocBuilder<SupervisorTasksCubit, SupervisorTasksState>(
+            buildWhen: (p, c) => p.allTasks.length != c.allTasks.length,
+            builder: (context, state) {
+              final auth = context.watch<AuthCubit>().state;
+              final subtitle = auth is AuthSuccess
+                  ? (auth.userModel.serviceTypeName ??
+                      auth.userModel.serviceTypeId ??
+                      '')
+                  : '';
+              return SupervisorScreenHeader(
+                icon: Icons.check_box_outlined,
+                title: 'supervisor_tasks_title'.tr(),
+                subtitle: subtitle,
+                trailing: HeaderCountBadge(count: state.allTasks.length),
+              );
+            },
+          ),
           BlocBuilder<SupervisorTasksCubit, SupervisorTasksState>(
             buildWhen: (prev, curr) =>
                 prev.resultCount != curr.resultCount ||
@@ -112,47 +129,6 @@ class _SupervisorTasksScreenState extends State<SupervisorTasksScreen> {
               },
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Header extends StatelessWidget {
-  const _Header({required this.serviceTypeId});
-
-  final String serviceTypeId;
-
-  @override
-  Widget build(BuildContext context) {
-    final authState = context.watch<AuthCubit>().state;
-    final serviceTypeName = authState is AuthSuccess
-        ? authState.userModel.role
-        : null;
-
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.fromLTRB(rw(16), rh(20) + MediaQuery.of(context).padding.top, rw(16), rh(16)),
-      decoration: const BoxDecoration(
-        gradient: AppColors.primaryGradient,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'supervisor_tasks_title'.tr(),
-            style: AppTextStyles.font18ExtraBold
-                .copyWith(color: AppColors.white),
-          ),
-          if (serviceTypeName != null) ...[
-            verticalSpacing(2),
-            Text(
-              serviceTypeName,
-              style: AppTextStyles.font12Light.copyWith(
-                color: AppColors.white.withValues(alpha: 0.7),
-              ),
-            ),
-          ],
         ],
       ),
     );

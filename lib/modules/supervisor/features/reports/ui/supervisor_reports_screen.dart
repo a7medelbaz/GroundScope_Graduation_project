@@ -10,6 +10,7 @@ import 'package:ground_scope/core/widgets/error_screen.dart';
 import 'package:ground_scope/core/widgets/filter_pills.dart';
 import 'package:ground_scope/core/widgets/search_with_counter.dart';
 import 'package:ground_scope/core/widgets/ui/dialogs/app_dialogs.dart';
+import 'package:ground_scope/modules/supervisor/core/widgets/supervisor_screen_header.dart';
 import '../logic/cubit/supervisor_reports_cubit.dart';
 import 'widgets/supervisor_report_card.dart';
 
@@ -71,12 +72,14 @@ class _SupervisorReportsScreenState extends State<SupervisorReportsScreen> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Gradient header
             BlocBuilder<SupervisorReportsCubit, SupervisorReportsState>(
               buildWhen: (p, c) =>
                   p.allReports.length != c.allReports.length,
-              builder: (context, state) => _Header(
-                totalReports: state.allReports.length,
+              builder: (context, state) => SupervisorScreenHeader(
+                icon: Icons.flag_outlined,
+                title: 'supervisor_reports_title'.tr(),
+                subtitle: 'from_your_units'.tr(),
+                trailing: HeaderCountBadge(count: state.allReports.length),
               ),
             ),
             // Search + counter
@@ -158,42 +161,6 @@ class _SupervisorReportsScreenState extends State<SupervisorReportsScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _Header extends StatelessWidget {
-  const _Header({required this.totalReports});
-  final int totalReports;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.fromLTRB(
-        rw(16),
-        rh(20) + MediaQuery.of(context).padding.top,
-        rw(16),
-        rh(16),
-      ),
-      decoration: const BoxDecoration(gradient: AppColors.primaryGradient),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'supervisor_reports_title'.tr(),
-            style: AppTextStyles.font18ExtraBold
-                .copyWith(color: AppColors.white),
-          ),
-          verticalSpacing(2),
-          Text(
-            'from_your_units'.tr(),
-            style: AppTextStyles.font12Light.copyWith(
-              color: AppColors.white.withValues(alpha: 0.7),
-            ),
-          ),
-        ],
       ),
     );
   }
