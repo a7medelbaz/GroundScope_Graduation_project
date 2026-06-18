@@ -74,6 +74,10 @@ import '../../modules/supervisor/features/reports/data/repo/supervisor_reports_r
 import '../../modules/supervisor/features/reports/data/repo/supervisor_reports_repo_impl.dart';
 import '../../modules/supervisor/features/reports/logic/cubit/supervisor_reports_cubit.dart';
 import '../../modules/supervisor/features/profile/logic/cubit/supervisor_profile_cubit.dart';
+import '../shared/data/remote/service_request_remote_ds.dart';
+import '../shared/data/repo/service_request_repo.dart';
+import '../shared/data/repo/service_request_repo_impl.dart';
+import '../../modules/admin/features/service_requests/logic/cubit/service_request_cubit.dart';
 
 final getIt = GetIt.instance;
 Future<void> setUpDependencies() async {
@@ -321,5 +325,20 @@ Future<void> setUpDependencies() async {
   );
   getIt.registerFactory<SupervisorProfileCubit>(
     () => SupervisorProfileCubit(userService: getIt<UserService>()),
+  );
+
+  // === SERVICE REQUESTS (Admin) ===
+  getIt.registerLazySingleton<ServiceRequestRemoteDs>(
+    () => ServiceRequestRemoteDs(getIt<SupabaseService>()),
+  );
+  getIt.registerLazySingleton<ServiceRequestRepo>(
+    () => ServiceRequestRepoImpl(getIt<ServiceRequestRemoteDs>()),
+  );
+  getIt.registerFactory<ServiceRequestCubit>(
+    () => ServiceRequestCubit(
+      getIt<ServiceRequestRepo>(),
+      getIt<ServiceTypeRepo>(),
+      getIt<UserService>(),
+    ),
   );
 }

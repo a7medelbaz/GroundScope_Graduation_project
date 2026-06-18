@@ -43,6 +43,8 @@ import 'package:ground_scope/modules/admin/features/users/logic/cubit/user_reset
 import 'package:ground_scope/modules/admin/features/users/logic/cubit/users_list_cubit.dart';
 import 'package:ground_scope/modules/admin/features/users/ui/users_list_screen.dart';
 
+import '../../modules/admin/features/service_requests/logic/cubit/service_request_cubit.dart';
+import '../../modules/admin/features/service_requests/ui/flight_service_request_screen.dart';
 import '../../modules/supervisor/core/main_navigation/supervisor_scaffold.dart';
 import '../../modules/worker/core/main_navigation/ui/worker_scaffold.dart';
 import '../auth/ui/login_screen.dart';
@@ -232,6 +234,16 @@ class AppRouter {
           BlocProvider.value(
             value: cubit,
             child: FlightDetailScreen(flight: flight),
+          ),
+          settings,
+        );
+
+      case Routes.adminFlightServiceRequestScreen:
+        final flight = arguments?['flight'] as FlightModel;
+        return _buildRoute(
+          BlocProvider(
+            create: (_) => getIt<ServiceRequestCubit>()..init(flight),
+            child: FlightServiceRequestScreen(flight: flight),
           ),
           settings,
         );
