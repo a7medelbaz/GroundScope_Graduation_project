@@ -46,7 +46,8 @@ class ServiceRequestCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
+      child: IntrinsicHeight(
+        child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
@@ -126,6 +127,7 @@ class ServiceRequestCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }
