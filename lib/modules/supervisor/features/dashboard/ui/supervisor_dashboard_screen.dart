@@ -7,18 +7,20 @@ import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/extensions/datetime_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
-import 'package:ground_scope/core/widgets/notification_button.dart';
 import 'package:ground_scope/core/di/dependency_injection.dart';
 import 'package:ground_scope/core/widgets/error_screen.dart';
 import 'package:ground_scope/modules/supervisor/core/main_navigation/cubit/supervisor_nav_cubit.dart';
 import 'package:ground_scope/modules/supervisor/features/dashboard/data/models/service_request_model.dart';
+import 'package:ground_scope/modules/supervisor/features/reports/logic/cubit/supervisor_reports_cubit.dart';
+import 'package:ground_scope/modules/supervisor/features/tasks/logic/cubit/supervisor_tasks_cubit.dart';
+import 'package:ground_scope/modules/supervisor/features/units/logic/cubit/supervisor_units_cubit.dart';
 import '../logic/cubit/assign_unit_cubit.dart';
 import '../logic/cubit/dashboard_cubit.dart';
 import 'widgets/assign_unit_bottom_sheet.dart';
 import 'widgets/service_request_card.dart';
 import 'widgets/stats_row.dart';
+import 'widgets/supervisor_dashboard_header.dart';
 import 'widgets/unit_status_mini_card.dart';
-import '../../../core/widgets/supervisor_screen_header.dart';
 
 class SupervisorDashboardScreen extends StatefulWidget {
   const SupervisorDashboardScreen({super.key});
@@ -85,16 +87,16 @@ class _SupervisorDashboardScreenState
     );
   }
 
-  String get _greetingKey {
-    final hour = DateTime.now().hour;
-    if (hour < 12) return 'good_morning';
-    if (hour < 17) return 'good_afternoon';
-    return 'good_evening';
-  }
-
   Widget _buildContent(BuildContext context, DashboardState state) {
+    final cc = context.customColors;
     final authState = context.watch<AuthCubit>().state;
     final userName = authState is AuthSuccess ? authState.userModel.fullName : '';
+    final serviceTypeName = state.serviceTypeName ??
+        (authState is AuthSuccess
+            ? (authState.userModel.serviceTypeName ??
+                authState.userModel.serviceTypeId ??
+                '')
+            : '');
 
     return RefreshIndicator(
       color: AppColors.primary200,
@@ -104,19 +106,51 @@ class _SupervisorDashboardScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SupervisorScreenHeader(
-              icon: Icons.dashboard_outlined,
-              title: userName,
-              subtitle: _greetingKey.tr(),
-              subtitleOnTop: true,
-              trailing: NotificationButton(onTap: () {}),
+            SupervisorDashboardHeader(
+              userName: userName,
+              serviceTypeName: serviceTypeName,
+              activeTaskCount: state.activeTaskCount,
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(rw(16), rh(20), rw(16), rh(24)),
+              padding: EdgeInsets.fromLTRB(rw(16), rh(16), rw(16), rh(24)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  StatsRow(state: state),
+                  Text(
+                    'overview'.tr(),
+                    style: AppTextStyles.font16ExtraBold
+                        .copyWith(color: cc.textPrimary),
+                  ),
+                  verticalSpacing(10),
+                  StatsRow(
+                    state: state,
+                    onCardTap: [
+                      () {
+                        context
+                            .read<SupervisorTasksCubit>()
+                            .setFilter('in_progress');
+                        context.read<SupervisorNavCubit>().changeTab(1);
+                      },
+                      () {
+                        context
+                            .read<SupervisorTasksCubit>()
+                            .setFilter('pending');
+                        context.read<SupervisorNavCubit>().changeTab(1);
+                      },
+                      () {
+                        context
+                            .read<SupervisorUnitsCubit>()
+                            .setFilter('available');
+                        context.read<SupervisorNavCubit>().changeTab(2);
+                      },
+                      () {
+                        context
+                            .read<SupervisorReportsCubit>()
+                            .setFilter('open');
+                        context.read<SupervisorNavCubit>().changeTab(3);
+                      },
+                    ],
+                  ),
                   verticalSpacing(24),
                   _SectionHeader(
                     title: 'service_requests_section'.tr(),

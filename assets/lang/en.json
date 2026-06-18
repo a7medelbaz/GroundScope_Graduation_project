@@ -324,6 +324,7 @@
   "active_tasks": "Active Tasks",
   "pending_requests": "Pending Requests",
   "units_available": "Units Available",
+  "overview": "Overview",
   "service_requests_section": "Service Requests",
   "live_unit_status_section": "Live Unit Status",
   "view_all": "View all",
