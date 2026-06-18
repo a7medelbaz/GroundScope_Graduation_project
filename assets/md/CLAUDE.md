@@ -1,5 +1,3 @@
-* [ ] col1col2col3
-
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
@@ -15,7 +13,8 @@ GroundScope is a Flutter application for managing airport ground operations. It 
 ```
 lib/
 ├── core/                        # Shared infrastructure across all modules
-│   ├── auth/                    # Authentication logic + UI
+│   ├── api/                     # Dio HTTP client (consumer, interceptors, factory)
+│   ├── auth/
 │   │   ├── data/
 │   │   │   ├── models/user_date.dart          # UserModel
 │   │   │   ├── remote/auth_remote_ds.dart
@@ -25,150 +24,200 @@ lib/
 │   │       ├── login_screen.dart
 │   │       ├── user_authenticated_check.dart  # Auth gate → routes to role scaffold
 │   │       └── widgets/login_form.dart
-│   │
 │   ├── config/
-│   │   └── app_config.dart      # Dev/prod env, Supabase credentials, app metadata
-│   │
+│   │   ├── app_config.dart
+│   │   └── firebase_options.dart
 │   ├── di/
 │   │   └── dependency_injection.dart  # GetIt registrations for ALL services/repos/cubits
-│   │
-│   ├── error/                   # Centralised error system
-│   │   ├── models/app_error.dart          # AppError with factory constructors
-│   │   ├── models/error_details.dart      # Metadata wrapper (field errors, trace IDs)
-│   │   ├── types/error_type.dart          # ErrorType enum + ErrorCode class
-│   │   ├── handlers/error_handler.dart    # Converts any exception → AppError
-│   │   └── handlers/supabase_error_handler.dart  # AuthException, PostgrestException, StorageException
-│   │
+│   ├── error/
+│   │   ├── models/app_error.dart + error_details.dart
+│   │   ├── types/error_type.dart + error_handler.dart
+│   │   └── handlers/supabase_error_handler.dart + firebase_error_handler.dart
 │   ├── localization/
-│   │   └── localization_manager.dart  # Supported locales, translations path, fallback
-│   │
+│   │   └── localization_manager.dart
 │   ├── networking/
-│   │   └── supabase_service.dart  # Singleton SupabaseClient wrapper + currentUser + signOut
-│   │
-│   ├── onboarding/
-│   │   └── ui/on_boarding_screen.dart + widgets/
-│   │
+│   │   └── supabase_service.dart
+│   ├── onboarding/ui/on_boarding_screen.dart + widgets/
 │   ├── router/
-│   │   ├── routes.dart           # All named route constants (see Routes class below)
-│   │   └── app_routers.dart      # AppRouter.generateRoute() switch-case with PageRouteBuilder
-│   │
+│   │   ├── routes.dart           # All named route constants
+│   │   └── app_routers.dart      # AppRouter.generateRoute() switch-case
 │   ├── service/
-│   │   ├── secure_storage.dart   # FlutterSecureStorage wrapper (write/read/delete/clearAll)
-│   │   ├── shared_prefs.dart     # SharedPreferences static helper (String/int/bool/double)
-│   │   └── user_service.dart     # Reads cached UserModel from SecureStorage
-│   │
+│   │   ├── secure_storage.dart
+│   │   ├── shared_prefs.dart
+│   │   └── user_service.dart     # Reads cached UserModel from SecureStorage (async getUser())
 │   ├── settings/
-│   │   ├── cubit/app_settings_cubit.dart   # Hydrated cubit — theme + locale + fontFamily
-│   │   └── cubit/app_settings_state.dart
-│   │
-│   ├── shared/data/             # Cross-module models, repos, and remote data sources
-│   │   ├── models/
-│   │   │   ├── flight_model.dart
-│   │   │   ├── report_model.dart    # ReportModel + ReportType/ReportSeverity/ReportStatus enums
-│   │   │   ├── service_type_model.dart
-│   │   │   ├── stand_model.dart
-│   │   │   ├── task_check_list_model.dart
-│   │   │   ├── task_model.dart      # TaskModel + TaskPriority/TaskStatus enums
-│   │   │   ├── task_pause_model.dart
-│   │   │   └── unit_model.dart
-│   │   ├── remote/
-│   │   │   ├── flights_remote_ds.dart
-│   │   │   ├── report_remote_ds.dart
-│   │   │   ├── task_remote_ds.dart
-│   │   │   └── unit_remote_ds.dart
-│   │   └── repo/
-│   │       ├── flight_repo.dart + flight_repo_impl.dart
-│   │       ├── report_repo.dart + report_repo_impl.dart
-│   │       ├── task_repo.dart + task_repo_impl.dart
-│   │       └── unit_repo.dart + unit_repo_impl.dart
-│   │
+│   │   └── cubit/app_settings_cubit.dart + app_settings_state.dart
+│   ├── shared/data/
+│   │   ├── models/               # Cross-module domain models (see list below)
+│   │   ├── remote/               # Shared remote data sources (Supabase)
+│   │   ├── repo/                 # Shared repository interfaces + implementations
+│   │   └── ui/widgets/credentials_share_sheet.dart
 │   ├── themes/
-│   │   ├── app_colors.dart       # Full color palette (primary, secondary, grey, status, bg)
-│   │   ├── app_font_family.dart
-│   │   ├── app_font_weight.dart  # Font weight constants
-│   │   ├── app_text_styles.dart  # Predefined TextStyles (font12–font24, Light/SemiBold/ExtraBold)
-│   │   ├── custom_colors.dart    # Semantic theme tokens (textPrimary, surface, border, etc.)
-│   │   └── theme_data/
-│   │       ├── theme_data_light.dart
-│   │       └── theme_data_dark.dart
-│   │
-│   ├── utils/                   # Helpers, extensions, constants
-│   │   ├── app_assets.dart       # Asset path constants (SVGs, PNGs, images)
-│   │   ├── app_constants.dart    # navigatorKey (GlobalKey<NavigatorState>), userDataKey
-│   │   ├── regex.dart            # Regex patterns: email, password, phone (Egyptian), name, Arabic
-│   │   ├── spacing.dart          # rw/rh/rr/rf helpers + verticalSpacing/horizontalSpacing
-│   │   ├── task_ui_helpers.dart  # TaskUiHelpers: priorityColor(), statusColor()
-│   │   ├── validators.dart       # Form validators: name(), email(), password(), phoneNumber()
-│   │   ├── extensions/
-│   │   │   ├── context_ext.dart      # Theme, MediaQuery, Locale, SnackBar, Navigation extensions
-│   │   │   ├── datetime_ext.dart     # formattedDate/Time/DateTime, isToday, isYesterday, timeAgo
-│   │   │   ├── list_ext.dart         # firstOrNull, lastOrNull
-│   │   │   ├── num_ext.dart          # toCurrency(), toFileSize()
-│   │   │   └── string_ext.dart       # capitalize, truncate, isValidEmail/Phone/Url
-│   │   └── functions/
-│   │       └── app_setting_method.dart  # switchLanguage(), switchTheme() via AppSettingsCubit
-│   │
-│   └── widgets/                 # Reusable UI components
-│       ├── custom_app_bar.dart        # Back button + centered title + optional trailing icon
-│       ├── custom_icon_button.dart    # Material InkWell icon button (optional label + tooltip)
-│       ├── custom_text_button.dart
-│       ├── custom_text_form_.dart     # TextFormField with validation
-│       ├── error_screen.dart
-│       ├── info_card.dart
-│       ├── info_row_data.dart         # Key-value row
-│       ├── notification_button.dart
-│       ├── dialogs/
-│       │   ├── app_dialogs.dart
-│       │   └── custom_dialog.dart
-│       └── ui/loaders/overlay_loader.dart
+│   │   ├── app_colors.dart       # Full palette + AppColors.primaryGradient
+│   │   ├── app_text_styles.dart  # font12–font24 × Light/SemiBold/ExtraBold
+│   │   ├── custom_colors.dart    # Semantic tokens (textPrimary, surface, border…)
+│   │   └── theme_data/theme_data_light.dart + theme_data_dark.dart
+│   ├── utils/
+│   │   ├── app_assets.dart
+│   │   ├── app_constants.dart    # navigatorKey, userDataKey
+│   │   ├── spacing.dart          # rw/rh/rr/rf + verticalSpacing/horizontalSpacing
+│   │   ├── task_ui_helpers.dart  # priorityColor(), statusColor()
+│   │   ├── validators.dart
+│   │   ├── credentials_generator.dart
+│   │   ├── extensions/context_ext.dart + datetime_ext.dart + list_ext.dart + …
+│   │   └── functions/app_setting_method.dart  # switchLanguage(), switchTheme()
+│   └── widgets/                  # Shared UI components (see list below)
 │
 ├── modules/
-│   ├── worker/
-│   │   ├── core/
-│   │   │   └── main_navigation/
-│   │   │       ├── cubit/bottom_nav_cubit.dart
-│   │   │       ├── model/nav_item.dart
-│   │   │       └── ui/worker_scaffold.dart   # PersistentTabView with 5 tabs
-│   │   └── features/
-│   │       ├── home/             # Tab 0 — task list + unit info
-│   │       ├── reports/          # Tab 1 — worker's submitted reports
-│   │       ├── add_report/       # Tab 2 — report submission form (also pushable as route)
-│   │       ├── notifications/    # Tab 3
-│   │       ├── profile/          # Tab 4
-│   │       ├── task_details/     # Pushed via Routes.taskDetailsScreen
-│   │       └── task_info/        # Pushed route — lightweight task info view
-│   │
-│   ├── supervisor/
-│   │   ├── core/main_navigation/supervisor_scaffold.dart
-│   │   └── features/
-│   │       ├── dashboard/        # Supervisor overview
-│   │       ├── tasks/            # Task management
-│   │       ├── units/            # Unit/team management
-│   │       ├── reports/          # All worker reports
-│   │       ├── notifications/
-│   │       └── profile/
-│   │
-│   └── admin/
-│       └── features/home/admin_screen.dart   # Placeholder dashboard
+│   ├── worker/           # Role: unit_manager
+│   ├── supervisor/       # Role: supervisor
+│   └── admin/            # Role: admin
 │
-├── ground_scope_app.dart   # ScreenUtilInit + MultiBlocProvider (AppSettingsCubit, AuthCubit)
-├── main_dev.dart           # Dev entry: .env → Supabase → HydratedBloc → DI → runApp
-└── main_prod.dart          # Prod entry: identical pattern to dev
+├── ground_scope_app.dart  # ScreenUtilInit + MultiBlocProvider (AppSettingsCubit, AuthCubit)
+├── main_dev.dart
+└── main_prod.dart
 ```
 
-**Feature module layout** (every feature inside a module follows this exactly):
+**Feature module layout** (every feature follows this exactly):
 
 ```
 feature/
 ├── data/
-│   ├── remote/         # Supabase API calls (remote data source)
-│   └── repo/           # Repository interface + implementation
+│   ├── remote/   # Supabase API calls
+│   └── repo/     # Abstract interface + implementation
 ├── logic/
-│   └── cubit/          # Cubit class + state class (state is `part of` the cubit file)
+│   └── cubit/    # XxxCubit + XxxState (state is `part of` the cubit file)
 └── ui/
-    ├── *_screen.dart   # Screen widget
-    └── widgets/        # Feature-specific widgets only
+    ├── xxx_screen.dart
+    └── widgets/
 ```
+
+---
+
+## Shared Domain Models (`lib/core/shared/data/models/`)
+
+| File | Contents |
+|---|---|
+| `flight_model.dart` | `FlightModel` |
+| `report_model.dart` | `ReportModel` + `ReportType` / `ReportSeverity` / `ReportStatus` enums |
+| `service_type_model.dart` | `ServiceTypeModel` |
+| `service_request_model.dart` | `ServiceRequestModel` |
+| `stand_model.dart` | `StandModel` |
+| `task_model.dart` | `TaskModel` + `TaskPriority` / `TaskStatus` enums |
+| `task_check_list_model.dart` | `TaskCheckListModel` |
+| `task_pause_model.dart` | `TaskPauseModel` |
+| `unit_model.dart` | `UnitModel` + `UnitStatus` enum; includes `shiftLabel` getter, `members: List<UnitMemberModel>`, `serviceTypeName` |
+| `unit_member_model.dart` | `UnitMemberModel` |
+| `unit_profile_model.dart` | `UnitStatus` enum (referenced by UnitModel) |
+| `generated_credentials.dart` | `GeneratedCredentials` |
+
+---
+
+## Shared Core Widgets (`lib/core/widgets/`)
+
+| File | Purpose |
+|---|---|
+| `custom_app_bar.dart` | Back button + centered title + optional trailing |
+| `custom_icon_button.dart` | InkWell icon button with optional label |
+| `custom_text_button.dart` | Primary + `CustomTextButton.outlined()` named ctor; `CustomButtonSize.small/medium/large`; `isFullWidth` |
+| `custom_text_form_.dart` | TextFormField with validation |
+| `error_screen.dart` | Full-screen error with retry callback |
+| `filter_pills.dart` | Horizontal scrollable filter chips; `filters`, `filterLabels`, `activeFilter`, `onFilterChanged` |
+| `search_with_counter.dart` | Search field + result counter below; `hintText`, `onChanged`, `resultCount` |
+| `info_card.dart` | Key-value card; takes `List<InfoRowData>`; `rr(14)` card |
+| `info_row_data.dart` | Data class for InfoCard rows: `icon`, `label`, `value`, `highlight`, `valueColor` |
+| `notification_button.dart` | Bell icon button |
+| `massage_snack_bar.dart` | Styled snackbar |
+| `ui/dialogs/app_dialogs.dart` | `AppDialogs.showConfirm(context, message:, onConfirm:, …)` — always use instead of raw showDialog |
+| `ui/dialogs/custom_dialog.dart` | Low-level dialog shell |
+| `ui/loaders/overlay_loader.dart` | Full-screen loading overlay |
+
+---
+
+## Module: Worker (`lib/modules/worker/`)
+
+**Role key**: `unit_manager`
+
+**Navigation**: `WorkerScaffold` uses `PersistentTabView` (5 tabs).
+
+| Tab | Feature | Cubit |
+|---|---|---|
+| 0 | Home (task list) | `HomeCubit` |
+| 1 | Reports (my reports) | `ReportsCubit` |
+| 2 | Add Report | `AddReportCubit` |
+| 3 | Notifications | — |
+| 4 | Profile | `ProfileCubit` |
+
+**Pushed routes**: `taskDetailsScreen` → `TaskDetailsScreen` (cubit provided in `app_routers.dart`), `taskDetailsInfoScreen`, `addReportScreen`, `reportsScreen`, `reportsDetailsScreen`, `workerManagerAndMembersScreen`, `workerMemberDetailScreen`.
+
+**Key note**: `AddReportScreen` is both tab 2 (not poppable) and a pushed route — guard all back-nav with `Navigator.canPop(context)`.
+
+---
+
+## Module: Supervisor (`lib/modules/supervisor/`)
+
+**Role key**: `supervisor`
+
+**Navigation**: `SupervisorScaffold` — `IndexedStack` + `BottomNavigationBar` (5 tabs). Tab cubit: `SupervisorNavCubit`.
+
+| Tab | Feature | Screen | Cubit |
+|---|---|---|---|
+| 0 | Dashboard | `SupervisorDashboardScreen` | `DashboardCubit` + `AssignUnitCubit` |
+| 1 | Tasks | `SupervisorTasksScreen` | `SupervisorTasksCubit` |
+| 2 | Units | `SupervisorUnitsScreen` | `SupervisorUnitsCubit` |
+| 3 | Reports | `SupervisorReportsScreen` | `SupervisorReportsCubit` |
+| 4 | Profile | `SupervisorProfileScreen` | `SupervisorProfileCubit` |
+
+All 5 cubits are provided via `MultiBlocProvider` in `UserAuthenticatedCheck` (not the scaffold).
+
+### Dashboard
+- Stats grid: active tasks, pending requests, units available
+- Service requests section: lists `tasks` with `status='pending'` and `unit_id IS NULL`
+- Assign unit flow: `AssignUnitBottomSheet` → updates `tasks.unit_id`, `tasks.assigned_by`, `tasks.status='in_progress'`
+- **No `flight_service_requests` table** — pending service requests ARE tasks with no unit
+
+### Tasks Tab
+- Realtime + manual refresh; `FilterPills` + `SearchWithCounter`
+- Filters: `all`, `pending`, `in_progress`, `completed`, `cancelled`
+- Card: left accent bar (`rw(4)`) colored by status; priority badge; wrapped in `IntrinsicHeight` (fixes infinite-height crash with `CrossAxisAlignment.stretch`)
+
+### Units Tab
+- Realtime stream (`SupervisorUnitsCubit._subscription`); no `RefreshIndicator`
+- Stream doesn't support joins → initial fetch gets members, stream merges with existing member data
+- `UnitStatusCard` → `UnitDetailBottomSheet` (shift, service type, compatible aircraft, crew list)
+- `_subscription?.cancel()` in `cubit.close()`
+
+### Reports Tab
+- `FilterPills`: `all`, `open`, `acknowledged`, `resolved`
+- Optimistic updates on acknowledge/resolve — changes local state immediately
+- Per-card loading spinner via `actionReportId: String?` in state
+- `actionReportId` uses sentinel-object pattern in `copyWith` to allow nullable clearing
+- `AppDialogs.showConfirm` required before all actions
+- Top accent bar (`rh(4)`) colored by severity
+
+### Profile Tab
+- Reads from `UserService.getUser()` — **no network call**, cache only
+- `SupervisorProfileCubit` injects `UserService`, calls `await getUser()`
+- Header: gradient matching dashboard, avatar with initials (max 2 letters)
+- Settings tiles: language (`switchLanguage`), dark mode (`switchTheme`), notifications (no-op), logout (`AppDialogs.showConfirm` → `AuthCubit.logout()`)
+
+---
+
+## Module: Admin (`lib/modules/admin/`)
+
+**Role key**: `admin`
+
+**Navigation**: Single `AdminDashboardScreen` with feature cards that push named routes.
+
+| Feature | Routes | Cubits |
+|---|---|---|
+| Dashboard | `adminDashboardScreen` | `AdminDashboardCubit` |
+| Flights | `adminFlightsScreen`, `adminFlightDetailScreen` | `FlightsListCubit`, `FlightImportCubit` |
+| Service Types | `adminServiceTypesScreen`, `adminServiceTypeFormScreen` | `ServiceTypesListCubit`, `ServiceTypeFormCubit` |
+| Stands | `adminStandsScreen`, `adminStandFormScreen` | `StandsListCubit`, `StandFormCubit` |
+| Units | `adminUnitsScreen`, `adminUnitDetailScreen`, `adminUnitFormScreen` | `UnitsListCubit`, `UnitDetailCubit`, `UnitFormCubit`, `UnitMemberCubit` |
+| Users | `adminUsersScreen` | `UsersListCubit`, `UserResetCubit` |
+| Service Requests | `adminFlightServiceRequestScreen` | `ServiceRequestCubit` |
 
 ---
 
@@ -178,164 +227,58 @@ feature/
 
 `UserAuthenticatedCheck` watches `AuthCubit`. On `AuthSuccess` it switches on `userModel.role`:
 
-- `unit_manager` → `MultiBlocProvider` (HomeCubit, AddReportCubit, ReportsCubit) → `WorkerScaffold`
-- `supervisor` → `SupervisorScaffold`
-- `admin` → `AdminScreen`
+- `unit_manager` → `MultiBlocProvider` (HomeCubit, AddReportCubit, ReportsCubit, ProfileCubit) → `WorkerScaffold`
+- `supervisor` → `MultiBlocProvider` (DashboardCubit, SupervisorTasksCubit, SupervisorUnitsCubit, SupervisorReportsCubit, SupervisorProfileCubit) → `SupervisorScaffold`
+- `admin` → `AdminDashboardScreen`
 
 ### DI
 
-All services, data sources, repositories, and cubits are registered in `lib/core/di/dependency_injection.dart` and initialised before `runApp()`. Use `getIt<T>()` to resolve. Tab-level cubits (HomeCubit, AddReportCubit, ReportsCubit) are provided in `UserAuthenticatedCheck`'s `MultiBlocProvider`. Feature cubits for pushed routes (TaskDetailsCubit) are provided in `app_routers.dart` via `BlocProvider`.
+All services, remote data sources, repositories, and cubits are registered in `lib/core/di/dependency_injection.dart`. Use `getIt<T>()` to resolve.
 
-### Navigation
+- **Singletons** (`registerLazySingleton`): services (SecureStorage, SupabaseService, UserService), all remote DSes and repos
+- **Factories** (`registerFactory`): all cubits — fresh instance on each `getIt<XxxCubit>()` call
 
-`WorkerScaffold` uses `PersistentTabView` (5 tabs). The "Add Report" tab (`index 2`) embeds `AddReportScreen` directly — it is **not** pushed as a route, so `Navigator.canPop(context)` is `false` there. Cross-module and pushed screens use named routes via `Navigator.pushNamed`. Always use the context extension helpers from `context_ext.dart`.
-
-### Error handling
-
-Supabase/Firebase exceptions → `SupabaseErrorHandler` / `ErrorHandler` → `AppError` → emitted as failure state from cubits. Use `AppError.unknown()`, `AppError.noInternet()`, etc. as factory constructors. Display via `state.error!.messageKey`.
-
-### Routing — all named routes
+### Navigation — all named routes
 
 ```dart
 class Routes {
-  static const String onBoardingScreen   = '/onBoardingScreen';
-  static const String loginScreen        = '/loginScreen';
-  static const String workerScaffold     = '/workerScaffold';
-  static const String taskDetailsScreen  = '/taskDetailsScreen';
-  static const String taskDetailsInfoScreen = '/taskDetailsInfoScreen';
-  static const String addReportScreen    = '/addReportScreen';
-  static const String reportsScreen      = '/reportsScreen';
-  static const String supervisorScaffold = '/supervisorScaffold';
-  static const String supervisorTaskListScreen = '/supervisorTaskListScreen';
-  static const String adminScreen        = '/adminScreen';
+  // Auth / Onboarding
+  static const onBoardingScreen   = '/onBoardingScreen';
+  static const loginScreen        = '/loginScreen';
+
+  // Worker
+  static const workerScaffold                  = '/workerScaffold';
+  static const taskDetailsScreen               = '/taskDetailsScreen';
+  static const taskDetailsInfoScreen           = '/taskDetailsInfoScreen';
+  static const addReportScreen                 = '/addReportScreen';
+  static const reportsScreen                   = '/reportsScreen';
+  static const reportsDetailsScreen            = '/reportsDetailsScreen';
+  static const workerManagerAndMembersScreen   = '/workerManagerAndMembersScreen';
+  static const workerMemberDetailScreen        = '/workerMemberDetailScreen';
+
+  // Supervisor
+  static const supervisorScaffold              = '/supervisorScaffold';
+  static const supervisorTaskListScreen        = '/supervisorTaskListScreen';
+
+  // Admin
+  static const adminDashboardScreen            = '/adminDashboardScreen';
+  static const adminUnitsScreen                = '/adminUnitsScreen';
+  static const adminUnitDetailScreen           = '/adminUnitDetailScreen';
+  static const adminUnitFormScreen             = '/adminUnitFormScreen';
+  static const adminServiceTypesScreen         = '/adminServiceTypesScreen';
+  static const adminServiceTypeFormScreen      = '/adminServiceTypeFormScreen';
+  static const adminStandsScreen               = '/adminStandsScreen';
+  static const adminStandFormScreen            = '/adminStandFormScreen';
+  static const adminFlightsScreen              = '/adminFlightsScreen';
+  static const adminFlightDetailScreen         = '/adminFlightDetailScreen';
+  static const adminUsersScreen                = '/adminUsersScreen';
+  static const adminFlightServiceRequestScreen = '/adminFlightServiceRequestScreen';
 }
 ```
 
----
-
-## Utilities Quick Reference
-
-### Spacing (`lib/core/utils/spacing.dart`)
+### Error handling
 
 ```dart
-rw(20)   // responsive width   → 20.w
-rh(16)   // responsive height  → 16.h
-rr(12)   // responsive radius  → 12.r
-rf(14)   // responsive font    → 14.sp
-verticalSpacing(8)    // SizedBox(height: 8.h)
-horizontalSpacing(8)  // SizedBox(width: 8.w)
-```
-
-**Never use raw pixel values.** Always wrap with these helpers.
-
-### Context Extensions (`lib/core/utils/extensions/context_ext.dart`)
-
-```dart
-context.customColors        // CustomColors (light/dark semantic tokens)
-context.isDarkMode          // bool
-context.screenWidth         // double
-context.isArabic            // bool
-context.pop()               // Navigator.pop — guards with mounted check
-context.pushNamed(Routes.x) // named navigation
-context.showErrorSnackBar('msg')
-context.showSuccessSnackBar('msg')
-```
-
-### DateTime Extensions (`lib/core/utils/extensions/datetime_ext.dart`)
-
-```dart
-report.createdAt.timeAgo          // "2 hours ago"
-report.createdAt.formattedDate    // "30/04/2026"
-report.createdAt.formattedTime    // "14:30"
-report.createdAt.isToday          // bool
-```
-
-### Task UI Helpers (`lib/core/utils/task_ui_helpers.dart`)
-
-```dart
-TaskUiHelpers.priorityColor(task.priority)      // Color by priority enum
-TaskUiHelpers.statusColor(task.status, context) // Color by status enum
-```
-
-### Validators (`lib/core/utils/validators.dart`)
-
-```dart
-Validators.email(value)       // returns String? error message
-Validators.password(value)    // checks uppercase, digit, special char, min 8 chars
-Validators.name(value)
-Validators.phoneNumber(value) // supports Egyptian format
-```
-
-### App Assets (`lib/core/utils/app_assets.dart`)
-
-```dart
-AppAssets.appLogoSVG     // 'assets/svgs/...'
-AppAssets.appLogoPNG     // 'assets/images/app_logo.png'
-AppAssets.onBoardingHero // 'assets/images/on_boarding_hero.png'
-AppAssets.workerTest     // 'assets/images/worker_test.png'
-```
-
----
-
-## Tech Stack
-
-| Category          | Package                   | Version  |
-| ----------------- | ------------------------- | -------- |
-| State management  | flutter_bloc              | ^9.1.1   |
-| Persistent state  | hydrated_bloc             | ^11.0.0  |
-| DI                | get_it                    | ^9.0.5   |
-| Backend           | supabase_flutter          | ^2.10.3  |
-| Firebase          | firebase_core             | ^4.2.1   |
-| Responsive sizing | flutter_screenutil        | ^5.9.3   |
-| Navigation        | persistent_bottom_nav_bar | ^6.2.1   |
-| Localization      | easy_localization         | ^3.0.8   |
-| Env vars          | flutter_dotenv            | ^6.0.0   |
-| Secure storage    | flutter_secure_storage    | ^10.0.0  |
-| SVG               | flutter_svg               | ^2.2.2   |
-| Image caching     | cached_network_image      | ^3.4.1   |
-| Animations        | flutter_animate           | ^4.5.2   |
-| Equality          | equatable                 | ^2.0.8   |
-| Image picking     | image_picker              | (latest) |
-
-Fonts: **Manrope** (default, 7 weights), **Tajawal** (Arabic, 7 weights). Design canvas: **390×844**.
-
----
-
-## Conventions
-
-### Naming
-
-- Cubits: `FeatureNameCubit` / states: `FeatureNameState`
-- Screens: `feature_name_screen.dart` → `FeatureNameScreen`
-- Remote data sources: `FeatureNameRemoteDs`
-- Repositories: `FeatureNameRepo` (abstract) + `FeatureNameRepoImpl`
-- Routes: constants in `lib/core/router/routes.dart`, switch-case in `app_routers.dart`
-- State file is always `part of` the cubit file (not a standalone file)
-
-### Sizing
-
-Always use `flutter_screenutil` extensions — `.sp` for font sizes, `.w`/`.h` for widths/heights, `.r` for radii. Never use raw pixel values.
-
-### Strings
-
-All user-facing strings must go through `easy_localization` (`.tr()` extension). Add keys to both `assets/lang/en.json` and `assets/lang/ar.json`.
-
-### Global vs local cubits
-
-- **Global** (app root via `MultiBlocProvider` in `UserAuthenticatedCheck`): `AuthCubit`, `AppSettingsCubit`, `HomeCubit`, `AddReportCubit`, `ReportsCubit`
-- **Route-level** (in `app_routers.dart` per-route `BlocProvider`): `TaskDetailsCubit`
-- Never put feature-specific logic in global cubits
-
-### `AddReportScreen` — dual context
-
-This screen is used both as **tab 2** of `WorkerScaffold` (no route to pop) and as a **pushed named route** (poppable). Always guard any back-navigation with `Navigator.canPop(context)`.
-
----
-
-## Error Handling Pattern
-
-```dart
-// In a cubit method:
 try {
   final result = await repo.someCall();
   emit(state.copyWith(status: MyStatus.success, data: result));
@@ -355,57 +298,204 @@ AppError.serverError()
 
 ---
 
-## Common Commands
+## Utilities Quick Reference
 
-```bash
-make install          # flutter pub get
-make dev              # Run dev flavor (lib/main_dev.dart)
-make prod             # Run prod flavor (lib/main_prod.dart)
-make generate         # One-time build_runner code generation
-make watch            # Watch mode for code generation
-make clean            # Clean + reinstall
-make l10n             # Generate localization files
-make test             # Run all tests
-make test-verbose     # Verbose test output
-make test-coverage    # Generate coverage report
-make test-file FILE=path/to/test.dart  # Run a single test file
-make build-apk-dev    # Debug APK (dev flavor)
-make build-apk-prod   # Release APK (prod flavor)
-make build-aab-prod   # App Bundle for Play Store
-make build-ios-prod   # iOS IPA (prod flavor)
+### Spacing (`lib/core/utils/spacing.dart`)
+
+```dart
+rw(20)   // responsive width   → 20.w
+rh(16)   // responsive height  → 16.h
+rr(12)   // responsive radius  → 12.r
+rf(14)   // responsive font    → 14.sp
+verticalSpacing(8)    // SizedBox(height: 8.h)
+horizontalSpacing(8)  // SizedBox(width: 8.w)
 ```
 
-Environment: requires a `.env` file at the project root:
+**Never use raw pixel values.**
 
+### Context Extensions (`lib/core/utils/extensions/context_ext.dart`)
+
+```dart
+context.customColors         // CustomColors semantic tokens
+context.isDarkMode           // bool
+context.isArabic             // bool
+context.screenWidth          // double
+context.pop()                // guarded Navigator.pop
+context.pushNamed(Routes.x)
+context.showErrorSnackBar('msg')
+context.showSuccessSnackBar('msg')
 ```
-SUPABASE_URL=...
-SUPABASE_ANON_KEY=...
+
+### DateTime Extensions
+
+```dart
+dt.timeAgo        // "2 hours ago"
+dt.formattedDate  // "30/04/2026"
+dt.formattedTime  // "14:30"
+dt.isToday        // bool
+```
+
+### Task UI Helpers
+
+```dart
+TaskUiHelpers.priorityColor(task.priority)       // Color by TaskPriority
+TaskUiHelpers.statusColor(task.status, context)  // Color by TaskStatus
+```
+
+### App Settings
+
+```dart
+switchLanguage(context)  // toggles locale via AppSettingsCubit
+switchTheme(context)     // toggles light/dark via AppSettingsCubit
+```
+
+---
+
+## Colors & Gradients
+
+```dart
+AppColors.primary200          // #2FA4D7 — main brand blue
+AppColors.primaryGradient     // LinearGradient topLeft→bottomRight: [primary100, primary200, primary300]
+AppColors.green200            // #22C55E
+AppColors.red200              // #EF4444
+AppColors.amber200            // #F59E0B
+AppColors.secondary200        // #D12052
+
+// Semantic tokens (theme-aware):
+context.customColors.textPrimary
+context.customColors.textSecondary
+context.customColors.textHint
+context.customColors.surface
+context.customColors.background
+context.customColors.border
+context.customColors.divider
+context.customColors.iconSecondary
+```
+
+---
+
+## Tech Stack
+
+| Category | Package | Version |
+|---|---|---|
+| State management | flutter_bloc | ^9.1.1 |
+| Persistent state | hydrated_bloc | ^11.0.0 |
+| DI | get_it | ^9.0.5 |
+| Backend | supabase_flutter | ^2.10.3 |
+| Firebase | firebase_core | ^4.2.1 |
+| Responsive sizing | flutter_screenutil | ^5.9.3 |
+| Navigation | persistent_bottom_nav_bar | ^6.2.1 |
+| Localization | easy_localization | ^3.0.8 |
+| Env vars | flutter_dotenv | ^6.0.0 |
+| Secure storage | flutter_secure_storage | ^10.0.0 |
+| SVG | flutter_svg | ^2.2.2 |
+| Image caching | cached_network_image | ^3.4.1 |
+| Animations | flutter_animate | ^4.5.2 |
+| Equality | equatable | ^2.0.8 |
+| Image picking | image_picker | (latest) |
+
+Fonts: **Manrope** (default, 7 weights), **Tajawal** (Arabic). Design canvas: **390×844**.
+
+---
+
+## Conventions
+
+### Naming
+
+- Cubits: `FeatureNameCubit` / state: `FeatureNameState` (`part of` cubit file)
+- Screens: `feature_name_screen.dart` → `FeatureNameScreen`
+- Remote DS: `FeatureNameRemoteDs`
+- Repos: `FeatureNameRepo` (abstract) + `FeatureNameRepoImpl`
+- Route constants in `routes.dart`; switch-case in `app_routers.dart`
+
+### Sizing
+
+Always `flutter_screenutil` — `.sp`/`.w`/`.h`/`.r` or the `rw/rh/rr/rf` helpers. Never raw pixel values.
+
+### Strings
+
+All user-facing strings via `easy_localization` (`.tr()`). Add to both `assets/lang/en.json` and `assets/lang/ar.json`.
+
+### AppDialogs
+
+Always use `AppDialogs.showConfirm(context, message:, onConfirm:)` — never raw `showDialog` for confirmation flows.
+
+### Realtime streams
+
+Cancel subscription in `cubit.close()`:
+```dart
+StreamSubscription? _subscription;
+
+@override
+Future<void> close() {
+  _subscription?.cancel();
+  return super.close();
+}
+```
+
+Supabase `.stream()` does **not** support joins — do the initial fetch with `.select('*, related(*)')`, then merge incoming stream data with existing joined data from state.
+
+### Nullable `copyWith` fields
+
+When a state field must be clearable to `null` via `copyWith`, use the sentinel-object pattern:
+```dart
+const _clear = Object();
+
+SomeState copyWith({ Object? myNullableField = _clear }) {
+  return SomeState(
+    myNullableField: identical(myNullableField, _clear)
+        ? this.myNullableField
+        : myNullableField as String?,
+  );
+}
 ```
 
 ---
 
 ## Do
 
-- Follow the `data/logic/ui` feature folder structure for every new feature.
-- Register every new cubit, repository, and data source in `lib/core/di/dependency_injection.dart`.
-- Add every new route as a constant in `lib/core/router/routes.dart` and handle it in `app_routers.dart`.
-- Use `AppError` + the appropriate error handler when catching Supabase or Firebase exceptions.
-- Use `AppTextStyles` and `AppColors` / `CustomColors` from `lib/core/themes/` for all styling.
-- Reuse shared models from `lib/core/shared/data/` (Task, Unit, Flight, Report…) before creating new ones.
-- Use `SecureStorage` for sensitive data (tokens, credentials) and `SharedPrefsService` for non-sensitive preferences.
-- Use `TaskUiHelpers` for task/priority colours; follow the same pattern for other domain-specific colour logic.
-- Use `context_ext.dart` navigation helpers (`context.pushNamed`, `context.pop`) — never raw `Navigator` widget push.
-- Use `validators.dart` for all form field validation.
-- Check `Navigator.canPop(context)` before popping when a screen can be both a tab and a pushed route.
+- Follow the `data/logic/ui` folder structure for every feature.
+- Register every new cubit, repo, and DS in `dependency_injection.dart`.
+- Add every new route to `routes.dart` and handle it in `app_routers.dart`.
+- Use `AppError` factory constructors for all exception handling.
+- Use `AppTextStyles.*` and `AppColors.*` / `context.customColors.*` for all styling.
+- Reuse shared models from `lib/core/shared/data/models/` before creating new ones.
+- Use `AppDialogs.showConfirm` before any destructive action.
+- Use `TaskUiHelpers` for task/priority colours.
+- Use `context_ext.dart` helpers — never raw `Navigator.push`.
+- Use `filter_pills.dart` and `search_with_counter.dart` for filter+search UIs.
 
 ## Don't
 
-- Don't hardcode pixel values — always use `flutter_screenutil` extensions (`.sp`, `.w`, `.h`, `.r`).
-- Don't hardcode user-facing strings — always use `easy_localization` `.tr()`.
-- Don't access the Supabase client directly — always go through `SupabaseService` or a repository.
-- Don't put feature-specific logic or state in global cubits (`AuthCubit`, `AppSettingsCubit`).
-- Don't skip the repository layer — UI/cubits must never call remote data sources directly.
-- Don't mix Worker, Supervisor, or Admin UI code across modules; keep each role fully self-contained.
-- Don't use raw `Navigator.push` with widget constructors for inter-screen navigation — use named routes.
-- Don't call `context.pop()` unconditionally on screens that can appear as both a tab and a pushed route.
-- Don't inline `TextStyle(...)` or raw `Color(0x...)` values — always use `AppTextStyles` and `AppColors`.
+- Don't hardcode pixel values — always `rw/rh/rr/rf`.
+- Don't hardcode user-facing strings — always `.tr()`.
+- Don't access Supabase client directly — always via `SupabaseService` or a repo.
+- Don't put feature logic in global cubits (`AuthCubit`, `AppSettingsCubit`).
+- Don't skip the repository layer.
+- Don't mix Worker/Supervisor/Admin UI across modules.
+- Don't use raw `Navigator.push` with widget constructors.
+- Don't inline `TextStyle(…)` or `Color(0x…)` — always `AppTextStyles.*` and `AppColors.*`.
+- Don't call `context.pop()` unconditionally on dual-context screens (tab + pushed route).
+- Don't use raw `showDialog` for confirmations — use `AppDialogs.showConfirm`.
+
+---
+
+## Common Commands
+
+```bash
+make install        # flutter pub get
+make dev            # Run dev flavor
+make prod           # Run prod flavor
+make clean          # Clean + reinstall
+make l10n           # Generate localization
+make test           # Run all tests
+make build-apk-dev  # Debug APK
+make build-apk-prod # Release APK
+make build-aab-prod # App Bundle
+```
+
+Environment: requires `.env` at project root:
+```
+SUPABASE_URL=...
+SUPABASE_ANON_KEY=...
+```

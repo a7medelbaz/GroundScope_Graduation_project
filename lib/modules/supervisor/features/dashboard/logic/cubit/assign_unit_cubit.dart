@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/error/models/app_error.dart';
 import 'package:ground_scope/core/service/user_service.dart';
 import 'package:ground_scope/core/shared/data/models/unit_model.dart';
+import 'package:ground_scope/modules/supervisor/features/dashboard/data/models/service_request_model.dart';
 import 'package:ground_scope/modules/supervisor/features/dashboard/data/repo/assign_unit_repo.dart';
 
 part 'assign_unit_state.dart';
@@ -45,26 +46,38 @@ class AssignUnitCubit extends Cubit<AssignUnitState> {
     ));
   }
 
-  Future<void> assign({
-    required String requestId,
+  Future<void> createTask({
+    required ServiceRequestModel request,
     required UnitModel unit,
+    required String priority,
+    required DateTime scheduledStart,
+    required DateTime scheduledEnd,
+    required List<String> checklistItems,
+    String? notes,
   }) async {
     emit(state.copyWith(status: AssignUnitStatus.assigning));
     try {
       final user = await _userService.getUser();
       final assignedBy = user?.id ?? '';
 
-      await _repo.assignUnit(
-        taskId: requestId,
-        unitId: unit.id,
-        assignedBy: assignedBy,
+      await _repo.createTaskFromRequest(
+        requestId:      request.id,
+        flightId:       request.flightId,
+        serviceTypeId:  request.serviceTypeId,
+        unitId:         unit.id,
+        assignedBy:     assignedBy,
+        priority:       priority,
+        scheduledStart: scheduledStart,
+        scheduledEnd:   scheduledEnd,
+        checklistItems: checklistItems,
+        notes:          notes,
       );
 
       emit(state.copyWith(status: AssignUnitStatus.success));
     } on AppError catch (e) {
       emit(state.copyWith(status: AssignUnitStatus.failure, error: e));
     } catch (e, st) {
-      debugPrint('AssignUnitCubit.assign: $e\n$st');
+      debugPrint('AssignUnitCubit.createTask: $e\n$st');
       emit(state.copyWith(
           status: AssignUnitStatus.failure, error: AppError.unknown()));
     }

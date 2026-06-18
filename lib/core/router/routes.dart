@@ -15,6 +15,7 @@ class Routes {
   // ########## Supervisor
   static const String supervisorScaffold = '/supervisorScaffold';
   static const String supervisorTaskListScreen = '/supervisorTaskListScreen';
+  static const String supervisorTaskDetailScreen = '/supervisorTaskDetailScreen';
 
   // ########## Admin
   static const String adminDashboardScreen = '/adminDashboardScreen';
@@ -28,4 +29,6 @@ class Routes {
   static const String adminFlightsScreen = '/adminFlightsScreen';
   static const String adminFlightDetailScreen = '/adminFlightDetailScreen';
   static const String adminUsersScreen = '/adminUsersScreen';
+  static const String adminFlightServiceRequestScreen =
+      '/adminFlightServiceRequestScreen';
 }
