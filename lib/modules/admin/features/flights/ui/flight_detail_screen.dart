@@ -8,6 +8,7 @@ import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/extensions/datetime_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
+import 'package:ground_scope/core/router/routes.dart';
 import 'package:ground_scope/modules/admin/features/flights/logic/cubit/flights_list_cubit.dart';
 import 'package:ground_scope/modules/admin/features/flights/ui/widgets/flight_status_badge.dart';
 import 'package:ground_scope/modules/admin/features/flights/ui/widgets/stand_assignment_sheet.dart';
@@ -159,6 +160,34 @@ class FlightDetailScreen extends StatelessWidget {
                                   ),
                                 );
                               }).toList(),
+                            ),
+                          ],
+                        ),
+                        verticalSpacing(20),
+                        _SectionCard(
+                          title: 'request_services'.tr(),
+                          delay: 260.ms,
+                          children: [
+                            SizedBox(
+                              width: double.infinity,
+                              height: rh(46),
+                              child: ElevatedButton.icon(
+                                onPressed: () => context.pushNamed(
+                                  Routes.adminFlightServiceRequestScreen,
+                                  arguments: {'flight': current},
+                                ),
+                                icon: const Icon(
+                                    Icons.miscellaneous_services_outlined),
+                                label: Text('request_services'.tr()),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primary200,
+                                  foregroundColor: AppColors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.circular(rr(14)),
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
                         ),
