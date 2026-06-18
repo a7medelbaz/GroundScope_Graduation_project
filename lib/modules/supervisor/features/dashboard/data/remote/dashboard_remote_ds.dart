@@ -82,17 +82,18 @@ class DashboardRemoteDs {
     }
   }
 
-  // Pending service requests are tasks with status='pending' and no unit assigned yet.
+  /// Fetches pending service requests for this supervisor's service type.
+  /// Reads from flight_service_requests, not tasks.
   Future<List<ServiceRequestModel>> fetchPendingServiceRequests(
       String serviceTypeId) async {
     try {
       final rows = await _supabaseService.client
-          .from('tasks')
-          .select('*, flights(*, stands(*))')
+          .from('flight_service_requests')
+          .select('*, flights(*, stands(*)), service_types(id, name)')
           .eq('service_type_id', serviceTypeId)
           .eq('status', 'pending')
-          .isFilter('unit_id', null)
           .order('created_at', ascending: true);
+
       return rows
           .map((row) => ServiceRequestModel.fromJson(row))
           .toList();

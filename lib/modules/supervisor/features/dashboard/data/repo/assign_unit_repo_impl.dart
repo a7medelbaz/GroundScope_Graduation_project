@@ -13,9 +13,23 @@ class AssignUnitRepoImpl implements AssignUnitRepo {
 
   @override
   Future<void> assignUnit({
-    required String taskId,
+    required String requestId,
     required String unitId,
     required String assignedBy,
+    required String flightId,
+    required String serviceTypeId,
+    required DateTime scheduledStart,
+    required DateTime scheduledEnd,
+    String? notes,
   }) =>
-      _ds.assignUnit(taskId: taskId, unitId: unitId, assignedBy: assignedBy);
+      _ds.assignUnit(
+        requestId:      requestId,
+        unitId:         unitId,
+        assignedBy:     assignedBy,
+        flightId:       flightId,
+        serviceTypeId:  serviceTypeId,
+        scheduledStart: scheduledStart,
+        scheduledEnd:   scheduledEnd,
+        notes:          notes,
+      );
 }

@@ -13,10 +13,65 @@ import 'package:ground_scope/modules/supervisor/features/dashboard/data/models/s
 import 'package:ground_scope/modules/supervisor/features/dashboard/logic/cubit/assign_unit_cubit.dart';
 import 'package:ground_scope/modules/supervisor/features/dashboard/logic/cubit/dashboard_cubit.dart';
 
-class AssignUnitBottomSheet extends StatelessWidget {
+class AssignUnitBottomSheet extends StatefulWidget {
   const AssignUnitBottomSheet({super.key, required this.request});
 
   final ServiceRequestModel request;
+
+  @override
+  State<AssignUnitBottomSheet> createState() => _AssignUnitBottomSheetState();
+}
+
+class _AssignUnitBottomSheetState extends State<AssignUnitBottomSheet> {
+  DateTime? _scheduledStart;
+  DateTime? _scheduledEnd;
+
+  @override
+  void initState() {
+    super.initState();
+    _scheduledStart = widget.request.flight?.scheduledArrival;
+    _scheduledEnd   = widget.request.flight?.scheduledDeparture;
+  }
+
+  Future<void> _pickTime({required bool isStart}) async {
+    final initial = TimeOfDay.fromDateTime(
+      isStart
+          ? (_scheduledStart ?? DateTime.now())
+          : (_scheduledEnd   ?? DateTime.now().add(const Duration(hours: 2))),
+    );
+
+    final picked = await showTimePicker(context: context, initialTime: initial);
+    if (picked == null) return;
+
+    final now = DateTime.now();
+    final dt = DateTime(now.year, now.month, now.day, picked.hour, picked.minute);
+
+    setState(() {
+      if (isStart) {
+        _scheduledStart = dt;
+      } else {
+        _scheduledEnd = dt;
+      }
+    });
+  }
+
+  void _onAssign(UnitModel unit) {
+    if (_scheduledStart == null || _scheduledEnd == null) {
+      context.showErrorSnackBar('please_set_times'.tr());
+      return;
+    }
+    if (_scheduledEnd!.isBefore(_scheduledStart!)) {
+      context.showErrorSnackBar('end_before_start'.tr());
+      return;
+    }
+
+    context.read<AssignUnitCubit>().assign(
+      request:        widget.request,
+      unit:           unit,
+      scheduledStart: _scheduledStart!,
+      scheduledEnd:   _scheduledEnd!,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +80,7 @@ class AssignUnitBottomSheet extends StatelessWidget {
     return BlocListener<AssignUnitCubit, AssignUnitState>(
       listener: (context, state) {
         if (state.status == AssignUnitStatus.success) {
-          context.read<DashboardCubit>().onServiceRequestAssigned(request.id);
+          context.read<DashboardCubit>().onServiceRequestAssigned(widget.request.id);
           Navigator.of(context).pop();
           context.showSuccessSnackBar('task_assigned'.tr());
         }
@@ -81,7 +136,7 @@ class AssignUnitBottomSheet extends StatelessWidget {
                               ),
                               verticalSpacing(2),
                               Text(
-                                '${request.flight?.flightNumber ?? '-'} · ${request.flight?.stand?.code ?? '-'}',
+                                '${widget.request.flight?.flightNumber ?? '-'} · ${widget.request.flight?.stand?.code ?? '-'}',
                                 style: AppTextStyles.font14Light
                                     .copyWith(color: cc.textSecondary),
                               ),
@@ -96,10 +151,33 @@ class AssignUnitBottomSheet extends StatelessWidget {
                     ),
                   ),
                   Divider(height: 1, color: cc.border),
+                  // Time pickers
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(rw(16), rh(12), rw(16), rh(4)),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _TimePickerButton(
+                            label: 'start_time'.tr(),
+                            time: _scheduledStart,
+                            onTap: () => _pickTime(isStart: true),
+                          ),
+                        ),
+                        horizontalSpacing(8),
+                        Expanded(
+                          child: _TimePickerButton(
+                            label: 'end_time'.tr(),
+                            time: _scheduledEnd,
+                            onTap: () => _pickTime(isStart: false),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   // Search field
                   Padding(
                     padding: EdgeInsets.fromLTRB(
-                        rw(16), rh(12), rw(16), rh(6)),
+                        rw(16), rh(8), rw(16), rh(6)),
                     child: CustomTextForm(
                       hintText: 'search_units'.tr(),
                       prefixIcon: Icon(
@@ -125,7 +203,7 @@ class AssignUnitBottomSheet extends StatelessWidget {
                     child: _UnitList(
                       state: state,
                       isAssigning: isAssigning,
-                      request: request,
+                      onAssign: _onAssign,
                     ),
                   ),
                   SizedBox(height: MediaQuery.of(context).padding.bottom),
@@ -139,16 +217,67 @@ class AssignUnitBottomSheet extends StatelessWidget {
   }
 }
 
+class _TimePickerButton extends StatelessWidget {
+  const _TimePickerButton({
+    required this.label,
+    required this.time,
+    required this.onTap,
+  });
+
+  final String label;
+  final DateTime? time;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final cc = context.customColors;
+    final displayTime = time != null
+        ? TimeOfDay.fromDateTime(time!).format(context)
+        : '--:--';
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: rw(12), vertical: rh(10)),
+        decoration: BoxDecoration(
+          color: cc.surfaceVariant,
+          borderRadius: BorderRadius.circular(rr(10)),
+          border: Border.all(color: cc.border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label,
+                style: AppTextStyles.font12Light
+                    .copyWith(color: cc.textHint)),
+            verticalSpacing(2),
+            Row(
+              children: [
+                Icon(Icons.access_time_outlined,
+                    size: rf(14), color: cc.iconSecondary),
+                horizontalSpacing(4),
+                Text(displayTime,
+                    style: AppTextStyles.font14SemiBold
+                        .copyWith(color: cc.textPrimary)),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _UnitList extends StatelessWidget {
   const _UnitList({
     required this.state,
     required this.isAssigning,
-    required this.request,
+    required this.onAssign,
   });
 
   final AssignUnitState state;
   final bool isAssigning;
-  final ServiceRequestModel request;
+  final void Function(UnitModel) onAssign;
 
   @override
   Widget build(BuildContext context) {
@@ -186,10 +315,7 @@ class _UnitList extends StatelessWidget {
         return _UnitPickerRow(
           unit: unit,
           isAssigning: isAssigning,
-          onAssign: () => context.read<AssignUnitCubit>().assign(
-                requestId: request.id,
-                unit: unit,
-              ),
+          onAssign: () => onAssign(unit),
         );
       },
     );

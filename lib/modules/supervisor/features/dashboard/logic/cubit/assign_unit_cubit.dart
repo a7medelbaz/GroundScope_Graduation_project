@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/error/models/app_error.dart';
 import 'package:ground_scope/core/service/user_service.dart';
 import 'package:ground_scope/core/shared/data/models/unit_model.dart';
+import 'package:ground_scope/modules/supervisor/features/dashboard/data/models/service_request_model.dart';
 import 'package:ground_scope/modules/supervisor/features/dashboard/data/repo/assign_unit_repo.dart';
 
 part 'assign_unit_state.dart';
@@ -46,8 +47,10 @@ class AssignUnitCubit extends Cubit<AssignUnitState> {
   }
 
   Future<void> assign({
-    required String requestId,
+    required ServiceRequestModel request,
     required UnitModel unit,
+    required DateTime scheduledStart,
+    required DateTime scheduledEnd,
   }) async {
     emit(state.copyWith(status: AssignUnitStatus.assigning));
     try {
@@ -55,9 +58,14 @@ class AssignUnitCubit extends Cubit<AssignUnitState> {
       final assignedBy = user?.id ?? '';
 
       await _repo.assignUnit(
-        taskId: requestId,
-        unitId: unit.id,
-        assignedBy: assignedBy,
+        requestId:      request.id,
+        unitId:         unit.id,
+        assignedBy:     assignedBy,
+        flightId:       request.flightId,
+        serviceTypeId:  request.serviceTypeId,
+        scheduledStart: scheduledStart,
+        scheduledEnd:   scheduledEnd,
+        notes:          request.notes,
       );
 
       emit(state.copyWith(status: AssignUnitStatus.success));

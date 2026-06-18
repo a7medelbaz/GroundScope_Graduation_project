@@ -386,5 +386,11 @@
   "dark_mode": "الوضع الداكن",
   "notifications": "الإشعارات",
   "english": "English",
-  "arabic": "العربية"
+  "arabic": "العربية",
+  "start_time": "وقت البداية",
+  "end_time": "وقت الانتهاء",
+  "please_set_times": "يرجى تحديد وقت البداية والانتهاء",
+  "end_before_start": "وقت الانتهاء يجب أن يكون بعد وقت البداية",
+  "service_request": "طلب خدمة",
+  "task_created": "تم إنشاء المهمة وتعيين الفريق"
 }

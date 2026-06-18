@@ -385,5 +385,11 @@
   "dark_mode": "Dark Mode",
   "notifications": "Notifications",
   "english": "English",
-  "arabic": "العربية"
+  "arabic": "العربية",
+  "start_time": "Start Time",
+  "end_time": "End Time",
+  "please_set_times": "Please set start and end times",
+  "end_before_start": "End time must be after start time",
+  "service_request": "Service Request",
+  "task_created": "Task created and unit assigned"
 }
