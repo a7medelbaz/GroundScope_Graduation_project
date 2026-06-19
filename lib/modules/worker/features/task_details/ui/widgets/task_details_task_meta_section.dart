@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../../core/shared/data/models/task_model.dart';
@@ -36,7 +37,7 @@ class TaskDetailsTaskMetaSection extends StatelessWidget {
             ),
             horizontalSpacing(10),
             Text(
-              'Task Info',
+              'task_info'.tr(),
               style: AppTextStyles.font18ExtraBold.copyWith(
                 color: cc.textPrimary,
               ),
@@ -53,20 +54,32 @@ class TaskDetailsTaskMetaSection extends StatelessWidget {
           child: Column(
             children: [
               _MetaRow(
-                label: 'Task ID',
+                label: 'worker_task_details.task_id'.tr(),
                 value: task.id.substring(0, 8).toUpperCase(),
               ),
               _MetaDivider(),
-              _MetaRow(label: 'Created At', value: fmt(task.createdAt)),
+              _MetaRow(
+                label: 'worker_task_details.created_at'.tr(),
+                value: fmt(task.createdAt),
+              ),
               _MetaDivider(),
-              _MetaRow(label: 'Last Updated', value: fmt(task.updatedAt)),
+              _MetaRow(
+                label: 'worker_task_details.last_updated'.tr(),
+                value: fmt(task.updatedAt),
+              ),
               if (task.actualStart != null) ...[
                 _MetaDivider(),
-                _MetaRow(label: 'Actual Start', value: fmt(task.actualStart)),
+                _MetaRow(
+                  label: 'worker_task_details.actual_start'.tr(),
+                  value: fmt(task.actualStart),
+                ),
               ],
               if (task.actualEnd != null) ...[
                 _MetaDivider(),
-                _MetaRow(label: 'Actual End', value: fmt(task.actualEnd)),
+                _MetaRow(
+                  label: 'worker_task_details.actual_end'.tr(),
+                  value: fmt(task.actualEnd),
+                ),
               ],
             ],
           ),

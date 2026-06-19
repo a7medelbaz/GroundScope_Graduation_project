@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -184,7 +185,8 @@ class _Header extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${report.type.label} Report',
+                      'worker_reports.report_label'
+                          .tr(namedArgs: {'type': report.type.label}),
                       style: AppTextStyles.font18SemiBold.copyWith(
                         color: AppColors.white,
                       ),
@@ -290,26 +292,26 @@ class _PrimaryInfoSection extends StatelessWidget {
     final severityColor = _severityColor(report.severity);
 
     return _SectionCard(
-      title: 'PRIMARY INFO',
+      title: 'primary_info'.tr().toUpperCase(),
       child: Column(
         children: [
           _InfoRow(
             icon: Icons.tag_rounded,
-            label: 'Report ID',
+            label: 'report_id'.tr(),
             value: _shortId(report.id),
             valueColor: cc.textPrimary,
           ),
           _RowDivider(),
           _InfoRow(
             icon: _typeIcon(report.type),
-            label: 'Type',
+            label: 'worker_reports.type'.tr(),
             value: report.type.label,
             valueColor: cc.textPrimary,
           ),
           _RowDivider(),
           _InfoRow(
             icon: Icons.flag_rounded,
-            label: 'Severity',
+            label: 'report_severity'.tr(),
             value: report.severity.label,
             valueColor: severityColor,
             isBadge: true,
@@ -318,14 +320,14 @@ class _PrimaryInfoSection extends StatelessWidget {
           _RowDivider(),
           _InfoRow(
             icon: Icons.flight_rounded,
-            label: 'Flight',
+            label: 'worker_reports.flight'.tr(),
             value: _shortId(report.flightId),
             valueColor: cc.textSecondary,
           ),
           _RowDivider(),
           _InfoRow(
             icon: Icons.access_time_rounded,
-            label: 'Filed',
+            label: 'filed'.tr(),
             value:
                 '${report.createdAt.formattedDate} · ${report.createdAt.formattedTime}',
             valueColor: cc.textSecondary,
@@ -346,7 +348,7 @@ class _EvidenceSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _SectionCard(
-      title: 'ATTACHED EVIDENCE',
+      title: 'attached_evidence'.tr().toUpperCase(),
       padding: report.imageUrl != null ? EdgeInsets.zero : null,
       child: report.imageUrl != null
           ? _ImageThumbnail(
@@ -435,7 +437,7 @@ class _ImageThumbnail extends StatelessWidget {
                       ),
                       horizontalSpacing(5),
                       Text(
-                        'EVIDENCE',
+                        'evidence'.tr().toUpperCase(),
                         style: AppTextStyles.font12SemiBold.copyWith(
                           color: AppColors.white,
                           letterSpacing: 0.8,
@@ -468,7 +470,7 @@ class _ImageThumbnail extends StatelessWidget {
                       ),
                       horizontalSpacing(4),
                       Text(
-                        'Tap to expand',
+                        'tap_to_expand'.tr(),
                         style: AppTextStyles.font12Light.copyWith(
                           color: AppColors.white,
                         ),
@@ -528,7 +530,7 @@ class _ImageError extends StatelessWidget {
           ),
           verticalSpacing(8),
           Text(
-            'Image unavailable',
+            'image_unavailable'.tr(),
             style: AppTextStyles.font12Light.copyWith(color: cc.textHint),
           ),
         ],
@@ -564,7 +566,7 @@ class _NoEvidencePlaceholder extends StatelessWidget {
           ),
           horizontalSpacing(12),
           Text(
-            'No photo attached',
+            'no_photo_attached'.tr(),
             style: AppTextStyles.font14Light.copyWith(color: cc.textHint),
           ),
         ],
@@ -651,7 +653,7 @@ class _DescriptionSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _SectionCard(
-      title: 'DESCRIPTION',
+      title: 'worker_add_report.description'.tr().toUpperCase(),
       child: Text(
         report.description,
         style: AppTextStyles.font14Light.copyWith(
@@ -676,33 +678,33 @@ class _TimelineSection extends StatelessWidget {
     final hasResolved = report.resolvedAt != null;
 
     return _SectionCard(
-      title: 'TIMELINE',
+      title: 'timeline'.tr().toUpperCase(),
       child: Column(
         children: [
           _TimelineItem(
             color: AppColors.amber200,
             icon: Icons.radio_button_unchecked_rounded,
-            label: 'Filed',
+            label: 'filed'.tr(),
             date:
-                '${report.createdAt.formattedDate} at ${report.createdAt.formattedTime}',
+                '${report.createdAt.formattedDate} ${'at'.tr()} ${report.createdAt.formattedTime}',
             isLast: !hasAcknowledged && !hasResolved,
           ),
           if (hasAcknowledged)
             _TimelineItem(
               color: AppColors.blue200,
               icon: Icons.visibility_rounded,
-              label: 'Acknowledged',
+              label: 'acknowledged'.tr(),
               date:
-                  '${report.acknowledgedAt!.formattedDate} at ${report.acknowledgedAt!.formattedTime}',
+                  '${report.acknowledgedAt!.formattedDate} ${'at'.tr()} ${report.acknowledgedAt!.formattedTime}',
               isLast: !hasResolved,
             ),
           if (hasResolved)
             _TimelineItem(
               color: AppColors.green200,
               icon: Icons.check_circle_rounded,
-              label: 'Resolved',
+              label: 'resolved'.tr(),
               date:
-                  '${report.resolvedAt!.formattedDate} at ${report.resolvedAt!.formattedTime}',
+                  '${report.resolvedAt!.formattedDate} ${'at'.tr()} ${report.resolvedAt!.formattedTime}',
               isLast: true,
             ),
         ],

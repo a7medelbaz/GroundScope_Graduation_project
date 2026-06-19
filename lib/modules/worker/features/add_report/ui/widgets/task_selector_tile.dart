@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/shared/data/models/task_model.dart';
@@ -65,14 +66,17 @@ class TaskSelectorTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    state.hasTask ? 'Linked Task' : 'Select Task',
+                    state.hasTask
+                        ? 'worker_add_report.linked_task'.tr()
+                        : 'worker_add_report.select_task'.tr(),
                     style: AppTextStyles.font12Light.copyWith(
                       color: customColors.textSecondary,
                     ),
                   ),
                   verticalSpacing(2),
                   Text(
-                    state.selectedTaskLabel ?? 'Tap to choose a task',
+                    state.selectedTaskLabel ??
+                        'worker_add_report.tap_to_choose_task'.tr(),
                     style: AppTextStyles.font14SemiBold.copyWith(
                       color: state.hasTask
                           ? customColors.textPrimary

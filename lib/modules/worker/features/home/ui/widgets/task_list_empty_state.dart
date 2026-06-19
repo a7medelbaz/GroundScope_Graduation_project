@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../../core/shared/data/models/task_model.dart';
@@ -22,15 +23,16 @@ class TaskListEmptyState extends StatelessWidget {
           verticalSpacing(12),
           Text(
             status == null
-                ? 'No tasks for today'
-                : 'No ${status!.label.toLowerCase()} tasks',
+                ? 'worker_home.no_tasks_today'.tr()
+                : 'worker_home.no_status_tasks'
+                    .tr(namedArgs: {'status': status!.label.toLowerCase()}),
             style: AppTextStyles.font16SemiBold.copyWith(
               color: cc.textSecondary,
             ),
           ),
           verticalSpacing(4),
           Text(
-            'Check back later or contact your supervisor',
+            'worker_home.check_back_later'.tr(),
             style: AppTextStyles.font14Light.copyWith(color: cc.textHint),
             textAlign: TextAlign.center,
           ),

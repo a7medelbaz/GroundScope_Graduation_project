@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../../core/shared/data/models/task_model.dart';
@@ -31,7 +32,7 @@ class TaskStatusFilterStrip extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: rw(16)),
         children: [
           TaskStatusChip(
-            label: 'All',
+            label: 'filter_all'.tr(),
             count: tasks.length,
             color: cc.textSecondary,
             isSelected: selectedStatus == null,
@@ -39,7 +40,7 @@ class TaskStatusFilterStrip extends StatelessWidget {
           ),
           horizontalSpacing(8),
           TaskStatusChip(
-            label: 'Assigned',
+            label: 'worker_home.filter_assigned'.tr(),
             count: _count(TaskStatus.assigned),
             color: AppColors.blue200,
             isSelected: selectedStatus == TaskStatus.assigned,
@@ -51,7 +52,7 @@ class TaskStatusFilterStrip extends StatelessWidget {
           ),
           horizontalSpacing(8),
           TaskStatusChip(
-            label: 'In Progress',
+            label: 'filter_in_progress'.tr(),
             count: _count(TaskStatus.inProgress),
             color: AppColors.primary200,
             isSelected: selectedStatus == TaskStatus.inProgress,
@@ -63,7 +64,7 @@ class TaskStatusFilterStrip extends StatelessWidget {
           ),
           horizontalSpacing(8),
           TaskStatusChip(
-            label: 'Pused',
+            label: 'worker_home.filter_paused'.tr(),
             count: _count(TaskStatus.paused),
             color: AppColors.amber200,
             isSelected: selectedStatus == TaskStatus.paused,
@@ -73,7 +74,7 @@ class TaskStatusFilterStrip extends StatelessWidget {
           ),
           horizontalSpacing(8),
           TaskStatusChip(
-            label: 'Done',
+            label: 'worker_home.filter_done'.tr(),
             count: _count(TaskStatus.completed),
             color: AppColors.green200,
             isSelected: selectedStatus == TaskStatus.completed,

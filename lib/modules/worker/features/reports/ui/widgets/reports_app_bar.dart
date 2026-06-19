@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/themes/app_colors.dart';
@@ -63,7 +64,7 @@ class ReportsAppBar extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'My Reports',
+                  'worker_reports.title'.tr(),
                   style: AppTextStyles.font22ExtraBold.copyWith(
                     color: AppColors.white,
                     letterSpacing: 0.2,
@@ -71,7 +72,7 @@ class ReportsAppBar extends StatelessWidget {
                 ),
                 verticalSpacing(2),
                 Text(
-                  'Track your submitted reports',
+                  'worker_reports.subtitle'.tr(),
                   style: AppTextStyles.font12Light.copyWith(
                     color: AppColors.primary100,
                     letterSpacing: 0.3,
