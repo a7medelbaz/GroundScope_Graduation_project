@@ -75,6 +75,10 @@ import '../../modules/supervisor/features/reports/data/repo/supervisor_reports_r
 import '../../modules/supervisor/features/reports/data/repo/supervisor_reports_repo_impl.dart';
 import '../../modules/supervisor/features/reports/logic/cubit/supervisor_reports_cubit.dart';
 import '../../modules/supervisor/features/profile/logic/cubit/supervisor_profile_cubit.dart';
+import '../../modules/supervisor/features/add_report/data/remote/supervisor_add_report_remote_ds.dart';
+import '../../modules/supervisor/features/add_report/data/repo/supervisor_add_report_repo.dart';
+import '../../modules/supervisor/features/add_report/data/repo/supervisor_add_report_repo_impl.dart';
+import '../../modules/supervisor/features/add_report/logic/cubit/supervisor_add_report_cubit.dart';
 import '../shared/data/remote/service_request_remote_ds.dart';
 import '../shared/data/repo/service_request_repo.dart';
 import '../shared/data/repo/service_request_repo_impl.dart';
@@ -328,7 +332,22 @@ Future<void> setUpDependencies() async {
     ),
   );
   getIt.registerFactory<SupervisorProfileCubit>(
-    () => SupervisorProfileCubit(userService: getIt<UserService>()),
+    () => SupervisorProfileCubit(
+      userService: getIt<UserService>(),
+      supabaseService: getIt<SupabaseService>(),
+    ),
+  );
+  getIt.registerLazySingleton<SupervisorAddReportRemoteDs>(
+    () => SupervisorAddReportRemoteDs(getIt<SupabaseService>()),
+  );
+  getIt.registerLazySingleton<SupervisorAddReportRepo>(
+    () => SupervisorAddReportRepoImpl(getIt<SupervisorAddReportRemoteDs>()),
+  );
+  getIt.registerFactory<SupervisorAddReportCubit>(
+    () => SupervisorAddReportCubit(
+      repo: getIt<SupervisorAddReportRepo>(),
+      userService: getIt<UserService>(),
+    ),
   );
 
   // === SERVICE REQUESTS (Admin) ===
