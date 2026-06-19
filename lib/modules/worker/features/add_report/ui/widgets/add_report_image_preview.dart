@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -91,7 +92,7 @@ class AddReportImagePreview extends StatelessWidget {
                   const Icon(Icons.edit_rounded, color: Colors.white, size: 14),
                   horizontalSpacing(4),
                   Text(
-                    'Replace',
+                    'worker_add_report.replace'.tr(),
                     style: AppTextStyles.font12SemiBold.copyWith(
                       color: Colors.white,
                     ),
