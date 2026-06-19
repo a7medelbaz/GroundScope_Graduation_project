@@ -46,6 +46,8 @@ import 'package:ground_scope/modules/admin/features/users/ui/users_list_screen.d
 import '../../modules/admin/features/service_requests/logic/cubit/service_request_cubit.dart';
 import '../../modules/admin/features/service_requests/ui/flight_service_request_screen.dart';
 import '../../modules/supervisor/core/main_navigation/supervisor_scaffold.dart';
+import '../../modules/supervisor/features/reports/logic/cubit/supervisor_reports_cubit.dart';
+import '../../modules/supervisor/features/reports/ui/supervisor_report_detail_screen.dart';
 import '../../modules/supervisor/features/tasks/logic/cubit/supervisor_task_detail_cubit.dart';
 import '../../modules/supervisor/features/tasks/ui/supervisor_task_detail_screen.dart';
 import '../../modules/worker/core/main_navigation/ui/worker_scaffold.dart';
@@ -75,6 +77,16 @@ class AppRouter {
           BlocProvider(
             create: (_) => getIt<SupervisorTaskDetailCubit>()..loadTask(taskId),
             child: SupervisorTaskDetailScreen(taskId: taskId),
+          ),
+          settings,
+        );
+      case Routes.supervisorReportDetailScreen:
+        final report = arguments?['report'] as ReportModel;
+        final reportsCubit = arguments?['cubit'] as SupervisorReportsCubit;
+        return _buildRoute(
+          BlocProvider.value(
+            value: reportsCubit,
+            child: SupervisorReportDetailScreen(report: report),
           ),
           settings,
         );

@@ -9,7 +9,7 @@ class SupervisorReportsRemoteDs {
   Future<List<ReportModel>> fetchReports(String serviceTypeId) async {
     final rows = await _supabaseService.client
         .from('reports')
-        .select('*, flights(*), users!reported_by(full_name), tasks!inner(service_type_id)')
+        .select('*, flights(*), users!reported_by(full_name, role), tasks!inner(service_type_id)')
         .eq('tasks.service_type_id', serviceTypeId)
         .order('created_at', ascending: false);
     return rows.map((row) => ReportModel.fromMap(row)).toList();

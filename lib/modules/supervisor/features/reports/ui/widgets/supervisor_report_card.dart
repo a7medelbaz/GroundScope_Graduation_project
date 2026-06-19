@@ -1,11 +1,14 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:ground_scope/core/router/routes.dart';
 import 'package:ground_scope/core/shared/data/models/report_model.dart';
 import 'package:ground_scope/core/themes/app_colors.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
 import 'package:ground_scope/core/widgets/custom_text_button.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../logic/cubit/supervisor_reports_cubit.dart';
 
 class SupervisorReportCard extends StatelessWidget {
   const SupervisorReportCard({
@@ -48,7 +51,15 @@ class SupervisorReportCard extends StatelessWidget {
     final severityColor = _severityColor(context);
     final statusColor = _statusColor(context);
 
-    return Container(
+    return GestureDetector(
+      onTap: () => Navigator.of(context).pushNamed(
+        Routes.supervisorReportDetailScreen,
+        arguments: {
+          'report': report,
+          'cubit': context.read<SupervisorReportsCubit>(),
+        },
+      ),
+      child: Container(
       margin: EdgeInsets.only(bottom: rh(12)),
       decoration: BoxDecoration(
         color: cc.surface,
@@ -167,9 +178,11 @@ class SupervisorReportCard extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 }
+
 
 class _Badge extends StatelessWidget {
   const _Badge({required this.label, required this.color});
