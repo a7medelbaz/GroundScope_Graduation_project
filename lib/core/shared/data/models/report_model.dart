@@ -100,6 +100,7 @@ class ReportModel {
     required this.createdAt,
     this.flight,
     this.reporterName,
+    this.reporterRole,
   });
 
   final String id;
@@ -118,6 +119,7 @@ class ReportModel {
   final DateTime createdAt;
   final FlightModel? flight;
   final String? reporterName;
+  final String? reporterRole;
 
   factory ReportModel.fromMap(Map<String, dynamic> map) {
     final flightMap = map['flights'] as Map<String, dynamic>?;
@@ -143,6 +145,7 @@ class ReportModel {
       createdAt: DateTime.parse(map['created_at']),
       flight: flightMap != null ? FlightModel.fromMap(flightMap) : null,
       reporterName: userMap?['full_name'] as String?,
+      reporterRole: userMap?['role'] as String?,
     );
   }
 
@@ -163,6 +166,7 @@ class ReportModel {
     DateTime? createdAt,
     FlightModel? flight,
     String? reporterName,
+    String? reporterRole,
   }) {
     return ReportModel(
       id: id ?? this.id,
@@ -181,6 +185,7 @@ class ReportModel {
       createdAt: createdAt ?? this.createdAt,
       flight: flight ?? this.flight,
       reporterName: reporterName ?? this.reporterName,
+      reporterRole: reporterRole ?? this.reporterRole,
     );
   }
 

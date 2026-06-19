@@ -54,9 +54,7 @@ class _SupervisorTasksScreenState extends State<SupervisorTasksScreen> {
             builder: (context, state) {
               final auth = context.watch<AuthCubit>().state;
               final subtitle = auth is AuthSuccess
-                  ? (auth.userModel.serviceTypeName ??
-                      auth.userModel.serviceTypeId ??
-                      '')
+                  ? (auth.userModel.serviceTypeName ?? '')
                   : '';
               return SupervisorScreenHeader(
                 icon: Icons.check_box_outlined,

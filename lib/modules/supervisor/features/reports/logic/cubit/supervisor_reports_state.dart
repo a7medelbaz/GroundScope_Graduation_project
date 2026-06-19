@@ -11,6 +11,8 @@ final class SupervisorReportsState extends Equatable {
     this.allReports = const [],
     this.filteredReports = const [],
     this.activeFilter = 'all',
+    this.activeSeverityFilter = 'all',
+    this.activeRoleFilter = 'all',
     this.searchQuery = '',
     this.actionReportId,
     this.error,
@@ -20,17 +22,25 @@ final class SupervisorReportsState extends Equatable {
   final List<ReportModel> allReports;
   final List<ReportModel> filteredReports;
   final String activeFilter;
+  final String activeSeverityFilter;
+  final String activeRoleFilter;
   final String searchQuery;
   final String? actionReportId;
   final AppError? error;
 
   int get resultCount => filteredReports.length;
 
+  int get activeAdvancedFilterCount =>
+      (activeSeverityFilter != 'all' ? 1 : 0) +
+      (activeRoleFilter != 'all' ? 1 : 0);
+
   SupervisorReportsState copyWith({
     SupervisorReportsStatus? status,
     List<ReportModel>? allReports,
     List<ReportModel>? filteredReports,
     String? activeFilter,
+    String? activeSeverityFilter,
+    String? activeRoleFilter,
     String? searchQuery,
     Object? actionReportId = _clearId,
     AppError? error,
@@ -40,6 +50,8 @@ final class SupervisorReportsState extends Equatable {
       allReports: allReports ?? this.allReports,
       filteredReports: filteredReports ?? this.filteredReports,
       activeFilter: activeFilter ?? this.activeFilter,
+      activeSeverityFilter: activeSeverityFilter ?? this.activeSeverityFilter,
+      activeRoleFilter: activeRoleFilter ?? this.activeRoleFilter,
       searchQuery: searchQuery ?? this.searchQuery,
       actionReportId: identical(actionReportId, _clearId)
           ? this.actionReportId
@@ -54,6 +66,8 @@ final class SupervisorReportsState extends Equatable {
         allReports,
         filteredReports,
         activeFilter,
+        activeSeverityFilter,
+        activeRoleFilter,
         searchQuery,
         actionReportId,
         error,
