@@ -25,7 +25,13 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
       emit(state.copyWith(
         status: SupervisorReportsStatus.loaded,
         allReports: reports,
-        filteredReports: _applyFilters(reports, state.activeFilter, state.searchQuery),
+        filteredReports: _applyFilters(
+          reports,
+          state.activeFilter,
+          state.activeSeverityFilter,
+          state.activeRoleFilter,
+          state.searchQuery,
+        ),
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -40,14 +46,66 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
   void setFilter(String filter) {
     emit(state.copyWith(
       activeFilter: filter,
-      filteredReports: _applyFilters(state.allReports, filter, state.searchQuery),
+      filteredReports: _applyFilters(
+        state.allReports,
+        filter,
+        state.activeSeverityFilter,
+        state.activeRoleFilter,
+        state.searchQuery,
+      ),
+    ));
+  }
+
+  void setSeverityFilter(String filter) {
+    emit(state.copyWith(
+      activeSeverityFilter: filter,
+      filteredReports: _applyFilters(
+        state.allReports,
+        state.activeFilter,
+        filter,
+        state.activeRoleFilter,
+        state.searchQuery,
+      ),
+    ));
+  }
+
+  void setRoleFilter(String filter) {
+    emit(state.copyWith(
+      activeRoleFilter: filter,
+      filteredReports: _applyFilters(
+        state.allReports,
+        state.activeFilter,
+        state.activeSeverityFilter,
+        filter,
+        state.searchQuery,
+      ),
+    ));
+  }
+
+  void clearAdvancedFilters() {
+    emit(state.copyWith(
+      activeSeverityFilter: 'all',
+      activeRoleFilter: 'all',
+      filteredReports: _applyFilters(
+        state.allReports,
+        state.activeFilter,
+        'all',
+        'all',
+        state.searchQuery,
+      ),
     ));
   }
 
   void setSearch(String query) {
     emit(state.copyWith(
       searchQuery: query,
-      filteredReports: _applyFilters(state.allReports, state.activeFilter, query),
+      filteredReports: _applyFilters(
+        state.allReports,
+        state.activeFilter,
+        state.activeSeverityFilter,
+        state.activeRoleFilter,
+        query,
+      ),
     ));
   }
 
@@ -61,7 +119,6 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
       final supervisorId = user?.id ?? '';
       await _repo.acknowledgeReport(reportId: reportId, supervisorId: supervisorId);
 
-      // Optimistic update
       final updated = state.allReports.map((r) {
         if (r.id != reportId) return r;
         return r.copyWith(
@@ -74,7 +131,13 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
       emit(state.copyWith(
         status: SupervisorReportsStatus.loaded,
         allReports: updated,
-        filteredReports: _applyFilters(updated, state.activeFilter, state.searchQuery),
+        filteredReports: _applyFilters(
+          updated,
+          state.activeFilter,
+          state.activeSeverityFilter,
+          state.activeRoleFilter,
+          state.searchQuery,
+        ),
         actionReportId: null,
       ));
     } catch (e) {
@@ -96,7 +159,6 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
       final supervisorId = user?.id ?? '';
       await _repo.resolveReport(reportId: reportId, supervisorId: supervisorId);
 
-      // Optimistic update
       final updated = state.allReports.map((r) {
         if (r.id != reportId) return r;
         return r.copyWith(
@@ -109,7 +171,13 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
       emit(state.copyWith(
         status: SupervisorReportsStatus.loaded,
         allReports: updated,
-        filteredReports: _applyFilters(updated, state.activeFilter, state.searchQuery),
+        filteredReports: _applyFilters(
+          updated,
+          state.activeFilter,
+          state.activeSeverityFilter,
+          state.activeRoleFilter,
+          state.searchQuery,
+        ),
         actionReportId: null,
       ));
     } catch (e) {
@@ -123,13 +191,33 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
 
   List<ReportModel> _applyFilters(
     List<ReportModel> reports,
-    String filter,
+    String statusFilter,
+    String severityFilter,
+    String roleFilter,
     String query,
   ) {
     var result = reports;
-    if (filter != 'all') {
-      result = result.where((r) => r.status.name == filter).toList();
+
+    if (statusFilter != 'all') {
+      result = result.where((r) => r.status.name == statusFilter).toList();
     }
+
+    if (severityFilter != 'all') {
+      result =
+          result.where((r) => r.severity.value == severityFilter).toList();
+    }
+
+    if (roleFilter != 'all') {
+      result = result.where((r) {
+        final role = r.reporterRole;
+        if (roleFilter == 'admin') {
+          return role == 'admin' || role == 'supervisor';
+        }
+        // 'worker' bucket = workers + unit managers + unknown
+        return role == 'worker' || role == 'unit_manager' || role == null;
+      }).toList();
+    }
+
     if (query.trim().isNotEmpty) {
       final q = query.trim().toLowerCase();
       result = result.where((r) {
@@ -138,6 +226,7 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
         return flightNum.contains(q) || desc.contains(q);
       }).toList();
     }
+
     return result;
   }
 }
