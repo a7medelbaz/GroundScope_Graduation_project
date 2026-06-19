@@ -9,6 +9,7 @@ import 'package:ground_scope/core/widgets/error_screen.dart';
 import '../logic/cubit/supervisor_profile_cubit.dart';
 import 'widgets/profile_header.dart';
 import 'widgets/profile_info_card.dart';
+import 'widgets/supervisor_personal_card.dart';
 import 'widgets/supervisor_settings_tiles.dart';
 
 class SupervisorProfileScreen extends StatefulWidget {
@@ -67,9 +68,12 @@ class _SupervisorProfileScreenState extends State<SupervisorProfileScreen> {
                           rw(20), rh(24), rw(20), rh(40)),
                       physics: const AlwaysScrollableScrollPhysics(),
                       children: [
-                        ProfileInfoCard(
+                        SupervisorPersonalCard(
                           user: user,
                           serviceTypeName: state.serviceTypeName,
+                        ),
+                        verticalSpacing(24),
+                        ProfileInfoCard(
                           unitCount: state.unitCount,
                           memberCount: state.memberCount,
                         ),

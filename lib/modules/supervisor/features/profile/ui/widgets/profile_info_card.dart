@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:ground_scope/core/auth/data/models/user_date.dart';
 import 'package:ground_scope/core/themes/app_colors.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
@@ -9,14 +8,10 @@ import 'package:ground_scope/core/utils/spacing.dart';
 class ProfileInfoCard extends StatelessWidget {
   const ProfileInfoCard({
     super.key,
-    required this.user,
-    required this.serviceTypeName,
     required this.unitCount,
     required this.memberCount,
   });
 
-  final UserModel user;
-  final String? serviceTypeName;
   final int unitCount;
   final int memberCount;
 
@@ -25,35 +20,6 @@ class ProfileInfoCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── About section ─────────────────────────────────────────────────
-        _SectionLabel(text: 'profile_about'.tr()),
-        verticalSpacing(8),
-        _Card(
-          children: [
-            _Row(
-              icon: Icons.mail_outline_rounded,
-              label: 'email'.tr(),
-              value: user.email,
-            ),
-            _Divider(),
-            _Row(
-              icon: Icons.phone_outlined,
-              label: 'phone'.tr(),
-              value: user.phone?.isNotEmpty == true ? user.phone! : '—',
-            ),
-            _Divider(),
-            _Row(
-              icon: Icons.bolt_rounded,
-              label: 'service_type'.tr(),
-              value: serviceTypeName ?? '—',
-              highlight: serviceTypeName != null,
-            ),
-            _Divider(),
-            _StatusRow(isActive: user.isActive),
-          ],
-        ),
-        verticalSpacing(20),
-        // ── Team overview ─────────────────────────────────────────────────
         _SectionLabel(text: 'profile_my_team'.tr()),
         verticalSpacing(8),
         _Card(
@@ -127,103 +93,6 @@ class _Card extends StatelessWidget {
   }
 }
 
-class _Row extends StatelessWidget {
-  const _Row({
-    required this.icon,
-    required this.label,
-    required this.value,
-    this.highlight = false,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-  final bool highlight;
-
-  @override
-  Widget build(BuildContext context) {
-    final cc = context.customColors;
-    final valueColor =
-        highlight ? AppColors.primary200 : cc.textPrimary;
-
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: rw(16), vertical: rh(14)),
-      child: Row(
-        children: [
-          Icon(icon, size: rf(18), color: AppColors.primary200),
-          horizontalSpacing(12),
-          Expanded(
-            child: Text(
-              label,
-              style: AppTextStyles.font14Light.copyWith(
-                color: cc.textSecondary,
-              ),
-            ),
-          ),
-          Flexible(
-            child: Text(
-              value,
-              style: AppTextStyles.font14SemiBold.copyWith(color: valueColor),
-              textAlign: TextAlign.end,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _StatusRow extends StatelessWidget {
-  const _StatusRow({required this.isActive});
-
-  final bool isActive;
-
-  @override
-  Widget build(BuildContext context) {
-    final cc = context.customColors;
-    final color = isActive ? AppColors.green200 : AppColors.grey400;
-    final label = isActive ? 'status_active'.tr() : 'status_inactive'.tr();
-
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: rw(16), vertical: rh(14)),
-      child: Row(
-        children: [
-          Icon(Icons.verified_user_outlined,
-              size: rf(18), color: AppColors.primary200),
-          horizontalSpacing(12),
-          Expanded(
-            child: Text(
-              'profile_status'.tr(),
-              style:
-                  AppTextStyles.font14Light.copyWith(color: cc.textSecondary),
-            ),
-          ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: rw(8),
-                height: rw(8),
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              horizontalSpacing(6),
-              Text(
-                label,
-                style: AppTextStyles.font14SemiBold.copyWith(color: color),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _StatRow extends StatelessWidget {
   const _StatRow({
     required this.icon,
@@ -254,9 +123,7 @@ class _StatRow extends StatelessWidget {
               color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(rr(10)),
             ),
-            child: Center(
-              child: Icon(icon, size: rf(18), color: color),
-            ),
+            child: Center(child: Icon(icon, size: rf(18), color: color)),
           ),
           horizontalSpacing(12),
           Expanded(
@@ -289,12 +156,10 @@ class _StatRow extends StatelessWidget {
 
 class _Divider extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return Divider(
-      height: 1,
-      thickness: 1,
-      color: context.customColors.divider,
-      indent: rw(46),
-    );
-  }
+  Widget build(BuildContext context) => Divider(
+        height: 1,
+        thickness: 1,
+        color: context.customColors.divider,
+        indent: rw(46),
+      );
 }
