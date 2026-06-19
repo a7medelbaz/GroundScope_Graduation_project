@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:ground_scope/core/auth/logic/cubit/auth_cubit.dart';
 import 'package:ground_scope/core/themes/app_colors.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
@@ -10,6 +11,8 @@ import 'package:ground_scope/core/widgets/error_screen.dart';
 import 'package:ground_scope/core/widgets/search_with_counter.dart';
 import 'package:ground_scope/core/widgets/ui/dialogs/app_dialogs.dart';
 import 'package:ground_scope/modules/supervisor/core/widgets/supervisor_screen_header.dart';
+import 'package:ground_scope/modules/supervisor/features/add_report/logic/cubit/supervisor_add_report_cubit.dart';
+import 'package:ground_scope/modules/supervisor/features/add_report/ui/supervisor_add_report_screen.dart';
 import '../logic/cubit/supervisor_reports_cubit.dart';
 import 'widgets/supervisor_report_card.dart';
 
@@ -99,6 +102,23 @@ class _SupervisorReportsScreenState extends State<SupervisorReportsScreen> {
       },
       child: Scaffold(
         backgroundColor: cc.background,
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () => context.push(
+            BlocProvider(
+              create: (_) => GetIt.I<SupervisorAddReportCubit>(),
+              child: const SupervisorAddReportScreen(),
+            ),
+          ),
+          backgroundColor: AppColors.primary200,
+          foregroundColor: AppColors.white,
+          icon: const Icon(Icons.edit_rounded),
+          label: Text(
+            'New Report',
+            style: AppTextStyles.font12SemiBold.copyWith(
+              color: AppColors.white,
+            ),
+          ),
+        ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
