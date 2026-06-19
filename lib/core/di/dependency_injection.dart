@@ -328,7 +328,10 @@ Future<void> setUpDependencies() async {
     ),
   );
   getIt.registerFactory<SupervisorProfileCubit>(
-    () => SupervisorProfileCubit(userService: getIt<UserService>()),
+    () => SupervisorProfileCubit(
+      userService: getIt<UserService>(),
+      supabaseService: getIt<SupabaseService>(),
+    ),
   );
 
   // === SERVICE REQUESTS (Admin) ===
