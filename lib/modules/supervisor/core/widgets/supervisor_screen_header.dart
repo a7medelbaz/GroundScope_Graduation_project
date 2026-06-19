@@ -42,9 +42,9 @@ class SupervisorScreenHeader extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.fromLTRB(
-        rw(16),
+        rw(20),
         rh(20) + MediaQuery.of(context).padding.top,
-        rw(16),
+        rw(20),
         rh(24),
       ),
       decoration: const BoxDecoration(
@@ -52,10 +52,14 @@ class SupervisorScreenHeader extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.primary200,
-            AppColors.primary300,
             AppColors.primary400,
+            AppColors.primary300,
+            AppColors.primary200,
           ],
+        ),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(28),
+          bottomRight: Radius.circular(28),
         ),
       ),
       child: Row(
