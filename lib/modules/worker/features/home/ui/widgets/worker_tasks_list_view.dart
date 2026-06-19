@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -77,7 +78,7 @@ class _WorkerTasksListViewState extends State<WorkerTasksListView> {
       child: Row(
         children: [
           Text(
-            "Today's Tasks",
+            'worker_home.todays_tasks'.tr(),
             style: AppTextStyles.font18ExtraBold.copyWith(
               color: colors.textPrimary,
             ),

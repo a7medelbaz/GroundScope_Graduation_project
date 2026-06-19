@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/router/routes.dart';
@@ -16,12 +17,12 @@ class ReportsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  SafeArea(
+    return const SafeArea(
       top: false,
       child: Column(
         children: [
-          const ReportsAppBar(),
-          const ReportsFilterStrip(),
+          ReportsAppBar(),
+          ReportsFilterStrip(),
           Expanded(child: _Body()),
         ],
       ),
@@ -30,6 +31,8 @@ class ReportsScreen extends StatelessWidget {
 }
 
 class _Body extends StatelessWidget {
+  const _Body();
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ReportsCubit, ReportsState>(
@@ -53,7 +56,7 @@ class _Body extends StatelessWidget {
                 ),
                 verticalSpacing(12),
                 Text(
-                  state.error?.messageKey ?? 'Something went wrong',
+                  state.error?.messageKey ?? 'something_went_wrong'.tr(),
                   style: AppTextStyles.font14Light.copyWith(
                     color: context.customColors.textSecondary,
                   ),
@@ -64,14 +67,13 @@ class _Body extends StatelessWidget {
                   onPressed: () =>
                       context.read<ReportsCubit>().fetchMyReports(),
                   icon: const Icon(Icons.refresh_rounded),
-                  label: const Text('Retry'),
+                  label: Text('retry'.tr()),
                 ),
               ],
             ),
           );
         }
 
-        
         final reports = state.filteredReports;
 
         if (reports.isEmpty) {

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../../core/shared/data/models/task_model.dart';
@@ -32,8 +33,8 @@ class TaskDetailsQuickActionsRow extends StatelessWidget {
         Expanded(
           child: TaskDetailsActionTile(
             icon: Icons.info_outline_rounded,
-            label: 'Task Info',
-            sublabel: 'Flight & stand details',
+            label: 'task_info'.tr(),
+            sublabel: 'worker_task_details.flight_stand_details'.tr(),
             color: AppColors.primary200,
             onTap: onInfoTap,
           ),
@@ -42,8 +43,10 @@ class TaskDetailsQuickActionsRow extends StatelessWidget {
         Expanded(
           child: TaskDetailsActionTile(
             icon: Icons.flag_outlined,
-            label: 'Quick Report',
-            sublabel: _canReport ? 'Report an issue' : 'Task not active',
+            label: 'worker_task_details.quick_report'.tr(),
+            sublabel: _canReport
+                ? 'worker_task_details.report_issue'.tr()
+                : 'worker_task_details.task_not_active'.tr(),
             color: _canReport ? AppColors.secondary200 : cc.textDisabled,
             onTap: _canReport ? onReportTap : null,
             disabled: !_canReport,

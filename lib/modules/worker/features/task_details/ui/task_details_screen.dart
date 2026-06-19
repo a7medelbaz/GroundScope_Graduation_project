@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/router/routes.dart';
@@ -41,10 +42,10 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
     if (state.status == TaskStatus.inProgress) {
       await AppDialogs.showConfirm(
         context,
-        title: 'Finish Task?',
-        message: 'Do you want to mark this task as completed before leaving?',
-        confirmText: 'Finish',
-        cancelText: 'Stay',
+        title: 'worker_task_details.finish_task_title'.tr(),
+        message: 'worker_task_details.finish_task_message'.tr(),
+        confirmText: 'worker_task_details.finish'.tr(),
+        cancelText: 'worker_task_details.stay'.tr(),
         onConfirm: () {
           _popWithResult();
         },
@@ -84,10 +85,10 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
     if (!allChecked && state.status == TaskStatus.inProgress) {
       AppDialogs.showConfirm(
         context,
-        title: 'Checklist Incomplete',
-        message: 'Finish task anyway?',
-        confirmText: 'Finish',
-        cancelText: 'Cancel',
+        title: 'worker_task_details.checklist_incomplete'.tr(),
+        message: 'worker_task_details.finish_anyway'.tr(),
+        confirmText: 'worker_task_details.finish'.tr(),
+        cancelText: 'cancel'.tr(),
         onConfirm: complete,
       );
       return;

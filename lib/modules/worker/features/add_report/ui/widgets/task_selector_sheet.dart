@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
@@ -113,7 +114,7 @@ class _TaskSelectorSheetState extends State<TaskSelectorSheet> {
       child: Row(
         children: [
           Text(
-            'Select Task',
+            'worker_add_report.select_task'.tr(),
             style: AppTextStyles.font18SemiBold.copyWith(
               color: colors.textPrimary,
             ),
@@ -122,7 +123,7 @@ class _TaskSelectorSheetState extends State<TaskSelectorSheet> {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Cancel',
+              'cancel'.tr(),
               style: AppTextStyles.font14SemiBold.copyWith(
                 color: colors.textSecondary,
               ),
@@ -138,7 +139,7 @@ class _TaskSelectorSheetState extends State<TaskSelectorSheet> {
       child: Padding(
         padding: EdgeInsets.all(rw(20)),
         child: Text(
-          state.error?.messageKey ?? 'Something went wrong',
+          state.error?.messageKey ?? 'something_went_wrong'.tr(),
           style: AppTextStyles.font14Light.copyWith(color: colors.error),
           textAlign: TextAlign.center,
         ),
@@ -154,14 +155,14 @@ class _TaskSelectorSheetState extends State<TaskSelectorSheet> {
           Icon(Icons.inbox_outlined, size: 48, color: colors.iconSecondary),
           verticalSpacing(12),
           Text(
-            'No active tasks found',
+            'worker_add_report.no_active_tasks'.tr(),
             style: AppTextStyles.font14Light.copyWith(
               color: colors.textSecondary,
             ),
           ),
           verticalSpacing(4),
           Text(
-            'Please check back later',
+            'worker_add_report.please_check_back'.tr(),
             style: AppTextStyles.font12Light.copyWith(color: colors.textHint),
           ),
         ],

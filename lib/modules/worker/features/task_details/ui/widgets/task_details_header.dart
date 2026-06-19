@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../../core/shared/data/models/task_model.dart';
@@ -82,7 +83,7 @@ class TaskDetailsHeader extends StatelessWidget {
               horizontalSpacing(12),
               Expanded(
                 child: Text(
-                  'Task Details',
+                  'task_details'.tr(),
                   style: AppTextStyles.font16ExtraBold.copyWith(
                     color: AppColors.white,
                     letterSpacing: 0.3,
@@ -180,11 +181,9 @@ class TaskDetailsHeader extends StatelessWidget {
 
           verticalSpacing(20),
 
-          // ── Divider ────────────────────────────────────────
           Container(height: 1, color: AppColors.white.withValues(alpha: 0.15)),
           verticalSpacing(16),
 
-          // ── Flight + stand row ─────────────────────────────
           Row(
             children: [
               _InfoPill(
@@ -195,20 +194,20 @@ class TaskDetailsHeader extends StatelessWidget {
               if (task.standCode != null)
                 _InfoPill(
                   icon: Icons.location_on_rounded,
-                  label: 'Stand ${task.standCode}',
+                  label: 'worker_task_details.stand'
+                      .tr(namedArgs: {'code': task.standCode!}),
                 ),
               const Spacer(),
-              // Duration pill
               _InfoPill(
                 icon: Icons.timer_outlined,
-                label: '${task.durationMinutes} min',
+                label: 'worker_task_details.duration_min'
+                    .tr(namedArgs: {'minutes': '${task.durationMinutes}'}),
               ),
             ],
           ),
 
           verticalSpacing(16),
 
-          // ── Time window ────────────────────────────────────
           Container(
             padding: EdgeInsets.all(rw(14)),
             decoration: BoxDecoration(
@@ -222,7 +221,7 @@ class TaskDetailsHeader extends StatelessWidget {
               children: [
                 Expanded(
                   child: _TimeColumn(
-                    label: 'Scheduled Start',
+                    label: 'scheduled_start'.tr(),
                     time: _fmt(task.scheduledStart),
                     subLabel: _dateLabel(task.scheduledStart),
                   ),
@@ -234,7 +233,7 @@ class TaskDetailsHeader extends StatelessWidget {
                 ),
                 Expanded(
                   child: _TimeColumn(
-                    label: 'Scheduled End',
+                    label: 'scheduled_end'.tr(),
                     time: _fmt(task.scheduledEnd),
                     subLabel: _dateLabel(task.scheduledEnd),
                   ),
@@ -247,7 +246,7 @@ class TaskDetailsHeader extends StatelessWidget {
                   ),
                   Expanded(
                     child: _TimeColumn(
-                      label: 'Actual Start',
+                      label: 'worker_task_details.actual_start'.tr(),
                       time: _fmt(task.actualStart!),
                       subLabel: _dateLabel(task.actualStart!),
                       highlight: true,
@@ -264,18 +263,8 @@ class TaskDetailsHeader extends StatelessWidget {
 
   String _dateLabel(DateTime dt) {
     const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
     ];
     return '${dt.day} ${months[dt.month - 1]}';
   }

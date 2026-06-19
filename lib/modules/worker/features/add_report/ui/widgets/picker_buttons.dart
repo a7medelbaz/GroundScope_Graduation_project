@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,7 +17,7 @@ class PickerButtons extends StatelessWidget {
         Expanded(
           child: PickerButton(
             icon: Icons.camera_alt_rounded,
-            label: 'Camera',
+            label: 'worker_add_report.camera'.tr(),
             onTap: () {
               HapticFeedback.lightImpact();
               context.read<AddReportCubit>().pickImage(ImageSource.camera);
@@ -27,7 +28,7 @@ class PickerButtons extends StatelessWidget {
         Expanded(
           child: PickerButton(
             icon: Icons.photo_library_rounded,
-            label: 'Gallery',
+            label: 'worker_add_report.gallery'.tr(),
             onTap: () {
               HapticFeedback.lightImpact();
               context.read<AddReportCubit>().pickImage(ImageSource.gallery);

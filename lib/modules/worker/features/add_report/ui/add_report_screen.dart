@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -70,7 +71,7 @@ class _AddReportScreenState extends State<AddReportScreen>
           HapticFeedback.mediumImpact();
           _descController.clear();
           context.showMessageSnackBar(
-            "Report submitted successfully",
+            'worker_add_report.success_message'.tr(),
             type: SnackBarType.success,
           );
           context.read<AddReportCubit>().resetForm();
@@ -104,28 +105,28 @@ class _AddReportScreenState extends State<AddReportScreen>
                           preSelectedTask: widget.preSelectedTask,
                         ),
                         verticalSpacing(24),
-                        const SectionLabel(label: 'Report Type'),
+                        SectionLabel(label: 'report_type'.tr()),
                         verticalSpacing(10),
                         const ReportTypeSelector(),
                         verticalSpacing(24),
-                        const SectionLabel(label: 'Severity'),
+                        SectionLabel(label: 'report_severity'.tr()),
                         verticalSpacing(10),
                         const ReportSeveritySelector(),
                         verticalSpacing(24),
-                        const SectionLabel(label: 'Description'),
+                        SectionLabel(label: 'worker_add_report.description'.tr()),
                         verticalSpacing(10),
                         CustomTextForm(
-                          hintText: "Describe the issue in detail...",
+                          hintText: 'worker_add_report.description_hint'.tr(),
                           controller: _descController,
                           maxLines: 5,
                         ),
                         verticalSpacing(24),
-                        const SectionLabel(label: 'Attach Photo (optional)'),
+                        SectionLabel(label: 'worker_add_report.attach_photo'.tr()),
                         verticalSpacing(10),
                         const ImagePickerSection(),
                         verticalSpacing(36),
                         CustomTextButton(
-                          text: "Submit ",
+                          text: 'worker_add_report.submit'.tr(),
                           onPressed: () => _handleSubmit(context),
                         ),
                         verticalSpacing(40),

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/shared/data/models/report_model.dart';
@@ -19,11 +20,11 @@ class ReportsFilterStrip extends StatelessWidget {
   ];
 
   String _label(ReportStatus? filter) => switch (filter) {
-    null => 'All',
-    ReportStatus.open => 'Open',
-    ReportStatus.acknowledged => 'Acknowledged',
-    ReportStatus.inProgress => 'In Progress',
-    ReportStatus.resolved => 'Resolved',
+    null => 'filter_all'.tr(),
+    ReportStatus.open => 'filter_open'.tr(),
+    ReportStatus.acknowledged => 'filter_acknowledged'.tr(),
+    ReportStatus.inProgress => 'filter_in_progress'.tr(),
+    ReportStatus.resolved => 'filter_resolved'.tr(),
   };
 
   @override
@@ -53,14 +54,10 @@ class ReportsFilterStrip extends StatelessWidget {
                 vertical: rh(6),
               ),
               decoration: BoxDecoration(
-                color: isSelected
-                    ? AppColors.primary200
-                    : cc.surfaceVariant,
+                color: isSelected ? AppColors.primary200 : cc.surfaceVariant,
                 borderRadius: BorderRadius.circular(rr(20)),
                 border: Border.all(
-                  color: isSelected
-                      ? AppColors.primary200
-                      : cc.border,
+                  color: isSelected ? AppColors.primary200 : cc.border,
                   width: 1,
                 ),
               ),

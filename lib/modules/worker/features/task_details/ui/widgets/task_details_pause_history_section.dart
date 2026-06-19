@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../../../../../core/themes/app_colors.dart';
 import '../../../../../../core/themes/app_text_styles.dart';
@@ -28,7 +29,7 @@ class TaskDetailsPauseHistorySection extends StatelessWidget {
             ),
             horizontalSpacing(10),
             Text(
-              'Pause History',
+              'worker_task_details.pause_history'.tr(),
               style: AppTextStyles.font18ExtraBold.copyWith(
                 color: cc.textPrimary,
               ),
@@ -74,7 +75,7 @@ class TaskDetailsPauseHistorySection extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        p.reason ?? 'No reason provided',
+                        p.reason ?? 'worker_task_details.no_reason'.tr(),
                         style: AppTextStyles.font12SemiBold.copyWith(
                           color: cc.textSecondary,
                         ),
@@ -82,8 +83,12 @@ class TaskDetailsPauseHistorySection extends StatelessWidget {
                       verticalSpacing(3),
                       Text(
                         p.isActive
-                            ? 'Currently paused'
-                            : 'Resumed after ${p.duration.inMinutes} min',
+                            ? 'worker_task_details.currently_paused'.tr()
+                            : 'worker_task_details.resumed_after'.tr(
+                                namedArgs: {
+                                  'minutes': '${p.duration.inMinutes}',
+                                },
+                              ),
                         style: AppTextStyles.font12Light.copyWith(
                           color: cc.textHint,
                         ),
