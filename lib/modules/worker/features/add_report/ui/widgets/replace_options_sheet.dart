@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
@@ -40,7 +41,7 @@ class ReplaceOptionsSheet extends StatelessWidget {
               color: customColors.iconPrimary,
             ),
             title: Text(
-              'Take Photo',
+              'image_picker.take_photo'.tr(),
               style: AppTextStyles.font14SemiBold.copyWith(
                 color: customColors.textPrimary,
               ),
@@ -57,7 +58,7 @@ class ReplaceOptionsSheet extends StatelessWidget {
               color: customColors.iconPrimary,
             ),
             title: Text(
-              'Choose from Gallery',
+              'image_picker.choose_from_gallery'.tr(),
               style: AppTextStyles.font14SemiBold.copyWith(
                 color: customColors.textPrimary,
               ),

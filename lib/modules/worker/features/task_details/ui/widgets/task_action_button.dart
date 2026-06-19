@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../../core/shared/data/models/task_model.dart';
@@ -26,29 +27,29 @@ class TaskActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return switch (status) {
       TaskStatus.assigned => _singleButton(
-        text: 'Start Task',
+        text: 'worker_task_details.start_task'.tr(),
         icon: Icons.play_arrow_rounded,
         color: AppColors.primary200,
         onTap: onStart,
       ),
 
       TaskStatus.inProgress => _doubleButton(
-        leftText: 'Pause',
+        leftText: 'worker_task_details.pause'.tr(),
         leftIcon: Icons.pause_rounded,
         leftColor: AppColors.amber200,
         onLeftTap: onPause,
-        rightText: 'Finish',
+        rightText: 'worker_task_details.finish'.tr(),
         rightIcon: Icons.check_rounded,
         rightColor: AppColors.green200,
         onRightTap: onComplete,
       ),
 
       TaskStatus.paused => _doubleButton(
-        leftText: 'Resume',
+        leftText: 'worker_task_details.resume_task'.tr(),
         leftIcon: Icons.play_arrow_rounded,
         leftColor: AppColors.primary200,
         onLeftTap: onResume,
-        rightText: 'Finish',
+        rightText: 'worker_task_details.finish'.tr(),
         rightIcon: Icons.check_rounded,
         rightColor: AppColors.green200,
         onRightTap: onComplete,

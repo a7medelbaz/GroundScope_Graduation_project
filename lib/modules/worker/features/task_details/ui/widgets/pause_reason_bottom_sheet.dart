@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../../core/themes/app_colors.dart';
@@ -28,13 +29,13 @@ class _PauseReasonBottomSheetState extends State<PauseReasonBottomSheet> {
   final _controller = TextEditingController();
   String? _selectedQuick;
 
-  static const _quickReasons = [
-    'Waiting for equipment',
-    'Safety check required',
-    'Awaiting clearance',
-    'Break / rest',
-    'Weather condition',
-    'Other',
+  List<String> get _quickReasons => [
+    'worker_task_details.waiting_for_equipment'.tr(),
+    'worker_task_details.safety_check'.tr(),
+    'worker_task_details.awaiting_clearance'.tr(),
+    'worker_task_details.break_rest'.tr(),
+    'worker_task_details.weather'.tr(),
+    'worker_task_details.other'.tr(),
   ];
 
   @override
@@ -54,6 +55,7 @@ class _PauseReasonBottomSheetState extends State<PauseReasonBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final cc = context.customColors;
+    final quickReasons = _quickReasons;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -72,7 +74,6 @@ class _PauseReasonBottomSheetState extends State<PauseReasonBottomSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// Drag handle
             Center(
               child: Container(
                 width: rw(40),
@@ -103,13 +104,13 @@ class _PauseReasonBottomSheetState extends State<PauseReasonBottomSheet> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Pause Task',
+                      'worker_task_details.pause_task'.tr(),
                       style: AppTextStyles.font18ExtraBold.copyWith(
                         color: cc.textPrimary,
                       ),
                     ),
                     Text(
-                      'Select or enter a reason',
+                      'worker_task_details.pause_reason_subtitle'.tr(),
                       style: AppTextStyles.font12Light.copyWith(
                         color: cc.textHint,
                       ),
@@ -122,7 +123,7 @@ class _PauseReasonBottomSheetState extends State<PauseReasonBottomSheet> {
             Wrap(
               spacing: rw(8),
               runSpacing: rh(8),
-              children: _quickReasons.map((reason) {
+              children: quickReasons.map((reason) {
                 final selected = _selectedQuick == reason;
                 return GestureDetector(
                   onTap: () {
@@ -165,7 +166,7 @@ class _PauseReasonBottomSheetState extends State<PauseReasonBottomSheet> {
               ),
               hintStyle: AppTextStyles.font12Light.copyWith(color: cc.textHint),
               controller: _controller,
-              hintText: 'Or type a custom reason…',
+              hintText: 'worker_task_details.custom_reason_hint'.tr(),
               onChanged: (_) {
                 if (_selectedQuick != null) {
                   setState(() => _selectedQuick = null);
@@ -179,7 +180,7 @@ class _PauseReasonBottomSheetState extends State<PauseReasonBottomSheet> {
                   child: CustomTextButton.outlined(
                     size: CustomButtonSize.small,
                     textStyle: AppTextStyles.font16SemiBold,
-                    text: 'Cancel',
+                    text: 'cancel'.tr(),
                     onPressed: () => Navigator.of(context).pop(null),
                   ),
                 ),
@@ -190,7 +191,7 @@ class _PauseReasonBottomSheetState extends State<PauseReasonBottomSheet> {
                   child: CustomTextButton(
                     size: CustomButtonSize.small,
                     textStyle: AppTextStyles.font16SemiBold,
-                    text: 'Pause Task',
+                    text: 'worker_task_details.pause_task'.tr(),
                     onPressed: _submit,
                     backgroundColor: AppColors.amber200,
                     foregroundColor: Colors.white,
