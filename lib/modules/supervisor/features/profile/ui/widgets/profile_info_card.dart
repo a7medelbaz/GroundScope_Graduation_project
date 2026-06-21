@@ -33,13 +33,14 @@ class ProfileInfoCard extends StatelessWidget {
         InfoRowData(
           icon: Icons.bolt_outlined,
           label: 'service_type'.tr(),
-          value: user.serviceTypeId ?? '—',
+          value: user.serviceTypeName ?? '—',
           highlight: true,
         ),
         InfoRowData(
           icon: Icons.local_shipping_outlined,
           label: 'units_managed'.tr(),
-          value: '$unitCount ${'units'.tr()} · $memberCount ${'crew_members'.tr()}',
+          value:
+              '$unitCount ${'units'.tr()} · $memberCount ${'crew_members'.tr()}',
         ),
       ],
     );
