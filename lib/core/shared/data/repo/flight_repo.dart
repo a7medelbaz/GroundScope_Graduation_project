@@ -5,6 +5,13 @@ abstract class FlightRepo {
   Future<FlightModel> fetchFlightData({required String flightId});
   Future<int> countActiveFlightsToday();
 
+  Future<List<FlightModel>> fetchActiveFlights();
+
+  Future<void> batchUpdateStatus({
+    required List<String> flightIds,
+    required String newStatus,
+  });
+
   Future<List<FlightModel>> fetchFlights({
     FlightStatus? statusFilter,
     FlightType? typeFilter,

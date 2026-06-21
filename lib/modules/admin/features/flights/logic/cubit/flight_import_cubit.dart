@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/error/models/app_error.dart';
 import 'package:ground_scope/core/shared/data/models/flight_model.dart';
@@ -27,6 +28,8 @@ class FlightImportCubit extends Cubit<FlightImportState> {
         ),
       );
     } on AppError catch (e) {
+      debugPrint('IMPORT ERROR: $e');
+      debugPrint('STACK: ${e.details}');
       emit(state.copyWith(status: FlightImportStatus.failure, error: e));
     } catch (_) {
       emit(
