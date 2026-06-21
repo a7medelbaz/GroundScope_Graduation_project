@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../../core/themes/app_colors.dart';
@@ -27,7 +28,7 @@ class TaskDetailsNotesSection extends StatelessWidget {
             ),
             horizontalSpacing(10),
             Text(
-              'Notes',
+              'worker_task_details.notes'.tr(),
               style: AppTextStyles.font18ExtraBold.copyWith(
                 color: cc.textPrimary,
               ),

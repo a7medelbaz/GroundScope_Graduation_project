@@ -5,13 +5,15 @@ import '../utils/extensions/context_ext.dart';
 import '../utils/spacing.dart';
 
 class CustomAppBar extends StatelessWidget {
-  const CustomAppBar({super.key, required this.title, this.iconData});
+  const CustomAppBar({super.key, required this.title, this.iconData,this.appBarColor});
   final String title;
   final Widget? iconData;
+  final Color? appBarColor;
 
   @override
   Widget build(final BuildContext context) {
     return Container(
+      color: appBarColor,
       padding: EdgeInsets.symmetric(horizontal: rw(16), vertical: rh(24)),
       child: Row(
         children: [

@@ -9,6 +9,7 @@ import 'package:ground_scope/core/utils/spacing.dart';
 import 'package:ground_scope/core/widgets/error_screen.dart';
 import 'package:ground_scope/core/widgets/filter_pills.dart';
 import 'package:ground_scope/core/widgets/search_with_counter.dart';
+import 'package:ground_scope/modules/supervisor/core/widgets/supervisor_screen_header.dart';
 import '../logic/cubit/supervisor_units_cubit.dart';
 import 'widgets/unit_status_card.dart';
 
@@ -42,12 +43,12 @@ class _SupervisorUnitsScreenState extends State<SupervisorUnitsScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Gradient header
           BlocBuilder<SupervisorUnitsCubit, SupervisorUnitsState>(
             buildWhen: (p, c) => p.allUnits.length != c.allUnits.length,
-            builder: (context, state) => _Header(
-              totalUnits: state.allUnits.length,
-              serviceTypeId: _serviceTypeId,
+            builder: (context, state) => SupervisorScreenHeader(
+              icon: Icons.local_shipping_outlined,
+              title: 'supervisor_units_title'.tr(),
+              subtitle: '${state.allUnits.length} ${'units'.tr()}',
             ),
           ),
           // Search + counter
@@ -107,49 +108,6 @@ class _SupervisorUnitsScreenState extends State<SupervisorUnitsScreen> {
                       UnitStatusCard(unit: state.filteredUnits[i]),
                 );
               },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Header extends StatelessWidget {
-  const _Header({required this.totalUnits, required this.serviceTypeId});
-
-  final int totalUnits;
-  final String serviceTypeId;
-
-  @override
-  Widget build(BuildContext context) {
-    final authState = context.watch<AuthCubit>().state;
-    final serviceTypeName = authState is AuthSuccess
-        ? authState.userModel.serviceTypeId
-        : null;
-
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.fromLTRB(
-        rw(16),
-        rh(20) + MediaQuery.of(context).padding.top,
-        rw(16),
-        rh(16),
-      ),
-      decoration: const BoxDecoration(gradient: AppColors.primaryGradient),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'supervisor_units_title'.tr(),
-            style: AppTextStyles.font18ExtraBold
-                .copyWith(color: AppColors.white),
-          ),
-          verticalSpacing(2),
-          Text(
-            '$totalUnits ${'units'.tr()}${serviceTypeName != null ? ' · $serviceTypeName' : ''}',
-            style: AppTextStyles.font12Light.copyWith(
-              color: AppColors.white.withValues(alpha: 0.7),
             ),
           ),
         ],

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:ground_scope/core/shared/data/models/task_model.dart';
 import 'package:ground_scope/core/themes/app_font_weight.dart';
@@ -108,7 +109,7 @@ class AddReportTaskTile extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            'SERVICE',
+                            'worker_add_report.service'.tr().toUpperCase(),
                             style: AppTextStyles.font12Light.copyWith(
                               color: color.withValues(alpha: 0.8),
                               fontSize: rf(10),
@@ -142,7 +143,11 @@ class AddReportTaskTile extends StatelessWidget {
                           ),
                           horizontalSpacing(3),
                           Text(
-                            'Stand ${task.standCode ?? '—'}',
+                            task.standCode != null
+                                ? 'worker_add_report.stand'.tr(
+                                    namedArgs: {'code': task.standCode!},
+                                  )
+                                : '—',
                             style: AppTextStyles.font12Light.copyWith(
                               color: customColors.textHint,
                             ),
