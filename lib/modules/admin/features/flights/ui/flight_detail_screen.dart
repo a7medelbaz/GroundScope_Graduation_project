@@ -7,6 +7,7 @@ import 'package:ground_scope/core/themes/app_colors.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/extensions/datetime_ext.dart';
+import 'package:ground_scope/core/utils/flight_status_checker.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
 import 'package:ground_scope/core/router/routes.dart';
 import 'package:ground_scope/modules/admin/features/flights/logic/cubit/flights_list_cubit.dart';
@@ -43,7 +44,31 @@ class FlightDetailScreen extends StatelessWidget {
     FlightModel flight,
     FlightStatus status,
   ) async {
-    final cubit = context.read<FlightsListCubit>();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        title: Text('change_status'.tr()),
+        content: Text(
+          'confirm_flight_status_change'.tr(
+            namedArgs: {'status': status.label},
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(false),
+            child: Text('cancel'.tr()),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(true),
+            child: Text('app_dialogs.confirm'.tr()),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !context.mounted) return;
+
+    final cubit   = context.read<FlightsListCubit>();
     final success = await cubit.updateStatus(flight, status);
     if (!context.mounted) return;
     if (success) {
@@ -133,34 +158,74 @@ class FlightDetailScreen extends StatelessWidget {
                           title: 'status'.tr(),
                           delay: 200.ms,
                           children: [
-                            Wrap(
-                              spacing: rw(8),
-                              runSpacing: rh(8),
-                              children: FlightStatus.values.map((status) {
-                                final selected = status == current.status;
-                                return ChoiceChip(
-                                  label: Text(status.label),
-                                  selected: selected,
-                                  onSelected: (_) =>
-                                      _changeStatus(context, current, status),
-                                  selectedColor: AppColors.blue200,
-                                  labelStyle: AppTextStyles.font12SemiBold.copyWith(
-                                    color: selected
-                                        ? AppColors.white
-                                        : context.customColors.textSecondary,
+                            if (current.status == FlightStatus.departed ||
+                                current.status == FlightStatus.cancelled)
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.lock_outline,
+                                    size: rw(16),
+                                    color: context.customColors.textHint,
                                   ),
-                                  backgroundColor: context.customColors.background,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(rr(20)),
-                                    side: BorderSide(
-                                      color: selected
-                                          ? AppColors.blue200
-                                          : context.customColors.border,
+                                  horizontalSpacing(6),
+                                  Text(
+                                    current.status.label,
+                                    style: AppTextStyles.font12SemiBold.copyWith(
+                                      color: context.customColors.textHint,
                                     ),
                                   ),
-                                );
-                              }).toList(),
-                            ),
+                                ],
+                              )
+                            else
+                              Wrap(
+                                spacing: rw(8),
+                                runSpacing: rh(8),
+                                children: [
+                                  // Current status chip (non-interactive)
+                                  ChoiceChip(
+                                    label: Text(current.status.label),
+                                    selected: true,
+                                    onSelected: null,
+                                    selectedColor: AppColors.blue200,
+                                    labelStyle: AppTextStyles.font12SemiBold
+                                        .copyWith(color: AppColors.white),
+                                    backgroundColor:
+                                        context.customColors.background,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(rr(20)),
+                                      side: const BorderSide(
+                                          color: AppColors.blue200),
+                                    ),
+                                  ),
+                                  // Forward-only allowed next statuses
+                                  ...FlightStatusChecker.allowedNextStatuses(
+                                          current.status)
+                                      .map((status) => ChoiceChip(
+                                            label: Text(status.label),
+                                            selected: false,
+                                            onSelected: (_) => _changeStatus(
+                                                context, current, status),
+                                            selectedColor: AppColors.blue200,
+                                            labelStyle: AppTextStyles
+                                                .font12SemiBold
+                                                .copyWith(
+                                              color: context
+                                                  .customColors.textSecondary,
+                                            ),
+                                            backgroundColor:
+                                                context.customColors.background,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(rr(20)),
+                                              side: BorderSide(
+                                                color:
+                                                    context.customColors.border,
+                                              ),
+                                            ),
+                                          )),
+                                ],
+                              ),
                           ],
                         ),
                         verticalSpacing(20),
@@ -168,27 +233,45 @@ class FlightDetailScreen extends StatelessWidget {
                           title: 'request_services'.tr(),
                           delay: 260.ms,
                           children: [
-                            SizedBox(
-                              width: double.infinity,
-                              height: rh(46),
-                              child: ElevatedButton.icon(
-                                onPressed: () => context.pushNamed(
-                                  Routes.adminFlightServiceRequestScreen,
-                                  arguments: {'flight': current},
-                                ),
-                                icon: const Icon(
-                                    Icons.miscellaneous_services_outlined),
-                                label: Text('request_services'.tr()),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.primary200,
-                                  foregroundColor: AppColors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(rr(14)),
+                            if (FlightStatusChecker.canRequestServices(current))
+                              SizedBox(
+                                width: double.infinity,
+                                height: rh(46),
+                                child: ElevatedButton.icon(
+                                  onPressed: () => context.pushNamed(
+                                    Routes.adminFlightServiceRequestScreen,
+                                    arguments: {'flight': current},
+                                  ),
+                                  icon: const Icon(
+                                      Icons.miscellaneous_services_outlined),
+                                  label: Text('request_services'.tr()),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.primary200,
+                                    foregroundColor: AppColors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(rr(14)),
+                                    ),
                                   ),
                                 ),
+                              )
+                            else
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.info_outline,
+                                    size: rw(16),
+                                    color: context.customColors.textHint,
+                                  ),
+                                  horizontalSpacing(8),
+                                  Text(
+                                    'services_already_assigned'.tr(),
+                                    style: AppTextStyles.font12Light.copyWith(
+                                      color: context.customColors.textHint,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
                           ],
                         ),
                         verticalSpacing(16),

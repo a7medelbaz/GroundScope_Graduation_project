@@ -21,10 +21,11 @@ class ServiceRequestCard extends StatelessWidget {
   final VoidCallback? onDetailsTap;
 
   Color get _accentColor => switch (request.status) {
-    ServiceRequestStatus.pending    => AppColors.primary200,
-    ServiceRequestStatus.assigned   => AppColors.green200,
-    ServiceRequestStatus.inProgress => AppColors.amber200,
-    _                               => AppColors.grey400,
+    ServiceRequestStatus.pending    => AppColors.amber200,
+    ServiceRequestStatus.assigned   => AppColors.blue200,
+    ServiceRequestStatus.inProgress => AppColors.primary200,
+    ServiceRequestStatus.completed  => AppColors.green200,
+    ServiceRequestStatus.cancelled  => AppColors.grey400,
   };
 
   @override

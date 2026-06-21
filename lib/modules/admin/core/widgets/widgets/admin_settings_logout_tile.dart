@@ -1,10 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/auth/logic/cubit/auth_cubit.dart';
-import 'package:ground_scope/core/di/dependency_injection.dart';
 import 'package:ground_scope/core/themes/app_colors.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
-import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
 import 'package:ground_scope/core/widgets/ui/dialogs/app_dialogs.dart';
 
@@ -51,10 +50,7 @@ class AdminSettingsLogoutTile extends StatelessWidget {
       context,
       message: 'logout_confirm_message'.tr(),
       onConfirm: () {
-        // Pop the confirm dialog
-        context.pop();
-        getIt<AuthCubit>().logout();
-        context.pop();
+        context.read<AuthCubit>().logout();
       },
     );
   }

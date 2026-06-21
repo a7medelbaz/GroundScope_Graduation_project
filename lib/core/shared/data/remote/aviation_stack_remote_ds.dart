@@ -1,13 +1,19 @@
 import 'package:dio/dio.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 import 'package:ground_scope/core/constants/app_constants.dart';
 import 'package:ground_scope/core/error/models/app_error.dart';
+import 'package:ground_scope/core/error/types/error_type.dart';
 import 'package:ground_scope/core/shared/data/models/flight_model.dart';
 
 class AviationStackRemoteDs {
   static const String _baseUrl = 'https://api.aviationstack.com/v1/timetable';
 
   final Dio _dio = Dio(
-    BaseOptions(connectTimeout: const Duration(seconds: 30), receiveTimeout: const Duration(seconds: 30)),
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
+    ),
   );
 
   /// Fetches both arrivals and departures for the configured airport.
@@ -34,35 +40,66 @@ class AviationStackRemoteDs {
       return combined;
     } on AppError {
       rethrow;
-    } catch (_) {
+    } catch (e, st) {
+      debugPrint('FETCH ERROR: $e');
+      debugPrint('FETCH STACK: $st');
       throw AppError.unknown();
     }
   }
 
   Future<List<FlightModel>> _fetch({required String type}) async {
-    final response = await _dio.get<Map<String, dynamic>>(
-      _baseUrl,
-      queryParameters: {
-        'access_key': AppConstants.aviationStackKey,
-        'iataCode': AppConstants.airportIataCode,
-        'type': type,
-      },
-    );
+    try {
+      final response = await _dio.get<Map<String, dynamic>>(
+        _baseUrl,
+        queryParameters: {
+          'access_key': AppConstants.aviationStackKey,
+          'iataCode': AppConstants.airportIataCode,
+          'type': type,
+        },
+      );
 
-    final json = response.data ?? {};
-    final data = json['data'] as List? ?? [];
+      debugPrint('API STATUS: ${response.statusCode}');
+      debugPrint('API DATA KEYS: ${response.data?.keys}');
+      debugPrint('API ERROR: ${response.data?['error']}');
 
-    return data
-        .cast<Map<String, dynamic>>()
-        // Filter out codeshared duplicates
-        .where((item) => item['codeshared'] == null)
-        // Filter out entries with empty flight numbers
-        .where((item) {
-          final num = item['flight']?['iataNumber']?.toString() ?? '';
-          return num.isNotEmpty;
-        })
-        .map((item) => _mapToModel(item, type))
-        .toList();
+      final json = response.data ?? {};
+      final data = json['data'] as List? ?? [];
+      debugPrint('FLIGHTS COUNT: ${data.length}');
+
+      return data
+          .cast<Map<String, dynamic>>()
+          .where((item) => item['codeshared'] == null)
+          .where((item) {
+            final num = item['flight']?['iataNumber']?.toString() ?? '';
+            return num.isNotEmpty;
+          })
+          .map((item) => _mapToModel(item, type))
+          .toList();
+    } on DioException catch (e) {
+      debugPrint('DIO ERROR: ${e.type} — ${e.message}');
+      debugPrint('DIO RESPONSE: ${e.response?.data}');
+      if (e.response?.statusCode == 429) {
+        throw AppError(
+          type: ErrorType.serviceUnavailable,
+          messageKey: 'api_rate_limit_exceeded'.tr(),
+        );
+      }
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        throw AppError(
+          type: ErrorType.connectionError,
+          messageKey: 'connection_timeout'.tr(),
+        );
+      }
+      throw AppError(
+        type: ErrorType.connectionError,
+        messageKey: 'errors.connection_error'.tr(),
+      );
+    } catch (e, st) {
+      debugPrint('PARSE ERROR: $e');
+      debugPrint('PARSE STACK: $st');
+      throw AppError.unknown();
+    }
   }
 
   FlightModel _mapToModel(Map<String, dynamic> item, String type) {
@@ -79,14 +116,17 @@ class AviationStackRemoteDs {
       flightNumber: flight['iataNumber']?.toString() ?? '',
       airline: airline['name']?.toString() ?? '',
       origin: isArrival
-          ? departure['iataCode']?.toString() ?? '' // came FROM here
+          ? departure['iataCode']?.toString() ??
+                '' // came FROM here
           : departure['iataCode']?.toString() ?? '', // CAI (departing)
       destination: isArrival
-          ? arrival['iataCode']?.toString() ?? '' // CAI (arriving)
+          ? arrival['iataCode']?.toString() ??
+                '' // CAI (arriving)
           : arrival['iataCode']?.toString() ?? '', // going TO here
       aircraftType: aircraft['icaoCode']?.toString(),
       aircraftRegistration: aircraft['regNumber']?.toString(),
-      scheduledArrival: _parseDate(
+      scheduledArrival:
+          _parseDate(
             isArrival ? arrival['scheduledTime'] : departure['scheduledTime'],
           ) ??
           DateTime.now(),

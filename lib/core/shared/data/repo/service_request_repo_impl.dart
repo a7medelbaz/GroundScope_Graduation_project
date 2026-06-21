@@ -30,4 +30,8 @@ class ServiceRequestRepoImpl implements ServiceRequestRepo {
 
   @override
   Future<Map<String, int>> fetchStatusSummary() => _ds.fetchStatusSummary();
+
+  @override
+  Stream<List<AdminServiceRequestModel>> watchForFlight(String flightId) =>
+      _ds.watchForFlight(flightId);
 }
