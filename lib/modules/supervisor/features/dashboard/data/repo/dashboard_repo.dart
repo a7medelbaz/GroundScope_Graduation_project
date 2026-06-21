@@ -10,4 +10,6 @@ abstract class DashboardRepo {
   Future<List<UnitModel>> fetchUnitsPreview(String serviceTypeId,
       {int limit = 3});
   Future<String?> fetchServiceTypeName(String serviceTypeId);
+  Stream<List<ServiceRequestModel>> watchPendingServiceRequests(
+      String serviceTypeId);
 }

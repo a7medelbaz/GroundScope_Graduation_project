@@ -82,6 +82,17 @@ class ServiceRequestRemoteDs {
     }
   }
 
+  /// Real-time stream of all service requests for a specific flight.
+  Stream<List<AdminServiceRequestModel>> watchForFlight(String flightId) {
+    return _supabase.client
+        .from('flight_service_requests')
+        .stream(primaryKey: ['id'])
+        .eq('flight_id', flightId)
+        .map((rows) => rows
+            .map((e) => AdminServiceRequestModel.fromMap(e))
+            .toList());
+  }
+
   /// Fetch summary count of requests by status for dashboard.
   Future<Map<String, int>> fetchStatusSummary() async {
     try {
