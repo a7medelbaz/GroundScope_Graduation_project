@@ -33,7 +33,7 @@ class GroundScopeApp extends StatelessWidget {
                   return BlocBuilder<AuthCubit, AuthState>(
                     builder: (context, state) {
                       return MaterialApp(
-                        key: ValueKey(state is AuthSuccess),
+                        key: ValueKey(state is AuthSuccess  ),
                         localizationsDelegates: context.localizationDelegates,
                         supportedLocales: context.supportedLocales,
                         locale: settings.locale,
