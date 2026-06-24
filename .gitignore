@@ -16,6 +16,7 @@ migrate_working_dir/
 *.iml
 *.ipr
 *.iws
+*.md
 .idea/
 .env
 CLAUDE_Roles.md
