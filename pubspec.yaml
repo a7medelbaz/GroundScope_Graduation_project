@@ -37,6 +37,7 @@ dependencies:
   image_picker: ^1.2.1
   dio: ^5.9.2
   url_launcher: ^6.3.1
+  firebase_messaging: ^16.4.1
 
 dev_dependencies:
   flutter_test:
