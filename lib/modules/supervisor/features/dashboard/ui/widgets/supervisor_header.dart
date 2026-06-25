@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ground_scope/core/themes/app_colors.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
+import 'package:ground_scope/core/router/routes.dart';
 import 'package:ground_scope/core/widgets/notification_button.dart';
 
 class SupervisorHeader extends StatelessWidget {
@@ -66,7 +67,10 @@ class SupervisorHeader extends StatelessWidget {
               ],
             ),
           ),
-          NotificationButton(onTap: () {}),
+          NotificationButton(
+            onTap: () =>
+                Navigator.of(context).pushNamed(Routes.notificationsScreen),
+          ),
         ],
       ),
     );

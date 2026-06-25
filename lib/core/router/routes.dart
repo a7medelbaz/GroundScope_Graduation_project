@@ -32,4 +32,7 @@ class Routes {
   static const String adminUsersScreen = '/adminUsersScreen';
   static const String adminFlightServiceRequestScreen =
       '/adminFlightServiceRequestScreen';
+
+  // ########## Shared
+  static const String notificationsScreen = '/notificationsScreen';
 }

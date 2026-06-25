@@ -1,6 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:ground_scope/core/notifications/logic/cubit/notification_cubit.dart';
+import 'package:ground_scope/core/notifications/service/notification_navigator.dart';
+import 'package:ground_scope/core/service/user_service.dart';
 import '../../../../core/themes/app_colors.dart';
 import '../../../../core/themes/app_text_styles.dart';
 import '../../../../core/utils/extensions/context_ext.dart';
@@ -39,6 +43,22 @@ class _SupervisorScaffoldBodyState extends State<_SupervisorScaffoldBody> {
     SupervisorReportsScreen(),
     SupervisorProfileScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final user = await GetIt.instance<UserService>().getUser();
+      if (user != null && mounted) {
+        context.read<NotificationCubit>().startUnreadWatch(user.id);
+        context.read<NotificationCubit>().load();
+      }
+      if (mounted) {
+        await NotificationNavigator.handleInitialMessage(context);
+        NotificationNavigator.listenForTaps(context);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
