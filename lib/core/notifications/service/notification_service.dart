@@ -59,26 +59,29 @@ class NotificationService {
 
   void _handleForegroundMessage(RemoteMessage message) {
     final notification = message.notification;
-    final android = message.notification?.android;
+    if (notification == null) return;
 
-    if (notification != null && android != null) {
-      _localNotifications.show(
-         notification.hashCode,
-         notification.title,
-        notification.body,
-       NotificationDetails(
-          android: AndroidNotificationDetails(
-            _channel.id,
-            _channel.name,
-            channelDescription: _channel.description,
-            importance: Importance.high,
-            priority: Priority.high,
-            icon: '@mipmap/ic_launcher',
-          ),
+    _localNotifications.show(
+      notification.hashCode,
+      notification.title,
+      notification.body,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          _channel.id,
+          _channel.name,
+          channelDescription: _channel.description,
+          importance: Importance.high,
+          priority: Priority.high,
+          icon: '@mipmap/ic_launcher',
         ),
-        payload: _encodePayload(message.data),
-      );
-    }
+        iOS: const DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+      ),
+      payload: _encodePayload(message.data),
+    );
   }
 
   Future<RemoteMessage?> getInitialMessage() => _fcm.getInitialMessage();
