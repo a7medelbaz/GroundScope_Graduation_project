@@ -1,7 +1,7 @@
 name: ground_scope
 description: "A new Flutter project for aviation ground operations."
 publish_to: "none"
-version: 1.0.1+1
+version: 1.0.2+1
 
 environment:
   sdk: ^3.9.2
