@@ -83,6 +83,10 @@ import '../shared/data/remote/service_request_remote_ds.dart';
 import '../shared/data/repo/service_request_repo.dart';
 import '../shared/data/repo/service_request_repo_impl.dart';
 import '../../modules/admin/features/service_requests/logic/cubit/service_request_cubit.dart';
+import '../notifications/data/remote/notification_remote_ds.dart';
+import '../notifications/data/repo/notification_repo.dart';
+import '../notifications/data/repo/notification_repo_impl.dart';
+import '../notifications/logic/cubit/notification_cubit.dart';
 
 final getIt = GetIt.instance;
 Future<void> setUpDependencies() async {
@@ -363,5 +367,16 @@ Future<void> setUpDependencies() async {
       getIt<ServiceTypeRepo>(),
       getIt<UserService>(),
     ),
+  );
+
+  // === NOTIFICATIONS ===
+  getIt.registerLazySingleton<NotificationRemoteDs>(
+    () => NotificationRemoteDs(getIt<SupabaseService>()),
+  );
+  getIt.registerLazySingleton<NotificationRepo>(
+    () => NotificationRepoImpl(getIt<NotificationRemoteDs>()),
+  );
+  getIt.registerFactory<NotificationCubit>(
+    () => NotificationCubit(getIt<NotificationRepo>()),
   );
 }
