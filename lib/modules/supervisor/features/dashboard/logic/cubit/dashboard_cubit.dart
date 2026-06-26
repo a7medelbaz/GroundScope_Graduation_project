@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,6 +21,7 @@ class DashboardCubit extends Cubit<DashboardState> {
 
   final DashboardRepo _dashboardRepo;
   final UserService _userService;
+  StreamSubscription<List<ServiceRequestModel>>? _requestSubscription;
 
   Future<void> loadDashboard() async {
     emit(state.copyWith(status: DashboardStatus.loading));
@@ -72,6 +75,8 @@ class DashboardCubit extends Cubit<DashboardState> {
         unitsPreview: unitsPreview,
         serviceTypeName: serviceTypeName,
       ));
+
+      await _startRealTimeSubscription(serviceTypeId);
     } on AppError catch (e) {
       emit(state.copyWith(status: DashboardStatus.failure, error: e));
     } catch (e, st) {
@@ -82,6 +87,29 @@ class DashboardCubit extends Cubit<DashboardState> {
   }
 
   Future<void> refresh() => loadDashboard();
+
+  Future<void> _startRealTimeSubscription(String serviceTypeId) async {
+    await _requestSubscription?.cancel();
+    _requestSubscription = _dashboardRepo
+        .watchPendingServiceRequests(serviceTypeId)
+        .listen(
+      (requests) {
+        if (state.status == DashboardStatus.loaded) {
+          emit(state.copyWith(
+            pendingRequests: requests,
+            pendingRequestCount: requests.length,
+          ));
+        }
+      },
+      onError: (e) => debugPrint('Dashboard real-time error: $e'),
+    );
+  }
+
+  @override
+  Future<void> close() {
+    _requestSubscription?.cancel();
+    return super.close();
+  }
 
   void onServiceRequestAssigned(String requestId) {
     final updated =

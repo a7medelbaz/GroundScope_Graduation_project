@@ -124,6 +124,19 @@ class DashboardRemoteDs {
     }
   }
 
+  /// Real-time stream of pending service requests for this service type.
+  Stream<List<ServiceRequestModel>> watchPendingServiceRequests(
+      String serviceTypeId) {
+    return _supabaseService.client
+        .from('flight_service_requests')
+        .stream(primaryKey: ['id'])
+        .eq('service_type_id', serviceTypeId)
+        .map((rows) => rows
+            .where((r) => r['status'] == 'pending')
+            .map((r) => ServiceRequestModel.fromJson(r))
+            .toList());
+  }
+
   Future<String?> fetchServiceTypeName(String serviceTypeId) async {
     try {
       final row = await _supabaseService.client

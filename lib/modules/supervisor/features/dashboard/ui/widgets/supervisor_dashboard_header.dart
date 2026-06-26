@@ -4,6 +4,7 @@ import 'package:ground_scope/core/themes/app_colors.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/datetime_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
+import 'package:ground_scope/core/router/routes.dart';
 import 'package:ground_scope/core/widgets/notification_button.dart';
 
 class SupervisorDashboardHeader extends StatelessWidget {
@@ -98,7 +99,10 @@ class SupervisorDashboardHeader extends StatelessWidget {
                   ],
                 ),
               ),
-              NotificationButton(onTap: () {}),
+              NotificationButton(
+                onTap: () => Navigator.of(context, rootNavigator: true)
+                    .pushNamed(Routes.notificationsScreen),
+              ),
             ],
           ),
           verticalSpacing(20),

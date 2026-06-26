@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,6 +23,7 @@ class ServiceRequestCubit extends Cubit<ServiceRequestState> {
   final ServiceRequestRepo _requestRepo;
   final ServiceTypeRepo _serviceTypeRepo;
   final UserService _userService;
+  StreamSubscription<List<AdminServiceRequestModel>>? _subscription;
 
   Future<void> init(FlightModel flight) async {
     emit(state.copyWith(
@@ -38,6 +41,8 @@ class ServiceRequestCubit extends Cubit<ServiceRequestState> {
         existingRequests: results[0] as List<AdminServiceRequestModel>,
         allServiceTypes:  results[1] as List<ServiceTypeModel>,
       ));
+
+      _startRealTimeWatch(flight.id);
     } on AppError catch (e) {
       emit(state.copyWith(status: SrLoadStatus.failure, error: e));
     } catch (e, st) {
@@ -47,6 +52,43 @@ class ServiceRequestCubit extends Cubit<ServiceRequestState> {
         error: AppError.unknown(),
       ));
     }
+  }
+
+  void _startRealTimeWatch(String flightId) {
+    _subscription?.cancel();
+    _subscription = _requestRepo.watchForFlight(flightId).listen(
+      (requests) {
+        if (state.status == SrLoadStatus.success) {
+          // stream() has no joins — enrich serviceTypeName from loaded service types
+          final enriched = requests.map((r) {
+            if (r.serviceTypeName != null) return r;
+            final matchName = state.allServiceTypes
+                .where((st) => st.id == r.serviceTypeId)
+                .map((st) => st.name)
+                .firstOrNull;
+            return AdminServiceRequestModel(
+              id:                   r.id,
+              flightId:             r.flightId,
+              serviceTypeId:        r.serviceTypeId,
+              requestedBy:          r.requestedBy,
+              assignedSupervisorId: r.assignedSupervisorId,
+              status:               r.status,
+              notes:                r.notes,
+              createdAt:            r.createdAt,
+              serviceTypeName:      matchName,
+            );
+          }).toList();
+          emit(state.copyWith(existingRequests: enriched));
+        }
+      },
+      onError: (e) => debugPrint('ServiceRequest real-time error: $e'),
+    );
+  }
+
+  @override
+  Future<void> close() {
+    _subscription?.cancel();
+    return super.close();
   }
 
   void toggleServiceType(String serviceTypeId) {

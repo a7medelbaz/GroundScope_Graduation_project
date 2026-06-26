@@ -33,4 +33,9 @@ class DashboardRepoImpl implements DashboardRepo {
   @override
   Future<String?> fetchServiceTypeName(String serviceTypeId) =>
       _remoteDs.fetchServiceTypeName(serviceTypeId);
+
+  @override
+  Stream<List<ServiceRequestModel>> watchPendingServiceRequests(
+          String serviceTypeId) =>
+      _remoteDs.watchPendingServiceRequests(serviceTypeId);
 }

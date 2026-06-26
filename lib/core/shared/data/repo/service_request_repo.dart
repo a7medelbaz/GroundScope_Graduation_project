@@ -13,4 +13,6 @@ abstract class ServiceRequestRepo {
   Future<void> cancel(String requestId);
 
   Future<Map<String, int>> fetchStatusSummary();
+
+  Stream<List<AdminServiceRequestModel>> watchForFlight(String flightId);
 }

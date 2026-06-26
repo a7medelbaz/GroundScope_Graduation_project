@@ -52,6 +52,8 @@ import '../../modules/supervisor/features/tasks/logic/cubit/supervisor_task_deta
 import '../../modules/supervisor/features/tasks/ui/supervisor_task_detail_screen.dart';
 import '../../modules/worker/core/main_navigation/ui/worker_scaffold.dart';
 import '../auth/ui/login_screen.dart';
+import '../notifications/logic/cubit/notification_cubit.dart';
+import '../notifications/ui/notifications_screen.dart';
 import '../onboarding/ui/on_boarding_screen.dart';
 
 class AppRouter {
@@ -283,6 +285,15 @@ class AppRouter {
               ),
             ],
             child: const UsersListScreen(),
+          ),
+          settings,
+        );
+
+      case Routes.notificationsScreen:
+        return _buildRoute(
+          BlocProvider.value(
+            value: getIt<NotificationCubit>(),
+            child: const NotificationsScreen(),
           ),
           settings,
         );

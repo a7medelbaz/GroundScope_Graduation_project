@@ -45,12 +45,14 @@ class FlightFilterChips extends StatelessWidget {
 
   String _label(FlightsFilter filter) {
     return switch (filter) {
-      FlightsFilter.all => 'all'.tr(),
-      FlightsFilter.arrivals => 'filter_arrivals'.tr(),
+      FlightsFilter.all        => 'all'.tr(),
+      FlightsFilter.active     => 'filter_active'.tr(),
+      FlightsFilter.scheduled  => 'scheduled'.tr(),
+      FlightsFilter.ready      => 'filter_ready'.tr(),
+      FlightsFilter.departed   => 'filter_departed'.tr(),
+      FlightsFilter.arrivals   => 'filter_arrivals'.tr(),
       FlightsFilter.departures => 'filter_departures'.tr(),
-      FlightsFilter.scheduled => 'scheduled'.tr(),
-      FlightsFilter.active => 'active'.tr(),
-      FlightsFilter.cancelled => 'cancelled'.tr(),
+      FlightsFilter.cancelled  => 'cancelled'.tr(),
     };
   }
 }

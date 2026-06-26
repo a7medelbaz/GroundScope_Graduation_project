@@ -32,9 +32,20 @@ class TaskDetailsRemoteDs {
     required String userId,
   }) async {
     try {
+      final taskData = await supabaseService.client
+          .from('tasks')
+          .select('actual_start')
+          .eq('id', taskId)
+          .single();
+
+      final updateMap = <String, dynamic>{'status': 'paused'};
+      if (taskData['actual_start'] == null) {
+        updateMap['actual_start'] = DateTime.now().toIso8601String();
+      }
+
       await supabaseService.client
           .from('tasks')
-          .update({'status': 'paused'})
+          .update(updateMap)
           .eq('id', taskId);
 
       await supabaseService.client.from('task_pauses').insert({
@@ -70,10 +81,67 @@ class TaskDetailsRemoteDs {
     required TaskStatus newStatus,
   }) async {
     try {
+      // Step 1: Update task status
       await supabaseService.client
           .from('tasks')
-          .update({'status': newStatus.dbValue})
+          .update({
+            'status': newStatus.dbValue,
+            'updated_at': DateTime.now().toIso8601String(),
+            if (newStatus == TaskStatus.inProgress)
+              'actual_start': DateTime.now().toIso8601String(),
+            if (newStatus == TaskStatus.completed ||
+                newStatus == TaskStatus.cancelled)
+              'actual_end': DateTime.now().toIso8601String(),
+          })
           .eq('id', taskId);
+
+      // Step 2: Fetch task to get unit_id and service request keys
+      final taskData = await supabaseService.client
+          .from('tasks')
+          .select('unit_id, flight_id, service_type_id')
+          .eq('id', taskId)
+          .single();
+
+      final unitId        = taskData['unit_id'] as String?;
+      final flightId      = taskData['flight_id'] as String?;
+      final serviceTypeId = taskData['service_type_id'] as String?;
+
+      // Step 3: Update unit status
+      if (unitId != null) {
+        final unitStatus = switch (newStatus) {
+          TaskStatus.inProgress => 'busy',
+          TaskStatus.completed  => 'available',
+          TaskStatus.cancelled  => 'available',
+          _                     => null,
+        };
+        if (unitStatus != null) {
+          await supabaseService.client
+              .from('units')
+              .update({'status': unitStatus})
+              .eq('id', unitId);
+        }
+      }
+
+      // Step 4: Update flight_service_request status
+      if (flightId != null && serviceTypeId != null) {
+        final fsrStatus = switch (newStatus) {
+          TaskStatus.inProgress => 'in_progress',
+          TaskStatus.completed  => 'completed',
+          TaskStatus.cancelled  => 'cancelled',
+          _                     => null,
+        };
+        if (fsrStatus != null) {
+          await supabaseService.client
+              .from('flight_service_requests')
+              .update({
+                'status': fsrStatus,
+                'updated_at': DateTime.now().toIso8601String(),
+              })
+              .eq('flight_id', flightId)
+              .eq('service_type_id', serviceTypeId)
+              .eq('status', 'assigned');
+        }
+      }
     } catch (e) {
       throw ErrorHandler.handle(e);
     }

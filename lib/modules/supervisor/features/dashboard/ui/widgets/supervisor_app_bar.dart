@@ -4,6 +4,7 @@ import '../../../../../../../core/themes/app_colors.dart';
 import '../../../../../../../core/themes/app_text_styles.dart';
 import '../../../../../../../core/utils/extensions/datetime_ext.dart';
 import '../../../../../../../core/utils/spacing.dart';
+import '../../../../../../core/router/routes.dart';
 import '../../../../../../core/widgets/notification_button.dart';
 
 class SupervisorAppBar extends StatelessWidget {
@@ -122,9 +123,8 @@ class SupervisorAppBar extends StatelessWidget {
 
               // Notification icon
               NotificationButton(
-                onTap: () {
-                  // ToDo Build this screen
-                },
+                onTap: () => Navigator.of(context, rootNavigator: true)
+                    .pushNamed(Routes.notificationsScreen),
               ),
             ],
           ),

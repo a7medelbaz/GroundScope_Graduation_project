@@ -30,7 +30,7 @@ platform :android do
       android_artifact_type: "APK",
       android_artifact_path: "#{project_root}/build/app/outputs/flutter-apk/app-production-release.apk",
       testers: testers_list.join(", "),
-      release_notes: "test this version of the app"
+      release_notes: "Test Notifications RealTime"
     )
   end
 end

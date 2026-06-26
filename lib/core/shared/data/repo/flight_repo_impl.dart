@@ -25,6 +25,20 @@ class FlightRepoImpl implements FlightRepo {
   }
 
   @override
+  Future<List<FlightModel>> fetchActiveFlights() =>
+      flightsRemoteDs.fetchActiveFlights();
+
+  @override
+  Future<void> batchUpdateStatus({
+    required List<String> flightIds,
+    required String newStatus,
+  }) =>
+      flightsRemoteDs.batchUpdateStatus(
+        flightIds: flightIds,
+        newStatus: newStatus,
+      );
+
+  @override
   Future<List<FlightModel>> fetchFlights({
     FlightStatus? statusFilter,
     FlightType? typeFilter,

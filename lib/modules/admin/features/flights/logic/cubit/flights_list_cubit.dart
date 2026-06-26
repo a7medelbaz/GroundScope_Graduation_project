@@ -1,9 +1,11 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/error/models/app_error.dart';
 import 'package:ground_scope/core/shared/data/models/flight_model.dart';
 import 'package:ground_scope/core/shared/data/models/stand_model.dart';
 import 'package:ground_scope/core/shared/data/repo/flight_repo.dart';
+import 'package:ground_scope/core/utils/flight_status_checker.dart';
 
 part 'flights_list_state.dart';
 
@@ -15,38 +17,64 @@ class FlightsListCubit extends Cubit<FlightsListState> {
   Future<void> load() async {
     emit(state.copyWith(status: FlightsListStatus.loading));
     try {
-      final results = await Future.wait([
-        _repo.fetchFlights(),
-        _repo.fetchFlightsNeedingAttention(),
-      ]);
-      emit(
-        state.copyWith(
-          status: FlightsListStatus.success,
-          all: results[0],
-          warningFlights: results[1],
-        ),
-      );
-      _applyFilters();
+      // 1. Fetch active flights (today + next 12h)
+      final flights = await _repo.fetchActiveFlights();
+
+      // 2. Auto-update statuses silently (best-effort, won't block UI)
+      await _runAutoStatusUpdates(flights);
+
+      // 3. Re-fetch to get updated statuses
+      final updated = await _repo.fetchActiveFlights();
+
+      // 4. Sort
+      final sorted = [...updated]..sort(FlightStatusChecker.sortFlights);
+
+      // 5. Warning flights
+      final warnings = sorted.where(FlightStatusChecker.isWarning).toList();
+
+      emit(state.copyWith(
+        status: FlightsListStatus.success,
+        all: sorted,
+        filtered: _buildFiltered(sorted, state.filter, state.searchQuery),
+        warningFlights: warnings,
+      ));
     } on AppError catch (e) {
       emit(state.copyWith(status: FlightsListStatus.failure, error: e));
     } catch (_) {
-      emit(
-        state.copyWith(
-          status: FlightsListStatus.failure,
-          error: AppError.unknown(),
-        ),
-      );
+      emit(state.copyWith(
+        status: FlightsListStatus.failure,
+        error: AppError.unknown(),
+      ));
+    }
+  }
+
+  /// Silent best-effort auto-status updates. Never throws.
+  Future<void> _runAutoStatusUpdates(List<FlightModel> flights) async {
+    try {
+      final updates = FlightStatusChecker.checkAutoUpdates(flights);
+      for (final entry in updates.entries) {
+        await _repo.batchUpdateStatus(
+          flightIds: entry.value,
+          newStatus: entry.key,
+        );
+      }
+    } catch (e) {
+      debugPrint('Auto-status update failed: $e');
     }
   }
 
   void onSearchChanged(String query) {
-    emit(state.copyWith(searchQuery: query));
-    _applyFilters();
+    emit(state.copyWith(
+      searchQuery: query,
+      filtered: _buildFiltered(state.all, state.filter, query),
+    ));
   }
 
   void onFilterChanged(FlightsFilter filter) {
-    emit(state.copyWith(filter: filter));
-    _applyFilters();
+    emit(state.copyWith(
+      filter: filter,
+      filtered: _buildFiltered(state.all, filter, state.searchQuery),
+    ));
   }
 
   /// Returns true if assignment succeeded.
@@ -147,13 +175,7 @@ class FlightsListCubit extends Cubit<FlightsListState> {
         excludeFlightId: flight.id,
       );
 
-  bool isWarning(FlightModel f) {
-    final now = DateTime.now();
-    return f.standId == null &&
-        f.status == FlightStatus.scheduled &&
-        f.scheduledArrival.isAfter(now) &&
-        f.scheduledArrival.isBefore(now.add(const Duration(hours: 3)));
-  }
+  bool isWarning(FlightModel f) => FlightStatusChecker.isWarning(f);
 
   Future<void> _refreshFlight(String flightId) async {
     try {
@@ -161,58 +183,50 @@ class FlightsListCubit extends Cubit<FlightsListState> {
       final updatedAll = state.all
           .map((f) => f.id == flightId ? updated : f)
           .toList();
-      emit(
-        state.copyWith(
-          all: updatedAll,
-          warningFlights: updatedAll.where(isWarning).toList(),
-        ),
-      );
-      _applyFilters();
+      emit(state.copyWith(
+        all: updatedAll,
+        filtered: _buildFiltered(updatedAll, state.filter, state.searchQuery),
+        warningFlights: updatedAll.where(isWarning).toList(),
+      ));
     } catch (_) {
       await load();
     }
   }
 
-  void _applyFilters() {
-    var list = state.all;
+  List<FlightModel> _buildFiltered(
+    List<FlightModel> flights,
+    FlightsFilter filter,
+    String query,
+  ) {
+    var result = switch (filter) {
+      FlightsFilter.all        => flights,
+      FlightsFilter.active     => flights.where((f) =>
+          f.status == FlightStatus.landed ||
+          f.status == FlightStatus.inService).toList(),
+      FlightsFilter.scheduled  => flights
+          .where((f) => f.status == FlightStatus.scheduled).toList(),
+      FlightsFilter.ready      => flights
+          .where((f) => f.status == FlightStatus.ready).toList(),
+      FlightsFilter.departed   => flights
+          .where((f) => f.status == FlightStatus.departed).toList(),
+      FlightsFilter.arrivals   => flights
+          .where((f) => f.flightType == FlightType.arrival).toList(),
+      FlightsFilter.departures => flights
+          .where((f) => f.flightType == FlightType.departure).toList(),
+      FlightsFilter.cancelled  => flights
+          .where((f) => f.status == FlightStatus.cancelled).toList(),
+    };
 
-    if (state.searchQuery.isNotEmpty) {
-      final q = state.searchQuery.toLowerCase();
-      list = list
-          .where(
-            (f) =>
-                f.flightNumber.toLowerCase().contains(q) ||
-                f.airline.toLowerCase().contains(q) ||
-                f.origin.toLowerCase().contains(q) ||
-                f.destination.toLowerCase().contains(q),
-          )
-          .toList();
+    if (query.isNotEmpty) {
+      final q = query.toLowerCase();
+      result = result.where((f) =>
+        f.flightNumber.toLowerCase().contains(q) ||
+        f.airline.toLowerCase().contains(q) ||
+        f.origin.toLowerCase().contains(q) ||
+        f.destination.toLowerCase().contains(q),
+      ).toList();
     }
 
-    switch (state.filter) {
-      case FlightsFilter.arrivals:
-        list = list.where((f) => f.flightType == FlightType.arrival).toList();
-      case FlightsFilter.departures:
-        list = list
-            .where((f) => f.flightType == FlightType.departure)
-            .toList();
-      case FlightsFilter.scheduled:
-        list = list.where((f) => f.status == FlightStatus.scheduled).toList();
-      case FlightsFilter.active:
-        list = list
-            .where(
-              (f) =>
-                  f.status == FlightStatus.landed ||
-                  f.status == FlightStatus.inService ||
-                  f.status == FlightStatus.ready,
-            )
-            .toList();
-      case FlightsFilter.cancelled:
-        list = list.where((f) => f.status == FlightStatus.cancelled).toList();
-      case FlightsFilter.all:
-        break;
-    }
-
-    emit(state.copyWith(filtered: list));
+    return result;
   }
 }

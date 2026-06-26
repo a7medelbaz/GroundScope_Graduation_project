@@ -1,6 +1,6 @@
 part of 'flights_list_cubit.dart';
 
-enum FlightsFilter { all, arrivals, departures, scheduled, active, cancelled }
+enum FlightsFilter { all, active, scheduled, ready, departed, arrivals, departures, cancelled }
 
 enum FlightsListStatus { initial, loading, success, failure }
 

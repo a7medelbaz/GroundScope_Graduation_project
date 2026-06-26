@@ -62,6 +62,12 @@ class AssignUnitRemoteDs {
 
       final taskId = taskRow['id'] as String;
 
+      // Set unit status to busy
+      await _supabaseService.client
+          .from('units')
+          .update({'status': 'busy'})
+          .eq('id', unitId);
+
       if (checklistItems.isNotEmpty) {
         final rows = checklistItems
             .asMap()
