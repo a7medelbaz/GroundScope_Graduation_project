@@ -123,7 +123,7 @@ class SupervisorAppBar extends StatelessWidget {
 
               // Notification icon
               NotificationButton(
-                onTap: () => Navigator.of(context)
+                onTap: () => Navigator.of(context, rootNavigator: true)
                     .pushNamed(Routes.notificationsScreen),
               ),
             ],

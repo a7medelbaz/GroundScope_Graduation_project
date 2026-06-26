@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+
 import '../../../notifications/service/notification_service.dart';
 import '../../../service/secure_storage.dart';
 import '../../../utils/app_constants.dart';
@@ -29,10 +30,12 @@ class AuthRepoImpl implements AuthRepo {
     // Save FCM token — non-blocking
     try {
       final token = await NotificationService.instance.getToken();
+      debugPrint('FCM TOKEN VALUE: $token');
       if (token != null) {
         await authRemoteDs.supabaseService.client
             .from('users')
-            .update({'fcm_token': token}).eq('id', userModel.id);
+            .update({'fcm_token': token})
+            .eq('id', userModel.id);
       }
     } catch (e) {
       debugPrint('FCM token save failed: $e');
@@ -43,7 +46,8 @@ class AuthRepoImpl implements AuthRepo {
       try {
         await authRemoteDs.supabaseService.client
             .from('users')
-            .update({'fcm_token': newToken}).eq('id', userModel.id);
+            .update({'fcm_token': newToken})
+            .eq('id', userModel.id);
       } catch (_) {}
     });
 
@@ -74,12 +78,12 @@ class AuthRepoImpl implements AuthRepo {
   Future<void> logout() async {
     // Clear FCM token before signing out — non-blocking
     try {
-      final authUser =
-          authRemoteDs.supabaseService.client.auth.currentUser;
+      final authUser = authRemoteDs.supabaseService.client.auth.currentUser;
       if (authUser != null) {
         await authRemoteDs.supabaseService.client
             .from('users')
-            .update({'fcm_token': null}).eq('auth_id', authUser.id);
+            .update({'fcm_token': null})
+            .eq('auth_id', authUser.id);
       }
     } catch (_) {}
 

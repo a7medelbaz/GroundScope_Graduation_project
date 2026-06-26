@@ -152,6 +152,17 @@ feature/
 
 **Key note**: `AddReportScreen` is both tab 2 (not poppable) and a pushed route — guard all back-nav with `Navigator.canPop(context)`.
 
+**Localization**: All worker UI strings are fully localized via `easy_localization`. Namespaced keys used:
+
+| Namespace | Coverage |
+|---|---|
+| `worker_home.*` | Greeting, "On Shift", filter chips (All/Assigned/In Progress/Paused/Done), empty states |
+| `worker_add_report.*` | Form labels, image picker, task selector, success/error messages |
+| `worker_reports.*` | App bar title/subtitle, filter strip, empty states, report detail row labels |
+| `worker_task_details.*` | Header, meta section, checklist, notes, pause history, action buttons, dialogs |
+
+Reused top-level keys: `good_morning/afternoon/evening`, `filter_all`, `filter_in_progress`, `filter_open`, `filter_acknowledged`, `filter_resolved`, `retry`, `cancel`, `checklist`, `scheduled_start`, `scheduled_end`, `task_info`, `task_details`, `primary_info`, `report_id`, `report_type`, `report_severity`, `attached_evidence`, `evidence`, `tap_to_expand`, `no_photo_attached`, `timeline`, `filed`, `at`, `acknowledged`, `resolved`, `something_went_wrong`, `image_picker.take_photo`, `image_picker.choose_from_gallery`.
+
 ---
 
 ## Module: Supervisor (`lib/modules/supervisor/`)
@@ -194,6 +205,39 @@ All 5 cubits are provided via `MultiBlocProvider` in `UserAuthenticatedCheck` (n
 - `actionReportId` uses sentinel-object pattern in `copyWith` to allow nullable clearing
 - `AppDialogs.showConfirm` required before all actions
 - Top accent bar (`rh(4)`) colored by severity
+- **FAB** on `SupervisorReportsScreen` → navigates to `SupervisorAddReportScreen` (see Add Report feature)
+
+### Add Report Feature (`lib/modules/supervisor/features/add_report/`)
+
+Full data/logic/ui feature allowing supervisors to file reports without an associated task.
+
+```
+add_report/
+├── data/
+│   ├── remote/supervisor_add_report_remote_ds.dart   # Inserts into `reports` table; uploads to `report-images` bucket
+│   └── repo/
+│       ├── supervisor_add_report_repo.dart             # Abstract interface
+│       └── supervisor_add_report_repo_impl.dart        # Delegates to remote DS
+├── logic/cubit/
+│   ├── supervisor_add_report_cubit.dart               # selectTarget, selectType, selectSeverity, pickImage, removeImage, submit, resetForm
+│   └── supervisor_add_report_state.dart               # SupervisorAddReportStatus enum + SupervisorAddReportState
+└── ui/
+    └── supervisor_add_report_screen.dart              # Full form screen with animated Send To selector, type/severity pickers, description, image picker
+```
+
+**Key design decisions:**
+- `reportedTo: 'admin' | 'worker'` — animated two-card selector; admin card = `AppColors.secondary200` (red), worker card = `AppColors.primary200` (blue)
+- No `task_id` or `flight_id` in the insert — supervisor reports are standalone; **DB requires these columns to be nullable** and a `reported_to TEXT` column to exist
+- Image picker widgets are self-contained inline in the screen (not reused from worker's `AddReportCubit`)
+- Error display: `state.error?.serverMessage ?? state.error?.messageKey ?? 'Something went wrong'`
+- DI: `SupervisorAddReportRemoteDs` and `SupervisorAddReportRepo` are `registerLazySingleton`; `SupervisorAddReportCubit` is `registerFactory`
+
+**Required DB migration** (run once in Supabase):
+```sql
+ALTER TABLE reports ALTER COLUMN task_id DROP NOT NULL;
+ALTER TABLE reports ALTER COLUMN flight_id DROP NOT NULL;
+ALTER TABLE reports ADD COLUMN IF NOT EXISTS reported_to TEXT;
+```
 
 ### Profile Tab
 - Reads from `UserService.getUser()` — **no network call**, cache only
@@ -284,8 +328,9 @@ try {
   emit(state.copyWith(status: MyStatus.success, data: result));
 } on AppError catch (e) {
   emit(state.copyWith(status: MyStatus.failure, error: e));
-} catch (_) {
-  emit(state.copyWith(status: MyStatus.failure, error: AppError.unknown()));
+} catch (e) {
+  // Always use SupabaseErrorHandler — never swallow with catch (_)
+  emit(state.copyWith(status: MyStatus.failure, error: SupabaseErrorHandler.handle(e)));
 }
 
 // AppError factory constructors:
@@ -294,6 +339,48 @@ AppError.noInternet()
 AppError.timeout()
 AppError.unauthorized()
 AppError.serverError()
+```
+
+**Critical**: Never use `catch (_)` — it discards real server errors. Always `catch (e)` + `SupabaseErrorHandler.handle(e)` so `serverMessage` is preserved and shown to the user.
+
+---
+
+## Localization
+
+All user-facing strings use `easy_localization` (`.tr()`). JSON files: `assets/lang/en.json` and `assets/lang/ar.json`.
+
+### Key namespaces
+
+| Namespace | Module | Description |
+|---|---|---|
+| `errors.*` | Global | Network / auth / server error messages |
+| `app_dialogs.*` | Global | Dialog button labels (cancel, ok, confirm…) |
+| `image_picker.*` | Global | take_photo, choose_from_gallery, upload_image |
+| `auth.*` | Auth | Login form strings + validation messages |
+| `worker_profile.*` | Worker | Profile screen + settings section |
+| `worker_home.*` | Worker | Greeting, shift status, task filter chips, empty states |
+| `worker_add_report.*` | Worker | Add report form: labels, hints, task selector, image picker |
+| `worker_reports.*` | Worker | Reports list: app bar, filters, empty states, detail row labels |
+| `worker_task_details.*` | Worker | Task detail: header, meta, checklist, pause history, action buttons, dialogs |
+
+### Named args pattern
+
+```dart
+// Simple
+'worker_home.on_shift'.tr()
+
+// With named args
+'worker_home.no_status_tasks'.tr(namedArgs: {'status': status.label})
+'worker_task_details.stand'.tr(namedArgs: {'code': task.standCode!})
+'worker_task_details.resumed_after'.tr(namedArgs: {'minutes': '${p.duration.inMinutes}'})
+```
+
+### Section headers (uppercase display)
+
+Store keys in Title Case, apply `.toUpperCase()` in the widget:
+```dart
+title: 'primary_info'.tr().toUpperCase()   // → "PRIMARY INFO" / "المعلومات الأساسية"
+title: 'timeline'.tr().toUpperCase()
 ```
 
 ---
@@ -324,6 +411,7 @@ context.pop()                // guarded Navigator.pop
 context.pushNamed(Routes.x)
 context.showErrorSnackBar('msg')
 context.showSuccessSnackBar('msg')
+context.showMessageSnackBar('msg', type: SnackBarType.success/error)
 ```
 
 ### DateTime Extensions
@@ -414,7 +502,7 @@ Always `flutter_screenutil` — `.sp`/`.w`/`.h`/`.r` or the `rw/rh/rr/rf` helper
 
 ### Strings
 
-All user-facing strings via `easy_localization` (`.tr()`). Add to both `assets/lang/en.json` and `assets/lang/ar.json`.
+All user-facing strings via `easy_localization` (`.tr()`). Add to both `assets/lang/en.json` and `assets/lang/ar.json`. Use namespaced keys for feature-specific strings (e.g. `worker_home.*`, `worker_add_report.*`). Reuse existing top-level keys where they already exist.
 
 ### AppDialogs
 
@@ -458,6 +546,7 @@ SomeState copyWith({ Object? myNullableField = _clear }) {
 - Register every new cubit, repo, and DS in `dependency_injection.dart`.
 - Add every new route to `routes.dart` and handle it in `app_routers.dart`.
 - Use `AppError` factory constructors for all exception handling.
+- Use `SupabaseErrorHandler.handle(e)` in every `catch (e)` block — never `catch (_)`.
 - Use `AppTextStyles.*` and `AppColors.*` / `context.customColors.*` for all styling.
 - Reuse shared models from `lib/core/shared/data/models/` before creating new ones.
 - Use `AppDialogs.showConfirm` before any destructive action.
@@ -469,6 +558,7 @@ SomeState copyWith({ Object? myNullableField = _clear }) {
 
 - Don't hardcode pixel values — always `rw/rh/rr/rf`.
 - Don't hardcode user-facing strings — always `.tr()`.
+- Don't use `catch (_)` — it swallows real server error messages; always `catch (e)`.
 - Don't access Supabase client directly — always via `SupabaseService` or a repo.
 - Don't put feature logic in global cubits (`AuthCubit`, `AppSettingsCubit`).
 - Don't skip the repository layer.

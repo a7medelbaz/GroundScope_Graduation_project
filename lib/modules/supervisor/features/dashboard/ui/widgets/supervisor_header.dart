@@ -69,7 +69,7 @@ class SupervisorHeader extends StatelessWidget {
           ),
           NotificationButton(
             onTap: () =>
-                Navigator.of(context).pushNamed(Routes.notificationsScreen),
+                Navigator.of(context, rootNavigator: true).pushNamed(Routes.notificationsScreen),
           ),
         ],
       ),
