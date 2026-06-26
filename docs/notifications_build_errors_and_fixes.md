@@ -23,7 +23,7 @@ Five separate issues appeared when integrating `flutter_local_notifications`. Th
 
 **The full chain:**
 
-```
+```Shell
 Missing pubspec entry
     └── 13 fake "undefined" errors in the IDE
           └── flutter pub get → Build starts
