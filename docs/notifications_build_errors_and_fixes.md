@@ -137,9 +137,9 @@ Android's **core library desugaring** solves this: it is a build-time process wh
 
 Two things were missing from `android/app/build.gradle.kts`:
 
-| What's missing | Effect |
-|---|---|
-| `isCoreLibraryDesugaringEnabled = true` | Tells the compiler to perform bytecode rewriting |
+| What's missing                                                        | Effect                                                    |
+| --------------------------------------------------------------------- | --------------------------------------------------------- |
+| `isCoreLibraryDesugaringEnabled = true`                             | Tells the compiler to perform bytecode rewriting          |
 | `coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")` | Provides the actual backported implementations at runtime |
 
 Both are required. The flag without the library gives a different build error. The library without the flag does nothing.
@@ -268,6 +268,7 @@ When **JDK 21** compiles those subprojects with `--source 8 --target 8`, it emit
 ### Why you can't just edit the plugin files
 
 The plugin `build.gradle` files live inside Flutter's pub cache (`~/.pub-cache/hosted/pub.dev/...`). Editing them directly would:
+
 - Be overwritten on the next `flutter pub get`
 - Not be tracked by the repo
 - Be machine-specific
@@ -371,6 +372,7 @@ Every single Android SDK package disappeared from the compile classpath of `flut
 In **AGP 8.9.1**, the `android.jar` (the file that provides every `android.*` package) is added to each plugin subproject's `JavaCompile` task using a **lazy classpath provider**. This provider is registered and wired during Gradle's **task graph resolution phase** — which runs *after* `projectsEvaluated`.
 
 The sequence without our block:
+
 ```
 projectsEvaluated fires
     └── task graph resolution begins
@@ -379,6 +381,7 @@ projectsEvaluated fires
 ```
 
 The sequence with our block:
+
 ```
 projectsEvaluated fires
     └── tasks.withType<JavaCompile>() → forces EAGER realization of compileDebugJavaWithJavac NOW
@@ -404,13 +407,13 @@ Remove the `gradle.projectsEvaluated` block entirely. The Java 8 warnings are co
 
 ## 7. Full Diff Summary
 
-| File | What changed | Why |
-|---|---|---|
-| `pubspec.yaml` | Added `flutter_local_notifications: ^18.0.0` | Package was used in code but missing from dependencies |
-| `android/app/build.gradle.kts` | Added `isCoreLibraryDesugaringEnabled = true` in `compileOptions` | Required for plugins that use Java 8+ time APIs on Android < 26 |
-| `android/app/build.gradle.kts` | Added `dependencies { coreLibraryDesugaring(...) }` block | Provides the actual backported `java.time.*` implementations |
-| `notification_service.dart` | Removed `android != null` guard; added `DarwinNotificationDetails` | Foreground notifications were silently dropped on iOS |
-| `android/build.gradle.kts` | **Nothing** — two approaches tried and reverted (see Section 6) | Any root-level `JavaCompile` override breaks AGP 8.9.1's lazy classpath setup |
+| File                             | What changed                                                           | Why                                                                            |
+| -------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `pubspec.yaml`                 | Added`flutter_local_notifications: ^18.0.0`                          | Package was used in code but missing from dependencies                         |
+| `android/app/build.gradle.kts` | Added`isCoreLibraryDesugaringEnabled = true` in `compileOptions`   | Required for plugins that use Java 8+ time APIs on Android < 26                |
+| `android/app/build.gradle.kts` | Added`dependencies { coreLibraryDesugaring(...) }` block             | Provides the actual backported`java.time.*` implementations                  |
+| `notification_service.dart`    | Removed`android != null` guard; added `DarwinNotificationDetails`  | Foreground notifications were silently dropped on iOS                          |
+| `android/build.gradle.kts`     | **Nothing** — two approaches tried and reverted (see Section 6) | Any root-level`JavaCompile` override breaks AGP 8.9.1's lazy classpath setup |
 
 ### Correct order to apply the real fixes
 
