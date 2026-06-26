@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:ground_scope/core/router/routes.dart';
 import 'package:ground_scope/core/shared/data/models/task_model.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
@@ -20,7 +21,10 @@ class SupervisorTaskCard extends StatelessWidget {
     final priorityColor = TaskUiHelpers.priorityColor(task.priority);
 
     return GestureDetector(
-      onTap: () {},
+      onTap: () => Navigator.of(context).pushNamed(
+        Routes.supervisorTaskDetailScreen,
+        arguments: {'taskId': task.id},
+      ),
       child: Container(
         margin: EdgeInsets.only(bottom: rh(12)),
         decoration: BoxDecoration(

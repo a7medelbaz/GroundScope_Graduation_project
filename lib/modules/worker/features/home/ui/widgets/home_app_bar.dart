@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../../core/auth/data/models/user_date.dart';
@@ -17,11 +18,11 @@ class HomeAppBar extends StatelessWidget {
   final UserModel userModel;
   final UnitModel unitModel;
 
-  String get _greeting {
+  String _greeting(BuildContext context) {
     final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
+    if (hour < 12) return 'good_morning'.tr();
+    if (hour < 17) return 'good_afternoon'.tr();
+    return 'good_evening'.tr();
   }
 
   @override
@@ -60,7 +61,7 @@ class HomeAppBar extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _greeting,
+                      _greeting(context),
                       style: AppTextStyles.font14Light.copyWith(
                         color: AppColors.primary100,
                         letterSpacing: 0.4,
@@ -132,7 +133,7 @@ class HomeAppBar extends StatelessWidget {
                   ),
                   horizontalSpacing(8),
                   Text(
-                    'On Shift',
+                    'worker_home.on_shift'.tr(),
                     style: AppTextStyles.font12Light.copyWith(
                       color: AppColors.white,
                       letterSpacing: 0.3,

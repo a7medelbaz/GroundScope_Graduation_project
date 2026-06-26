@@ -16,66 +16,62 @@ class SupervisorSettingsTiles extends StatelessWidget {
   Widget build(BuildContext context) {
     final cc = context.customColors;
     final isArabic = context.isArabic;
+    final isDark = context.isDarkMode;
 
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: rw(16)),
+    return Container(
+      decoration: BoxDecoration(
+        color: cc.surface,
+        borderRadius: BorderRadius.circular(rr(16)),
+        border: Border.all(color: cc.border.withValues(alpha: 0.5)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Column(
         children: [
-          // Group 1 — preferences
-          Container(
-            decoration: BoxDecoration(
-              color: cc.surface,
-              borderRadius: BorderRadius.circular(rr(12)),
-              border: Border.all(color: cc.border.withValues(alpha: 0.5)),
-            ),
-            child: Column(
-              children: [
-                _SettingsTile(
-                  icon: Icons.language_outlined,
-                  label: 'language',
-                  trailingText: isArabic ? 'العربية' : 'english'.tr(),
-                  showTrailing: true,
-                  onTap: () => switchLanguage(context),
-                ),
-                Divider(height: 1, color: cc.divider),
-                _SettingsTile(
-                  icon: Icons.dark_mode_outlined,
-                  label: 'dark_mode',
-                  showTrailing: false,
-                  onTap: () => switchTheme(context),
-                ),
-                Divider(height: 1, color: cc.divider),
-                _SettingsTile(
-                  icon: Icons.notifications_outlined,
-                  label: 'notifications',
-                  showTrailing: false,
-                  onTap: () {},
-                ),
-              ],
+          _SettingsTile(
+            icon: Icons.language_rounded,
+            title: 'worker_profile.settings.language'.tr(),
+            trailing: isArabic ? 'العربية' : 'English',
+            showArrow: true,
+            onTap: () => switchLanguage(context),
+          ),
+          _Divider(),
+          _SettingsTile(
+            icon: isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+            title: 'worker_profile.settings.dark_mode'.tr(),
+            trailing:
+                isDark ? 'worker_profile.dark'.tr() : 'worker_profile.light'.tr(),
+            showArrow: true,
+            onTap: () => switchTheme(context),
+          ),
+          _Divider(),
+          _SettingsTile(
+            icon: Icons.info_outline_rounded,
+            title: 'worker_profile.about'.tr(),
+            showArrow: true,
+            onTap: () => AppDialogs.showInfo(
+              context,
+              title: 'worker_profile.about'.tr(),
+              message: 'worker_profile.about_description'.tr(),
             ),
           ),
-          verticalSpacing(12),
-          // Group 2 — logout
-          Container(
-            decoration: BoxDecoration(
-              color: cc.surface,
-              borderRadius: BorderRadius.circular(rr(12)),
-              border: Border.all(color: cc.border.withValues(alpha: 0.5)),
-            ),
-            child: _SettingsTile(
-              icon: Icons.logout_outlined,
-              label: 'logout',
-              showTrailing: false,
-              isDestructive: true,
-              onTap: () async {
-                await AppDialogs.showConfirm(
-                  context,
-                  message: 'logout_confirm_message'.tr(),
-                  onConfirm: () {
-                    context.read<AuthCubit>().logout();
-                  },
-                );
-              },
+          _Divider(),
+          _SettingsTile(
+            icon: Icons.logout_rounded,
+            title: 'worker_profile.logout'.tr(),
+            titleColor: AppColors.red200,
+            iconColor: AppColors.red200,
+            showArrow: false,
+            onTap: () => AppDialogs.showConfirm(
+              context,
+              title: 'worker_profile.logout'.tr(),
+              message: 'logout_confirm_message'.tr(),
+              onConfirm: () => context.read<AuthCubit>().logout(),
             ),
           ),
         ],
@@ -87,57 +83,76 @@ class SupervisorSettingsTiles extends StatelessWidget {
 class _SettingsTile extends StatelessWidget {
   const _SettingsTile({
     required this.icon,
-    required this.label,
-    required this.showTrailing,
+    required this.title,
+    required this.showArrow,
     required this.onTap,
-    this.trailingText,
-    this.isDestructive = false,
+    this.trailing,
+    this.titleColor,
+    this.iconColor,
   });
 
   final IconData icon;
-  final String label;
-  final bool showTrailing;
-  final String? trailingText;
-  final bool isDestructive;
+  final String title;
+  final bool showArrow;
   final VoidCallback onTap;
+  final String? trailing;
+  final Color? titleColor;
+  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
     final cc = context.customColors;
-    final iconColor =
-        isDestructive ? AppColors.red200 : cc.iconSecondary;
-    final labelColor =
-        isDestructive ? AppColors.red200 : cc.textPrimary;
 
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
-      behavior: HitTestBehavior.opaque,
+      borderRadius: BorderRadius.circular(rr(16)),
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: rw(16), vertical: rh(14)),
         child: Row(
           children: [
-            Icon(icon, size: rf(18), color: iconColor),
-            horizontalSpacing(10),
+            Icon(
+              icon,
+              size: rf(20),
+              color: iconColor ?? AppColors.primary200,
+            ),
+            horizontalSpacing(12),
             Expanded(
               child: Text(
-                label.tr(),
-                style:
-                    AppTextStyles.font14Light.copyWith(color: labelColor),
+                title,
+                style: AppTextStyles.font14SemiBold.copyWith(
+                  color: titleColor ?? cc.textPrimary,
+                ),
               ),
             ),
-            if (showTrailing) ...[
+            if (trailing != null) ...[
               Text(
-                trailingText ?? '',
-                style: AppTextStyles.font12Light
-                    .copyWith(color: cc.textHint),
+                trailing!,
+                style:
+                    AppTextStyles.font12Light.copyWith(color: cc.textSecondary),
               ),
               horizontalSpacing(4),
-              Icon(Icons.chevron_right,
-                  size: rf(16), color: cc.iconSecondary),
             ],
+            if (showArrow)
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: rf(12),
+                color: cc.textHint,
+              ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _Divider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Divider(
+      height: 1,
+      color: context.customColors.divider,
+      indent: rw(16),
+      endIndent: rw(16),
     );
   }
 }

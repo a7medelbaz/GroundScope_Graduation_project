@@ -20,8 +20,13 @@ class ServiceRequestCard extends StatelessWidget {
   final VoidCallback onAssignTap;
   final VoidCallback? onDetailsTap;
 
-  Color get _accentColor =>
-      request.status == 'pending' ? AppColors.primary200 : AppColors.amber200;
+  Color get _accentColor => switch (request.status) {
+    ServiceRequestStatus.pending    => AppColors.amber200,
+    ServiceRequestStatus.assigned   => AppColors.blue200,
+    ServiceRequestStatus.inProgress => AppColors.primary200,
+    ServiceRequestStatus.completed  => AppColors.green200,
+    ServiceRequestStatus.cancelled  => AppColors.grey400,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +47,8 @@ class ServiceRequestCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
+      child: IntrinsicHeight(
+        child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
@@ -67,9 +73,18 @@ class ServiceRequestCard extends StatelessWidget {
                       _HeaderRow(
                         flightNumber: flight?.flightNumber ?? '-',
                         standCode: flight?.stand?.code ?? '-',
+                        serviceTypeName: request.serviceTypeName,
                         status: request.status,
                         accentColor: _accentColor,
                       ),
+                      if (request.serviceTypeName != null) ...[
+                        verticalSpacing(4),
+                        Text(
+                          request.serviceTypeName!,
+                          style: AppTextStyles.font12Light
+                              .copyWith(color: context.customColors.textSecondary),
+                        ),
+                      ],
                       verticalSpacing(8),
                       _MetaChipsRow(
                         arrivalTime: flight?.scheduledArrival.formattedTime,
@@ -114,6 +129,7 @@ class ServiceRequestCard extends StatelessWidget {
           ),
         ],
       ),
+      ),
     );
   }
 }
@@ -122,13 +138,15 @@ class _HeaderRow extends StatelessWidget {
   const _HeaderRow({
     required this.flightNumber,
     required this.standCode,
+    this.serviceTypeName,
     required this.status,
     required this.accentColor,
   });
 
   final String flightNumber;
   final String standCode;
-  final String status;
+  final String? serviceTypeName;
+  final ServiceRequestStatus status;
   final Color accentColor;
 
   @override
@@ -156,7 +174,7 @@ class _HeaderRow extends StatelessWidget {
 class _StatusBadge extends StatelessWidget {
   const _StatusBadge({required this.status, required this.color});
 
-  final String status;
+  final ServiceRequestStatus status;
   final Color color;
 
   @override
@@ -169,7 +187,7 @@ class _StatusBadge extends StatelessWidget {
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Text(
-        status,
+        status.label,
         style: AppTextStyles.font12SemiBold.copyWith(color: color),
       ),
     );

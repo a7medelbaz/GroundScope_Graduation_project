@@ -43,7 +43,13 @@ import 'package:ground_scope/modules/admin/features/users/logic/cubit/user_reset
 import 'package:ground_scope/modules/admin/features/users/logic/cubit/users_list_cubit.dart';
 import 'package:ground_scope/modules/admin/features/users/ui/users_list_screen.dart';
 
+import '../../modules/admin/features/service_requests/logic/cubit/service_request_cubit.dart';
+import '../../modules/admin/features/service_requests/ui/flight_service_request_screen.dart';
 import '../../modules/supervisor/core/main_navigation/supervisor_scaffold.dart';
+import '../../modules/supervisor/features/reports/logic/cubit/supervisor_reports_cubit.dart';
+import '../../modules/supervisor/features/reports/ui/supervisor_report_detail_screen.dart';
+import '../../modules/supervisor/features/tasks/logic/cubit/supervisor_task_detail_cubit.dart';
+import '../../modules/supervisor/features/tasks/ui/supervisor_task_detail_screen.dart';
 import '../../modules/worker/core/main_navigation/ui/worker_scaffold.dart';
 import '../auth/ui/login_screen.dart';
 import '../onboarding/ui/on_boarding_screen.dart';
@@ -65,6 +71,25 @@ class AppRouter {
         return _buildRoute(const WorkerScaffold(), settings);
       case Routes.supervisorScaffold:
         return _buildRoute(const SupervisorScaffold(), settings);
+      case Routes.supervisorTaskDetailScreen:
+        final taskId = (settings.arguments as Map<String, dynamic>)['taskId'] as String;
+        return _buildRoute(
+          BlocProvider(
+            create: (_) => getIt<SupervisorTaskDetailCubit>()..loadTask(taskId),
+            child: SupervisorTaskDetailScreen(taskId: taskId),
+          ),
+          settings,
+        );
+      case Routes.supervisorReportDetailScreen:
+        final report = arguments?['report'] as ReportModel;
+        final reportsCubit = arguments?['cubit'] as SupervisorReportsCubit;
+        return _buildRoute(
+          BlocProvider.value(
+            value: reportsCubit,
+            child: SupervisorReportDetailScreen(report: report),
+          ),
+          settings,
+        );
       case Routes.taskDetailsScreen:
         final task = arguments?['task'];
         return _buildRoute(
@@ -232,6 +257,16 @@ class AppRouter {
           BlocProvider.value(
             value: cubit,
             child: FlightDetailScreen(flight: flight),
+          ),
+          settings,
+        );
+
+      case Routes.adminFlightServiceRequestScreen:
+        final flight = arguments?['flight'] as FlightModel;
+        return _buildRoute(
+          BlocProvider(
+            create: (_) => getIt<ServiceRequestCubit>()..init(flight),
+            child: FlightServiceRequestScreen(flight: flight),
           ),
           settings,
         );

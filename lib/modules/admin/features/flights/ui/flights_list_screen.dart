@@ -70,7 +70,11 @@ class _FlightsListScreenState extends State<FlightsListScreen> {
 
                   if (state.status == FlightsListStatus.failure &&
                       state.all.isEmpty) {
+                    debugPrint(
+                      'FlightsListScreen: Error loading flights: ${state.error?.messageKey}',
+                    );
                     return ErrorScreen(
+                      error: state.error?.messageKey,
                       onRetry: context.read<FlightsListCubit>().load,
                     );
                   }
@@ -78,9 +82,9 @@ class _FlightsListScreenState extends State<FlightsListScreen> {
                   return Column(
                     children: [
                       if (state.warningFlights.isNotEmpty)
-                        _WarningBanner(count: state.warningFlights.length)
-                            .animate()
-                            .fadeIn(duration: 300.ms),
+                        _WarningBanner(
+                          count: state.warningFlights.length,
+                        ).animate().fadeIn(duration: 300.ms),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: rw(20)),
                         child: Column(
@@ -107,30 +111,16 @@ class _FlightsListScreenState extends State<FlightsListScreen> {
                         ),
                       ).animate().fadeIn(duration: 300.ms),
                       Expanded(
-                        child: state.filtered.isEmpty
+                        child:
+                            state.filtered.isEmpty &&
+                                state.filter != FlightsFilter.all
                             ? FlightEmptyState(onFetch: _openImportSheet)
-                            : ListView.builder(
-                                padding: EdgeInsets.fromLTRB(
-                                  rw(20),
-                                  rh(4),
-                                  rw(20),
-                                  rh(80),
-                                ),
-                                itemCount: state.filtered.length,
-                                itemBuilder: (_, index) {
-                                  final flight = state.filtered[index];
-                                  final cubit = context.read<FlightsListCubit>();
-                                  final delay = Duration(
-                                    milliseconds: (index * 40).clamp(0, 300),
-                                  );
-                                  return FlightListTile(
-                                    flight: flight,
-                                    isWarning: cubit.isWarning(flight),
-                                    onTap: () => _navigateToDetail(flight),
-                                    animationDelay: delay,
-                                  );
-                                },
-                              ),
+                            : state.filter == FlightsFilter.all &&
+                                  state.searchQuery.isEmpty
+                            ? _buildGroupedList(context, state)
+                            : state.filtered.isEmpty
+                            ? FlightEmptyState(onFetch: _openImportSheet)
+                            : _buildFlatList(context, state),
                       ),
                     ],
                   );
@@ -140,6 +130,116 @@ class _FlightsListScreenState extends State<FlightsListScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildFlatList(BuildContext context, FlightsListState state) {
+    final cubit = context.read<FlightsListCubit>();
+    return ListView.builder(
+      padding: EdgeInsets.fromLTRB(rw(20), rh(4), rw(20), rh(80)),
+      itemCount: state.filtered.length,
+      itemBuilder: (_, index) {
+        final flight = state.filtered[index];
+        return FlightListTile(
+          flight: flight,
+          isWarning: cubit.isWarning(flight),
+          onTap: () => _navigateToDetail(flight),
+          animationDelay: Duration(milliseconds: (index * 40).clamp(0, 300)),
+        );
+      },
+    );
+  }
+
+  Widget _buildGroupedList(BuildContext context, FlightsListState state) {
+    final cubit = context.read<FlightsListCubit>();
+    final all = state.all;
+
+    final active = all
+        .where(
+          (f) =>
+              f.status == FlightStatus.landed ||
+              f.status == FlightStatus.inService,
+        )
+        .toList();
+    final scheduled = all
+        .where((f) => f.status == FlightStatus.scheduled)
+        .toList();
+    final ready = all.where((f) => f.status == FlightStatus.ready).toList();
+    final departed = all
+        .where(
+          (f) =>
+              f.status == FlightStatus.departed ||
+              f.status == FlightStatus.cancelled,
+        )
+        .toList();
+
+    if (all.isEmpty) return FlightEmptyState(onFetch: _openImportSheet);
+
+    final sections = <_Section>[
+      if (active.isNotEmpty)
+        _Section(
+          title: 'section_active'.tr(namedArgs: {'count': '${active.length}'}),
+          flights: active,
+        ),
+      if (scheduled.isNotEmpty)
+        _Section(
+          title: 'section_scheduled'.tr(
+            namedArgs: {'count': '${scheduled.length}'},
+          ),
+          flights: scheduled,
+        ),
+      if (ready.isNotEmpty)
+        _Section(
+          title: 'section_ready'.tr(namedArgs: {'count': '${ready.length}'}),
+          flights: ready,
+        ),
+      if (departed.isNotEmpty)
+        _Section(
+          title: 'section_departed'.tr(
+            namedArgs: {'count': '${departed.length}'},
+          ),
+          flights: departed,
+        ),
+    ];
+
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: EdgeInsets.fromLTRB(rw(20), rh(4), rw(20), rh(80)),
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                // Build flat list: section header + tiles interleaved
+                int offset = 0;
+                for (final section in sections) {
+                  if (index == offset) {
+                    return _FlightSectionHeader(title: section.title);
+                  }
+                  offset++;
+                  final localIdx = index - offset;
+                  if (localIdx < section.flights.length) {
+                    final flight = section.flights[localIdx];
+                    return FlightListTile(
+                      flight: flight,
+                      isWarning: cubit.isWarning(flight),
+                      onTap: () => _navigateToDetail(flight),
+                      animationDelay: Duration(
+                        milliseconds: (localIdx * 40).clamp(0, 300),
+                      ),
+                    );
+                  }
+                  offset += section.flights.length;
+                }
+                return null;
+              },
+              childCount: sections.fold(
+                0,
+                (sum, s) => sum ?? 0 + 1 + s.flights.length,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -172,8 +272,49 @@ class _FlightsListScreenState extends State<FlightsListScreen> {
           TextButton.icon(
             onPressed: _openImportSheet,
             icon: const Icon(Icons.download_outlined, size: 18),
-            label: Text('fetch_today'.tr(), style: AppTextStyles.font12SemiBold),
+            label: Text(
+              'fetch_today'.tr(),
+              style: AppTextStyles.font12SemiBold,
+            ),
             style: TextButton.styleFrom(foregroundColor: AppColors.blue200),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Section {
+  const _Section({required this.title, required this.flights});
+  final String title;
+  final List<FlightModel> flights;
+}
+
+class _FlightSectionHeader extends StatelessWidget {
+  const _FlightSectionHeader({required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: rh(16), bottom: rh(8)),
+      child: Row(
+        children: [
+          Expanded(
+            child: Divider(thickness: 0.5, color: context.customColors.divider),
+          ),
+          horizontalSpacing(8),
+          Text(
+            title.toUpperCase(),
+            style: AppTextStyles.font12SemiBold.copyWith(
+              color: context.customColors.textHint,
+              letterSpacing: 0.6,
+            ),
+          ),
+          horizontalSpacing(8),
+          Expanded(
+            child: Divider(thickness: 0.5, color: context.customColors.divider),
           ),
         ],
       ),
@@ -198,7 +339,11 @@ class _WarningBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(Icons.warning_amber_rounded, size: rw(18), color: AppColors.amber200),
+          Icon(
+            Icons.warning_amber_rounded,
+            size: rw(18),
+            color: AppColors.amber200,
+          ),
           horizontalSpacing(8),
           Expanded(
             child: Text(

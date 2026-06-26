@@ -26,23 +26,74 @@ class AssignUnitRemoteDs {
     }
   }
 
-  // The "service request" is the task itself (status=pending, unit_id=null).
-  // Assigning a unit updates the task in-place: set unit_id, assigned_by, status=in_progress.
-  Future<void> assignUnit({
-    required String taskId,
+  /// Creates a task from a service request.
+  /// 1. Inserts task row, captures generated ID
+  /// 2. Inserts task_checklists rows (if any)
+  /// 3. Updates flight_service_requests status → 'assigned'
+  Future<void> createTaskFromRequest({
+    required String requestId,
+    required String flightId,
+    required String serviceTypeId,
     required String unitId,
     required String assignedBy,
+    required String priority,
+    required DateTime scheduledStart,
+    required DateTime scheduledEnd,
+    required List<String> checklistItems,
+    String? notes,
   }) async {
     try {
-      await _supabaseService.client.from('tasks').update({
-        'unit_id': unitId,
-        'assigned_by': assignedBy,
-        'status': 'in_progress',
-      }).eq('id', taskId);
+      final taskRow = await _supabaseService.client
+          .from('tasks')
+          .insert({
+            'flight_id':       flightId,
+            'service_type_id': serviceTypeId,
+            'unit_id':         unitId,
+            'assigned_by':     assignedBy,
+            'created_by':      assignedBy,
+            'status':          'assigned',
+            'priority':        priority,
+            'scheduled_start': scheduledStart.toIso8601String(),
+            'scheduled_end':   scheduledEnd.toIso8601String(),
+            'notes':           notes,
+          })
+          .select('id')
+          .single();
+
+      final taskId = taskRow['id'] as String;
+
+      // Set unit status to busy
+      await _supabaseService.client
+          .from('units')
+          .update({'status': 'busy'})
+          .eq('id', unitId);
+
+      if (checklistItems.isNotEmpty) {
+        final rows = checklistItems
+            .asMap()
+            .entries
+            .map((e) => {
+                  'task_id':     taskId,
+                  'item':        e.value,
+                  'is_checked':  false,
+                  'order_index': e.key,
+                })
+            .toList();
+        await _supabaseService.client.from('task_checklists').insert(rows);
+      }
+
+      await _supabaseService.client
+          .from('flight_service_requests')
+          .update({
+            'status':                  'assigned',
+            'assigned_supervisor_id':  assignedBy,
+            'updated_at':              DateTime.now().toIso8601String(),
+          })
+          .eq('id', requestId);
     } on PostgrestException catch (e) {
       throw SupabaseErrorHandler.handle(e);
     } catch (e, st) {
-      debugPrint('assignUnit error: $e\n$st');
+      debugPrint('createTaskFromRequest error: $e\n$st');
       throw AppError.unknown(e.toString());
     }
   }

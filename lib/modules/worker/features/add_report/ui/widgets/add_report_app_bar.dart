@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
@@ -23,7 +24,7 @@ class AddReportAppBar extends StatelessWidget {
           children: [
             // ── Centered title ──────────────────────────────────────────────
             Text(
-              'Add Report',
+              'worker_add_report.title'.tr(),
               style: AppTextStyles.font20ExtraBold.copyWith(
                 color: customColors.textPrimary,
               ),

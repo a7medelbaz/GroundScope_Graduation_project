@@ -53,6 +53,88 @@ class FlightsRemoteDs {
     }
   }
 
+  /// Fetches flights relevant for today's operations:
+  /// - Scheduled in next 12 hours
+  /// - Currently active (landed, in_service)
+  /// - Ready to depart (today)
+  /// - Departed/cancelled today
+  Future<List<FlightModel>> fetchActiveFlights() async {
+    try {
+      final now        = DateTime.now();
+      final plus12h    = now.add(const Duration(hours: 12));
+      final todayStart = DateTime(now.year, now.month, now.day);
+
+      final scheduled = await supabaseService.client
+          .from('flights')
+          .select('*, stands(*)')
+          .eq('status', 'scheduled')
+          .gte('scheduled_arrival', now.toIso8601String())
+          .lte('scheduled_arrival', plus12h.toIso8601String())
+          .order('scheduled_arrival', ascending: true);
+
+      final active = await supabaseService.client
+          .from('flights')
+          .select('*, stands(*)')
+          .inFilter('status', ['landed', 'in_service'])
+          .order('scheduled_arrival', ascending: true);
+
+      final ready = await supabaseService.client
+          .from('flights')
+          .select('*, stands(*)')
+          .eq('status', 'ready')
+          .gte('scheduled_departure', todayStart.toIso8601String())
+          .order('scheduled_departure', ascending: true);
+
+      final done = await supabaseService.client
+          .from('flights')
+          .select('*, stands(*)')
+          .inFilter('status', ['departed', 'cancelled'])
+          .gte('scheduled_arrival', todayStart.toIso8601String())
+          .order('scheduled_arrival', ascending: true);
+
+      final all = [
+        ...(scheduled as List),
+        ...(active    as List),
+        ...(ready     as List),
+        ...(done      as List),
+      ];
+
+      final seen   = <String>{};
+      final unique = all
+          .cast<Map<String, dynamic>>()
+          .where((e) => seen.add(e['id'] as String))
+          .map((e) => FlightModel.fromMap(e))
+          .toList();
+
+      return unique;
+    } on PostgrestException catch (e) {
+      throw SupabaseErrorHandler.handle(e);
+    } catch (_) {
+      throw AppError.unknown();
+    }
+  }
+
+  /// Updates multiple flights to a new status in one call.
+  Future<void> batchUpdateStatus({
+    required List<String> flightIds,
+    required String newStatus,
+  }) async {
+    if (flightIds.isEmpty) return;
+    try {
+      await supabaseService.client
+          .from('flights')
+          .update({
+            'status':     newStatus,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .inFilter('id', flightIds);
+    } on PostgrestException catch (e) {
+      throw SupabaseErrorHandler.handle(e);
+    } catch (_) {
+      throw AppError.unknown();
+    }
+  }
+
   /// Fetches all flights for the list screen with optional filters.
   Future<List<FlightModel>> fetchFlights({
     FlightStatus? statusFilter,

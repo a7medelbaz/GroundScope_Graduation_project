@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../../../core/auth/logic/cubit/auth_cubit.dart';
 import '../../../../../core/shared/data/models/unit_model.dart';
 import '../../../../../core/themes/app_colors.dart';

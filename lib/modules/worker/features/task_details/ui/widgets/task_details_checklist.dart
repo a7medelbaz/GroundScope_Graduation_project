@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../../core/shared/data/models/task_check_list_model.dart';
@@ -44,7 +45,7 @@ class TaskDetailsChecklist extends StatelessWidget {
             ),
             horizontalSpacing(10),
             Text(
-              'Checklist',
+              'checklist'.tr(),
               style: AppTextStyles.font18ExtraBold.copyWith(
                 color: cc.textPrimary,
               ),
@@ -74,7 +75,7 @@ class TaskDetailsChecklist extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: rh(16)),
               child: Text(
-                'No checklist items for this task',
+                'worker_task_details.no_checklist_items'.tr(),
                 style: AppTextStyles.font14Light.copyWith(color: cc.textHint),
               ),
             ),
