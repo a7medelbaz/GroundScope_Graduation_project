@@ -103,7 +103,7 @@ class HomeAppBar extends StatelessWidget {
               ),
               // Notification button
               NotificationButton(
-                onTap: () => Navigator.of(context)
+                onTap: () => Navigator.of(context, rootNavigator: true)
                     .pushNamed(Routes.notificationsScreen),
               ),
             ],
