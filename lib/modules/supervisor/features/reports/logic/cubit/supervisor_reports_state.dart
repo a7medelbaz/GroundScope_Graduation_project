@@ -1,58 +1,76 @@
 part of 'supervisor_reports_cubit.dart';
 
-enum SupervisorReportsStatus { initial, loading, loaded, actionLoading, failure }
+enum SupervisorReportsStatus {
+  initial,
+  loading,
+  loaded,
+  actionLoading,
+  submitting,
+  submitSuccess,
+  failure,
+}
 
-// Sentinel for "clear actionReportId to null"
+enum SupervisorReportsTab { inbox, sent, fromAdmin }
+
 const _clearId = Object();
 
 final class SupervisorReportsState extends Equatable {
   const SupervisorReportsState({
     this.status = SupervisorReportsStatus.initial,
-    this.allReports = const [],
-    this.filteredReports = const [],
-    this.activeFilter = 'all',
-    this.activeSeverityFilter = 'all',
-    this.activeRoleFilter = 'all',
-    this.searchQuery = '',
+    this.inbox = const [],
+    this.sent = const [],
+    this.fromAdmin = const [],
+    this.tab = SupervisorReportsTab.inbox,
+    this.selectedFilter,
     this.actionReportId,
     this.error,
   });
 
   final SupervisorReportsStatus status;
-  final List<ReportModel> allReports;
-  final List<ReportModel> filteredReports;
-  final String activeFilter;
-  final String activeSeverityFilter;
-  final String activeRoleFilter;
-  final String searchQuery;
+  final List<ReportModel> inbox;
+  final List<ReportModel> sent;
+  final List<ReportModel> fromAdmin;
+  final SupervisorReportsTab tab;
+  final ReportStatus? selectedFilter;
   final String? actionReportId;
   final AppError? error;
 
-  int get resultCount => filteredReports.length;
+  List<ReportModel> get currentList => switch (tab) {
+        SupervisorReportsTab.inbox => inbox,
+        SupervisorReportsTab.sent => sent,
+        SupervisorReportsTab.fromAdmin => fromAdmin,
+      };
 
-  int get activeAdvancedFilterCount =>
-      (activeSeverityFilter != 'all' ? 1 : 0) +
-      (activeRoleFilter != 'all' ? 1 : 0);
+  List<ReportModel> get filteredList {
+    final base = currentList;
+    return selectedFilter == null
+        ? base
+        : base.where((r) => r.status == selectedFilter).toList();
+  }
+
+  int get unreadInbox => inbox
+      .where((r) => r.status == ReportStatus.open)
+      .length;
 
   SupervisorReportsState copyWith({
     SupervisorReportsStatus? status,
-    List<ReportModel>? allReports,
-    List<ReportModel>? filteredReports,
-    String? activeFilter,
-    String? activeSeverityFilter,
-    String? activeRoleFilter,
-    String? searchQuery,
+    List<ReportModel>? inbox,
+    List<ReportModel>? sent,
+    List<ReportModel>? fromAdmin,
+    SupervisorReportsTab? tab,
+    ReportStatus? selectedFilter,
+    bool clearFilter = false,
     Object? actionReportId = _clearId,
     AppError? error,
   }) {
     return SupervisorReportsState(
       status: status ?? this.status,
-      allReports: allReports ?? this.allReports,
-      filteredReports: filteredReports ?? this.filteredReports,
-      activeFilter: activeFilter ?? this.activeFilter,
-      activeSeverityFilter: activeSeverityFilter ?? this.activeSeverityFilter,
-      activeRoleFilter: activeRoleFilter ?? this.activeRoleFilter,
-      searchQuery: searchQuery ?? this.searchQuery,
+      inbox: inbox ?? this.inbox,
+      sent: sent ?? this.sent,
+      fromAdmin: fromAdmin ?? this.fromAdmin,
+      tab: tab ?? this.tab,
+      selectedFilter:
+          clearFilter ? null : (selectedFilter ?? this.selectedFilter),
       actionReportId: identical(actionReportId, _clearId)
           ? this.actionReportId
           : actionReportId as String?,
@@ -63,12 +81,11 @@ final class SupervisorReportsState extends Equatable {
   @override
   List<Object?> get props => [
         status,
-        allReports,
-        filteredReports,
-        activeFilter,
-        activeSeverityFilter,
-        activeRoleFilter,
-        searchQuery,
+        inbox,
+        sent,
+        fromAdmin,
+        tab,
+        selectedFilter,
         actionReportId,
         error,
       ];
