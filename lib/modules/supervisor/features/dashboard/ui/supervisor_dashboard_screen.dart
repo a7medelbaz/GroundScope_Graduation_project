@@ -11,6 +11,7 @@ import 'package:ground_scope/core/di/dependency_injection.dart';
 import 'package:ground_scope/core/widgets/error_screen.dart';
 import 'package:ground_scope/modules/supervisor/core/main_navigation/cubit/supervisor_nav_cubit.dart';
 import 'package:ground_scope/modules/supervisor/features/dashboard/data/models/service_request_model.dart';
+import 'package:ground_scope/core/shared/data/models/report_model.dart';
 import 'package:ground_scope/modules/supervisor/features/reports/logic/cubit/supervisor_reports_cubit.dart';
 import 'package:ground_scope/modules/supervisor/features/tasks/logic/cubit/supervisor_tasks_cubit.dart';
 import 'package:ground_scope/modules/supervisor/features/units/logic/cubit/supervisor_units_cubit.dart';
@@ -149,7 +150,7 @@ class _SupervisorDashboardScreenState extends State<SupervisorDashboardScreen> {
                       },
                       () {
                         context.read<SupervisorReportsCubit>().setFilter(
-                          'open',
+                          ReportStatus.open,
                         );
                         context.read<SupervisorNavCubit>().changeTab(3);
                       },

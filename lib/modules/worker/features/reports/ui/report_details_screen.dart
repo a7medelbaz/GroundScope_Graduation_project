@@ -10,37 +10,38 @@ import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/extensions/datetime_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
+
 import '../logic/cubit/reports_cubit.dart';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 Color _severityColor(ReportSeverity s) => switch (s) {
-  ReportSeverity.low      => AppColors.green200,
-  ReportSeverity.medium   => AppColors.amber200,
-  ReportSeverity.high     => AppColors.secondary200,
+  ReportSeverity.low => AppColors.green200,
+  ReportSeverity.medium => AppColors.amber200,
+  ReportSeverity.high => AppColors.secondary200,
   ReportSeverity.critical => AppColors.red200,
 };
 
 Color _statusColor(ReportStatus s) => switch (s) {
-  ReportStatus.open         => AppColors.amber200,
+  ReportStatus.open => AppColors.amber200,
   ReportStatus.acknowledged => AppColors.blue200,
-  ReportStatus.inProgress   => AppColors.primary200,
-  ReportStatus.resolved     => AppColors.green200,
+  ReportStatus.inProgress => AppColors.primary200,
+  ReportStatus.resolved => AppColors.green200,
 };
 
 IconData _typeIcon(ReportType t) => switch (t) {
-  ReportType.issue  => Icons.warning_rounded,
-  ReportType.delay  => Icons.timer_off_rounded,
+  ReportType.issue => Icons.warning_rounded,
+  ReportType.delay => Icons.timer_off_rounded,
   ReportType.damage => Icons.build_rounded,
   ReportType.safety => Icons.shield_rounded,
-  ReportType.other  => Icons.description_rounded,
+  ReportType.other => Icons.description_rounded,
 };
 
 IconData _statusIcon(ReportStatus s) => switch (s) {
-  ReportStatus.open         => Icons.radio_button_unchecked_rounded,
+  ReportStatus.open => Icons.radio_button_unchecked_rounded,
   ReportStatus.acknowledged => Icons.visibility_rounded,
-  ReportStatus.inProgress   => Icons.pending_actions_rounded,
-  ReportStatus.resolved     => Icons.check_circle_rounded,
+  ReportStatus.inProgress => Icons.pending_actions_rounded,
+  ReportStatus.resolved => Icons.check_circle_rounded,
 };
 
 String _shortId(String id) =>
@@ -137,7 +138,11 @@ class _Header extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [AppColors.primary400, AppColors.primary300, AppColors.primary200],
+          colors: [
+            AppColors.primary400,
+            AppColors.primary300,
+            AppColors.primary200,
+          ],
         ),
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(rr(28))),
       ),
@@ -185,8 +190,9 @@ class _Header extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'worker_reports.report_label'
-                          .tr(namedArgs: {'type': report.type.label}),
+                      'worker_reports.report_label'.tr(
+                        namedArgs: {'type': report.type.label},
+                      ),
                       style: AppTextStyles.font18SemiBold.copyWith(
                         color: AppColors.white,
                       ),
@@ -222,7 +228,11 @@ class _Header extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(_statusIcon(report.status), size: rr(16), color: AppColors.white),
+                Icon(
+                  _statusIcon(report.status),
+                  size: rr(16),
+                  color: AppColors.white,
+                ),
                 horizontalSpacing(8),
                 Text(
                   report.status.label.toUpperCase(),
@@ -321,7 +331,7 @@ class _PrimaryInfoSection extends StatelessWidget {
           _InfoRow(
             icon: Icons.flight_rounded,
             label: 'worker_reports.flight'.tr(),
-            value: _shortId(report.flightId),
+            value: _shortId(report.flightId ?? ''),
             valueColor: cc.textSecondary,
           ),
           _RowDivider(),
@@ -338,7 +348,8 @@ class _PrimaryInfoSection extends StatelessWidget {
   }
 }
 
-// ─── Evidence Section ─────────────────────────────────────────────────────────
+// ─── Evidence Section ──────────────────
+// ───────────────────────────────────────
 
 class _EvidenceSection extends StatelessWidget {
   const _EvidenceSection({required this.report});
@@ -361,10 +372,7 @@ class _EvidenceSection extends StatelessWidget {
 }
 
 class _ImageThumbnail extends StatelessWidget {
-  const _ImageThumbnail({
-    required this.imageUrl,
-    required this.statusColor,
-  });
+  const _ImageThumbnail({required this.imageUrl, required this.statusColor});
 
   final String imageUrl;
   final Color statusColor;
@@ -393,9 +401,8 @@ class _ImageThumbnail extends StatelessWidget {
               CachedNetworkImage(
                 imageUrl: imageUrl,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => _ImageShimmer(
-                  accentColor: statusColor,
-                ),
+                placeholder: (context, url) =>
+                    _ImageShimmer(accentColor: statusColor),
                 errorWidget: (context, url, error) => const _ImageError(),
               ),
               // Gradient overlay for readability of the hint label
@@ -495,20 +502,17 @@ class _ImageShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: context.customColors.surfaceVariant,
-      child: Center(
-        child: Icon(
-          Icons.image_outlined,
-          size: rf(36),
-          color: accentColor.withValues(alpha: 0.3),
-        ),
-      ),
-    )
+          color: context.customColors.surfaceVariant,
+          child: Center(
+            child: Icon(
+              Icons.image_outlined,
+              size: rf(36),
+              color: accentColor.withValues(alpha: 0.3),
+            ),
+          ),
+        )
         .animate(onPlay: (c) => c.repeat(reverse: true))
-        .shimmer(
-          duration: 1200.ms,
-          color: accentColor.withValues(alpha: 0.15),
-        );
+        .shimmer(duration: 1200.ms, color: accentColor.withValues(alpha: 0.15));
   }
 }
 
@@ -787,11 +791,7 @@ class _TimelineItem extends StatelessWidget {
 // ─── Shared sub-widgets ───────────────────────────────────────────────────────
 
 class _SectionCard extends StatelessWidget {
-  const _SectionCard({
-    required this.title,
-    required this.child,
-    this.padding,
-  });
+  const _SectionCard({required this.title, required this.child, this.padding});
 
   final String title;
   final Widget child;
@@ -883,9 +883,7 @@ class _InfoRow extends StatelessWidget {
               ),
               child: Text(
                 value,
-                style: AppTextStyles.font12SemiBold.copyWith(
-                  color: badgeColor,
-                ),
+                style: AppTextStyles.font12SemiBold.copyWith(color: badgeColor),
               ),
             )
           else

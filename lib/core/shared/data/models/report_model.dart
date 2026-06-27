@@ -1,5 +1,38 @@
 import 'flight_model.dart';
 
+enum ReportDirection {
+  workerToSupervisor,
+  supervisorToUnit,
+  supervisorToAdmin,
+  adminToSupervisor,
+  adminBroadcast;
+
+  static ReportDirection fromString(String value) => switch (value) {
+        'worker_to_supervisor' => ReportDirection.workerToSupervisor,
+        'supervisor_to_unit' => ReportDirection.supervisorToUnit,
+        'supervisor_to_admin' => ReportDirection.supervisorToAdmin,
+        'admin_to_supervisor' => ReportDirection.adminToSupervisor,
+        'admin_broadcast' => ReportDirection.adminBroadcast,
+        _ => ReportDirection.workerToSupervisor,
+      };
+
+  String get toDbString => switch (this) {
+        ReportDirection.workerToSupervisor => 'worker_to_supervisor',
+        ReportDirection.supervisorToUnit => 'supervisor_to_unit',
+        ReportDirection.supervisorToAdmin => 'supervisor_to_admin',
+        ReportDirection.adminToSupervisor => 'admin_to_supervisor',
+        ReportDirection.adminBroadcast => 'admin_broadcast',
+      };
+
+  String get label => switch (this) {
+        ReportDirection.workerToSupervisor => 'From Worker',
+        ReportDirection.supervisorToUnit => 'Alert to Unit',
+        ReportDirection.supervisorToAdmin => 'Forwarded to Admin',
+        ReportDirection.adminToSupervisor => 'From Admin',
+        ReportDirection.adminBroadcast => 'Broadcast',
+      };
+}
+
 enum ReportType {
   issue('issue'),
   delay('delay'),
@@ -85,13 +118,16 @@ enum ReportStatus {
 class ReportModel {
   const ReportModel({
     required this.id,
-    required this.taskId,
-    required this.flightId,
+    this.taskId,
+    this.flightId,
     required this.reportedBy,
     required this.type,
     required this.description,
     required this.severity,
     required this.status,
+    required this.direction,
+    this.forwardedFromId,
+    this.forwarderNotes,
     this.imageUrl,
     this.acknowledgedBy,
     this.acknowledgedAt,
@@ -101,16 +137,20 @@ class ReportModel {
     this.flight,
     this.reporterName,
     this.reporterRole,
+    this.recipientUserIds,
   });
 
   final String id;
-  final String taskId;
-  final String flightId;
+  final String? taskId;
+  final String? flightId;
   final String reportedBy;
   final ReportType type;
   final String description;
   final ReportSeverity severity;
   final ReportStatus status;
+  final ReportDirection direction;
+  final String? forwardedFromId;
+  final String? forwarderNotes;
   final String? imageUrl;
   final String? acknowledgedBy;
   final DateTime? acknowledgedAt;
@@ -120,29 +160,34 @@ class ReportModel {
   final FlightModel? flight;
   final String? reporterName;
   final String? reporterRole;
+  final List<String>? recipientUserIds;
 
   factory ReportModel.fromMap(Map<String, dynamic> map) {
     final flightMap = map['flights'] as Map<String, dynamic>?;
-    final userMap = map['users'] as Map<String, dynamic>?;
+    // Support both 'reporter:reported_by(...)' alias and legacy 'users!reported_by(...)' join
+    final userMap = (map['reporter'] ?? map['users']) as Map<String, dynamic>?;
     return ReportModel(
-      id: map['id'],
-      taskId: map['task_id'],
-      flightId: map['flight_id'],
-      reportedBy: map['reported_by'],
-      type: ReportType.fromString(map['type']),
-      description: map['description'],
-      severity: ReportSeverity.fromString(map['severity']),
-      status: ReportStatus.fromString(map['status']),
-      imageUrl: map['image_url'],
-      acknowledgedBy: map['acknowledged_by'],
+      id: map['id'] as String,
+      taskId: map['task_id'] as String?,
+      flightId: map['flight_id'] as String?,
+      reportedBy: map['reported_by'] as String,
+      type: ReportType.fromString(map['type'] as String? ?? ''),
+      description: map['description'] as String? ?? '',
+      severity: ReportSeverity.fromString(map['severity'] as String? ?? ''),
+      status: ReportStatus.fromString(map['status'] as String? ?? ''),
+      direction: ReportDirection.fromString(map['direction'] as String? ?? ''),
+      forwardedFromId: map['forwarded_from_id'] as String?,
+      forwarderNotes: map['forwarder_notes'] as String?,
+      imageUrl: map['image_url'] as String?,
+      acknowledgedBy: map['acknowledged_by'] as String?,
       acknowledgedAt: map['acknowledged_at'] != null
-          ? DateTime.parse(map['acknowledged_at'])
+          ? DateTime.parse(map['acknowledged_at'] as String)
           : null,
-      resolvedBy: map['resolved_by'],
+      resolvedBy: map['resolved_by'] as String?,
       resolvedAt: map['resolved_at'] != null
-          ? DateTime.parse(map['resolved_at'])
+          ? DateTime.parse(map['resolved_at'] as String)
           : null,
-      createdAt: DateTime.parse(map['created_at']),
+      createdAt: DateTime.parse(map['created_at'] as String),
       flight: flightMap != null ? FlightModel.fromMap(flightMap) : null,
       reporterName: userMap?['full_name'] as String?,
       reporterRole: userMap?['role'] as String?,
@@ -158,6 +203,9 @@ class ReportModel {
     String? description,
     ReportSeverity? severity,
     ReportStatus? status,
+    ReportDirection? direction,
+    String? forwardedFromId,
+    String? forwarderNotes,
     String? imageUrl,
     String? acknowledgedBy,
     DateTime? acknowledgedAt,
@@ -167,6 +215,7 @@ class ReportModel {
     FlightModel? flight,
     String? reporterName,
     String? reporterRole,
+    List<String>? recipientUserIds,
   }) {
     return ReportModel(
       id: id ?? this.id,
@@ -177,6 +226,9 @@ class ReportModel {
       description: description ?? this.description,
       severity: severity ?? this.severity,
       status: status ?? this.status,
+      direction: direction ?? this.direction,
+      forwardedFromId: forwardedFromId ?? this.forwardedFromId,
+      forwarderNotes: forwarderNotes ?? this.forwarderNotes,
       imageUrl: imageUrl ?? this.imageUrl,
       acknowledgedBy: acknowledgedBy ?? this.acknowledgedBy,
       acknowledgedAt: acknowledgedAt ?? this.acknowledgedAt,
@@ -186,6 +238,7 @@ class ReportModel {
       flight: flight ?? this.flight,
       reporterName: reporterName ?? this.reporterName,
       reporterRole: reporterRole ?? this.reporterRole,
+      recipientUserIds: recipientUserIds ?? this.recipientUserIds,
     );
   }
 
@@ -198,6 +251,7 @@ class ReportModel {
       'description': description,
       'severity': severity.value,
       'status': status.value,
+      'direction': direction.toDbString,
     };
   }
 }

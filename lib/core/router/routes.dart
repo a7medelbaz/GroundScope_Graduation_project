@@ -33,6 +33,15 @@ class Routes {
   static const String adminFlightServiceRequestScreen =
       '/adminFlightServiceRequestScreen';
 
+  // ########## Supervisor reports (new)
+  static const String supervisorSendReportScreen = '/supervisorSendReportScreen';
+  static const String supervisorForwardReportScreen = '/supervisorForwardReportScreen';
+
+  // ########## Admin reports (new)
+  static const String adminReportsScreen = '/adminReportsScreen';
+  static const String adminSendReportScreen = '/adminSendReportScreen';
+  static const String adminReportDetailScreen = '/adminReportDetailScreen';
+
   // ########## Shared
   static const String notificationsScreen = '/notificationsScreen';
 }

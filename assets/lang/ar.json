@@ -86,7 +86,43 @@
   "service_types": "أنواع الخدمات",
   "users": "المستخدمون",
   "flights": "الرحلات",
-  "reports": "التقارير",
+  "reports": {
+    "title": "التقارير",
+    "send_report": "إرسال تقرير",
+    "broadcast": "بث للجميع",
+    "forward_to_admin": "إعادة توجيه للمسؤول",
+    "tabs": {
+      "all": "الكل",
+      "communication": "التواصل",
+      "my_reports": "تقاريري",
+      "sent": "المُرسلة",
+      "received": "المُستلمة",
+      "inbox": "الوارد",
+      "from_admin": "من المسؤول"
+    },
+    "actions": {
+      "send_to_unit": "إرسال للوحدة",
+      "broadcast": "بث",
+      "acknowledge": "تأكيد الاستلام",
+      "resolve": "حل",
+      "forward": "إعادة توجيه للمسؤول",
+      "add_notes": "إضافة ملاحظات",
+      "notes_hint": "أدخل ملاحظات التوجيه...",
+      "select_supervisor": "اختر المشرفين",
+      "select_unit": "اختر الوحدة",
+      "broadcast_warning": "سيتم إرسال هذا التقرير إلى جميع العمال في جميع الوحدات في نوع خدمتك."
+    },
+    "send_form": {
+      "type": "نوع التقرير",
+      "severity": "الخطورة",
+      "description": "الوصف",
+      "attach_image": "إرفاق صورة (اختياري)",
+      "send": "إرسال"
+    },
+    "empty": {
+      "no_sent": "لا توجد تقارير"
+    }
+  },
   "coming_soon": "قريباً",
   "add_service_type": "إضافة نوع خدمة",
   "edit_service_type": "تعديل نوع الخدمة",
