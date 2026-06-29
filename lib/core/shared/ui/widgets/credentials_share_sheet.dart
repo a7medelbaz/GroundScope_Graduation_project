@@ -96,7 +96,7 @@ class CredentialsShareSheet extends StatelessWidget {
         Container(
           width: rw(56),
           height: rw(56),
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: AppColors.green50,
             shape: BoxShape.circle,
           ),
