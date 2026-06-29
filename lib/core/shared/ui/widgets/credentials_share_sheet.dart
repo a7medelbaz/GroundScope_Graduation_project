@@ -96,7 +96,7 @@ class CredentialsShareSheet extends StatelessWidget {
         Container(
           width: rw(56),
           height: rw(56),
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: AppColors.green50,
             shape: BoxShape.circle,
           ),
@@ -264,7 +264,7 @@ class _ShareButton extends StatelessWidget {
               .copyWith(color: AppColors.primary200),
         ),
         style: OutlinedButton.styleFrom(
-          side: BorderSide(color: AppColors.primary200),
+          side: const BorderSide(color: AppColors.primary200),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(rr(14)),
           ),

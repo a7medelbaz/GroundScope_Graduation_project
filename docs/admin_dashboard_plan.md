@@ -44,7 +44,7 @@ This project adds a **web Admin Dashboard** that **complements** (does not repla
 | Hosting | **Vercel** |
 | Languages | **English + Arabic (RTL)** — full parity |
 | Theme | **Light + Dark toggle** — full parity |
-| AviationStack API | **Mocked for now** (see `🔖 REMINDER` items) |
+| AviationStack API | **Live — mirror the existing Flutter integration** (see [Section 13](#13-aviationstack-reference--live-flight-import)) |
 | Goal | Demo-quality now, production-ready foundation |
 | Location | `c:\1_Flutter_Projects\GroundScope_Graduation_project\groundscope-admin\` (sibling to the Flutter app) |
 
@@ -61,8 +61,9 @@ This project adds a **web Admin Dashboard** that **complements** (does not repla
 NEXT_PUBLIC_SUPABASE_URL=https://xegigwfjsxwpmgqyhijf.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<same anon key as the Flutter .env>
 
-# 🔖 REMINDER: add when available
-# AVIATIONSTACK_API_KEY=...
+# AviationStack — the key ALREADY EXISTS in the Flutter app (AppConstants.aviationStackKey).
+# Copy that same value here. See Section 13 for the full integration.
+AVIATIONSTACK_API_KEY=<copy from Flutter AppConstants.aviationStackKey>
 ```
 
 ### 2.2 Two Supabase Clients (Next.js needs both)
@@ -442,9 +443,14 @@ Full schema: `ground_scope/docs/DATABASE.md`. Tables this dashboard reads/writes
 
 **Build Steps:**
 1. Users list: Name, Email, Role badge, Linked to (service type or unit), Active, Created, Actions. Filter by role.
-2. "Add Supervisor" sheet: Full Name, Email, Phone, Service Type (required). Auto-generate password (port `credentials_generator.dart` logic → `lib/utils/credentials.ts`). On submit: create Supabase Auth user → insert `users` row (`role='supervisor'`, `service_type_id`).
-3. "Add Unit Manager" sheet: same, but links a Unit (`role='unit_manager'`, `unit_id`).
-4. After creation: **Credentials Sheet** (name, email, generated password, copy-all). Shown once; not stored in plaintext.
+2. "Add Supervisor" sheet: Full Name, Phone, Service Type (required). **Email and password are auto-generated — NOT entered by the admin.** Port `lib/core/utils/credentials_generator.dart` → `lib/utils/credentials.ts`, matching its exact logic:
+   - Supervisor email = `supervisor.{serviceTypeSlug}@groundscope.com`
+   - Unit Manager email = `manager.{unitSlug}@groundscope.com`
+   - Slug = lowercase, strip everything except `a-z0-9`
+   - Password = `GroundScope{4 random digits}{1 special from !@#$%}`
+   On submit: create Supabase Auth user with the generated email/password → insert `users` row (`role='supervisor'`, `service_type_id`).
+3. "Add Unit Manager" sheet: same, but links a Unit (`role='unit_manager'`, `unit_id`) and uses the manager email pattern.
+4. After creation: **Credentials Sheet** (name, generated email, generated password, copy-all). Shown once; not stored in plaintext.
 5. Deactivate user: `is_active=false` + confirm.
 6. Queries in `lib/queries/users.ts`.
 
@@ -461,16 +467,13 @@ Full schema: `ground_scope/docs/DATABASE.md`. Tables this dashboard reads/writes
 
 ## Phase 9 — Flights + Flight Detail + Service Requests
 
-**Goal:** Full flight lifecycle — import (mocked), manual entry, stand assignment, and dispatching service requests to supervisors.
+**Goal:** Full flight lifecycle — **live API import** (mirrors Flutter), manual entry, stand assignment, and dispatching service requests to supervisors.
 
 > `🔖 REMINDER` — **Before building, confirm the service-request model** with the project owner (see [Section 9] note): is a service request a `task` with `unit_id IS NULL`, or a row in `flight_service_requests`? Build to match the live mobile behavior.
 
 **Build Steps:**
 1. Flights list: Flight No., Airline, Origin→Destination, Aircraft, Status badge, Stand, Scheduled Arrival, Actions. Search (number/airline) + filters (status, date range).
-2. **Import from API — MOCKED:**
-   - Button "Import Flights (Demo)" loads `MOCK_FLIGHTS` and inserts them with `api_source='mock'`.
-   - Yellow banner: "⚠️ Using mock data — connect AviationStack API key to enable live import."
-   - `🔖 REMINDER`: replace mock with real AviationStack call (`http://api.aviationstack.com/v1/flights`, key from env) and remove the banner.
+2. **Import from API — LIVE (mirror Flutter):** Port the existing `lib/core/shared/data/remote/aviation_stack_remote_ds.dart` exactly. See [Section 13](#13-aviationstack-reference--live-flight-import) for the full spec. In short: "Import Today's Flights" button → fetch arrivals + departures from `https://api.aviationstack.com/v1/timetable`, dedupe codeshares, map to the flights table, insert with `api_source='aviationstack'`. **Do this server-side** (Next.js route handler) so the API key stays off the browser. Show count imported on success.
 3. "Add Manually" sheet: Flight Number, Airline, Origin, Destination, Aircraft Type, Registration, Scheduled Arrival, Scheduled Departure, Pax Count, Stand (dropdown), Status.
 4. Flight Detail (`flights/[id]`):
    - Flight info + edit-stand action.
@@ -482,9 +485,9 @@ Full schema: `ground_scope/docs/DATABASE.md`. Tables this dashboard reads/writes
 **Data:** `flights`, `stands`, `service_types`, `tasks`/`flight_service_requests`, `flight_turnaround_summary`.
 
 **Done When:**
-- [ ] Mock import inserts flights; manual entry works; stand assignment persists.
+- [ ] Live AviationStack import inserts real flights (server-side, key not exposed); manual entry works; stand assignment persists.
+- [ ] Imported flights match what the Flutter app imports (same endpoint, dedup, mapping).
 - [ ] Sending a service request appears for the correct supervisor on mobile.
-- [ ] Mock banner + `🔖 REMINDER` clearly present.
 - [ ] en/ar + both themes verified.
 
 ---
@@ -560,8 +563,8 @@ Full schema: `ground_scope/docs/DATABASE.md`. Tables this dashboard reads/writes
 
 | # | Item | Where | Action needed |
 |---|---|---|---|
-| 1 | **AviationStack API** is mocked | Phase 9 | Add `AVIATIONSTACK_API_KEY`, replace `MOCK_FLIGHTS` with real call, remove demo banner. |
-| 2 | **FCM push from web** not wired | Phase 4/9/11, `api/send-notification` | Add Supabase Edge Function to send FCM using stored `fcm_token`s when admin sends a request / resolves a report. |
+| 1 | **AviationStack** key must be copied | Phase 9 | The integration is LIVE, not mocked — see [Section 13](#13-aviationstack-reference--live-flight-import). Copy the existing key from Flutter's `AppConstants.aviationStackKey` into `AVIATIONSTACK_API_KEY` and keep the call server-side. |
+| 2 | **FCM push from web** not wired | Phase 9/11, `lib/queries/notifications.ts` | Web calls the **same** `send-notification` Edge Function Flutter uses — see [Section 12 — FCM Reference](#12-fcm-reference--how-notifications-work). First: verify the Edge Function is deployed in the Supabase dashboard (Functions tab). If missing, deploy it — the expected code is documented in Section 12. |
 | 3 | **Auth user creation** needs secure path | Phase 8 | Use server-side service-role key or Edge Function; never expose service-role key to browser. |
 | 4 | **Service-request model** must be confirmed | Phase 9 | Confirm task-with-null-unit vs `flight_service_requests` table; match mobile. |
 | 5 | **RLS policies** for admin web access | All phases | Verify admin role has the RLS permissions needed for every read/write used here. |
@@ -585,6 +588,289 @@ Full schema: `ground_scope/docs/DATABASE.md`. Tables this dashboard reads/writes
 | 10 | Operations Monitor (live) | 1–2 sessions |
 | 11 | Reports | 1 session |
 | 12 | Analytics | 1–2 sessions |
+
+---
+
+---
+
+## 12. FCM Reference — How Notifications Work
+
+> Read this before building Phase 9 or Phase 11. It explains the full notification system so the AI builder understands exactly what to call and when.
+
+### 12.1 How Flutter Sends Notifications (existing flow)
+
+The mobile app's notification flow has four layers:
+
+```
+Flutter feature code
+  → NotificationSender.send()           (lib/core/notifications/service/notification_sender.dart)
+    → NotificationRemoteDs.sendNotification()  (lib/core/notifications/data/remote/notification_remote_ds.dart)
+      → supabase.functions.invoke('send-notification')
+        → Supabase Edge Function (lives in Supabase dashboard, NOT in this repo)
+          → reads users.fcm_token for the target user
+          → POSTs to Firebase FCM HTTP API
+          → inserts row in notifications table
+          → target phone receives the push
+```
+
+**Key fact:** Flutter never talks to Firebase FCM directly. It calls a Supabase Edge Function called `send-notification` which does all FCM work server-side. The web dashboard calls the **exact same Edge Function** — no new FCM code is needed.
+
+### 12.2 The Five Notification Types
+
+Defined in `notification_model.dart`. Use these exact strings in the `type` field:
+
+| String | When used | Color on mobile |
+|---|---|---|
+| `task_assigned` | Supervisor receives a service request / task | Blue (`#2FA4D7`) |
+| `alert` | General warning | Red (`#EF4444`) |
+| `delay` | A task is running past its scheduled end | Amber (`#F59E0B`) |
+| `report` | New incident report filed | Pink (`#D12052`) |
+| `flight_landed` | Flight status changed to active/arrived | Green (`#22C55E`) |
+
+### 12.3 The Edge Function (verify before Phase 9)
+
+The function `send-notification` lives in your **Supabase project dashboard → Edge Functions**. It is NOT committed to this repo.
+
+**🔖 REMINDER — Before building Phase 9:**
+1. Open Supabase dashboard → Edge Functions.
+2. Confirm `send-notification` is listed and active.
+3. If it is missing, deploy it using the reference code below via the Supabase CLI:
+   ```bash
+   supabase functions deploy send-notification
+   ```
+
+> ⚠️ **Do not write a new Edge Function from the snippet below without checking the real one first.** Your `send-notification` function already exists and works, so it already uses the current **FCM HTTP v1 API** (`https://fcm.googleapis.com/v1/projects/{project-id}/messages:send` with an OAuth2 bearer token from a Firebase service account). The legacy endpoint (`fcm.googleapis.com/fcm/send` + `Authorization: key=...`) shown below was **shut down by Google in June 2024** and will not work for a new function. The snippet is included only to illustrate the **shape** (look up token → insert row → push). Pull the real implementation from your Supabase dashboard and treat that as the source of truth.
+
+**Illustrative shape only — NOT current FCM API** (`supabase/functions/send-notification/index.ts`):
+
+```typescript
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+
+serve(async (req) => {
+  const { user_id, title, body, type, reference_id, reference_type } = await req.json()
+
+  // Service-role client — can read fcm_token bypassing RLS. Safe here (server-side only).
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  )
+
+  // 1. Look up the target user's FCM token
+  const { data: user } = await supabase
+    .from('users')
+    .select('fcm_token')
+    .eq('id', user_id)
+    .single()
+
+  // 2. Insert notification row (visible in the user's in-app notification list)
+  await supabase.from('notifications').insert({
+    user_id,
+    title,
+    body,
+    type,
+    reference_id,
+    reference_type,
+    is_read: false,
+    sent_via_fcm: !!user?.fcm_token,
+  })
+
+  // 3. Send FCM push to the device (only if token exists)
+  // ⚠️ DEPRECATED ENDPOINT — the real function uses FCM HTTP v1 (see warning above).
+  if (user?.fcm_token) {
+    await fetch('https://fcm.googleapis.com/fcm/send', {
+      method: 'POST',
+      headers: {
+        'Authorization': `key=${Deno.env.get('FCM_SERVER_KEY')}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        to: user.fcm_token,
+        notification: { title, body },
+        data: { type, reference_id, reference_type },
+      }),
+    })
+  }
+
+  return new Response(JSON.stringify({ ok: true }), { status: 200 })
+})
+```
+
+> The Edge Function needs two environment secrets set in the Supabase dashboard:
+> `SUPABASE_SERVICE_ROLE_KEY` and `FCM_SERVER_KEY` (from Firebase Console → Project Settings → Cloud Messaging → Server key).
+
+### 12.4 The Web Query Function (build this in `lib/queries/notifications.ts`)
+
+This is the only notification code the web dashboard needs. It mirrors Flutter's `NotificationRemoteDs.sendNotification()` exactly.
+
+```typescript
+// lib/queries/notifications.ts
+
+import { createBrowserClient } from '@supabase/ssr'
+
+export async function sendNotification({
+  userId,
+  title,
+  body,
+  type,
+  referenceId,
+  referenceType,
+}: {
+  userId: string
+  title: string
+  body: string
+  type: 'task_assigned' | 'alert' | 'delay' | 'report' | 'flight_landed'
+  referenceId?: string
+  referenceType?: string
+}) {
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+
+  const { error } = await supabase.functions.invoke('send-notification', {
+    body: {
+      user_id: userId,
+      title,
+      body,
+      type,
+      reference_id: referenceId,
+      reference_type: referenceType,
+    },
+  })
+
+  if (error) throw error
+}
+```
+
+> Always call this in a `try/catch` and show a toast on error. A failed notification must never block the main action (same pattern as Flutter's `NotificationSender` — it silent-fails).
+>
+> ⚠️ **`reference_id` and `reference_type` are `NOT NULL` in the `notifications` table** ([DATABASE.md:379-380](DATABASE.md)). The TypeScript signature marks them optional to mirror Flutter, but every real call site **must** pass both — all three moments in §12.5 do. If you ever send a notification with no reference, give it a sensible non-null reference (e.g. the flight id) rather than omitting it, or the insert in the Edge Function will fail.
+
+### 12.5 The Three Moments the Web Sends Notifications
+
+**Moment 1 — Admin sends a service request (Phase 9)**
+
+Trigger: admin clicks "Send Service Request" on a flight detail page.
+
+```typescript
+await sendNotification({
+  userId: fuelingSupervisorId,       // supervisor linked to the chosen service type
+  title: 'New Service Request',
+  body: `Flight ${flightNumber} requires ${serviceTypeName} at Stand ${standCode}`,
+  type: 'task_assigned',
+  referenceId: taskId,               // the created task/request id
+  referenceType: 'task',
+})
+```
+
+**Moment 2 — Admin resolves a report (Phase 11)**
+
+Trigger: admin clicks "Resolve" on an incident report (after ConfirmDialog).
+
+```typescript
+await sendNotification({
+  userId: report.reportedBy,         // the worker who filed the report
+  title: 'Report Resolved',
+  body: `Your incident report for flight ${flightNumber} has been resolved`,
+  type: 'report',
+  referenceId: reportId,
+  referenceType: 'report',
+})
+```
+
+**Moment 3 — Admin marks a flight as arrived/active (Phase 9)**
+
+Trigger: admin changes a flight's status to `active` (flight has landed).
+
+```typescript
+// Send to every supervisor who has a pending request for this flight
+for (const supervisorId of affectedSupervisorIds) {
+  await sendNotification({
+    userId: supervisorId,
+    title: 'Flight Landed',
+    body: `${flightNumber} has arrived at Stand ${standCode}. Operations starting.`,
+    type: 'flight_landed',
+    referenceId: flightId,
+    referenceType: 'flight',
+  })
+}
+```
+
+### 12.6 Full Flow Diagram
+
+```
+Web Dashboard (Next.js, browser)
+  │
+  │  admin action (send request / resolve report / mark flight arrived)
+  ▼
+sendNotification() — lib/queries/notifications.ts
+  │
+  │  supabase.functions.invoke('send-notification', { body: {...} })
+  ▼
+Supabase Edge Function  ←── same function Flutter already calls
+  │
+  ├──► inserts row in notifications table
+  │        │
+  │        └──► supervisor/worker Notifications tab (realtime stream) updates live
+  │
+  └──► Firebase FCM HTTP API  ←── uses FCM_SERVER_KEY (secret, server-side only)
+           │
+           └──► target device (Android / iOS) receives push notification
+```
+
+---
+
+---
+
+## 13. AviationStack Reference — Live Flight Import
+
+> Read before building Phase 9. The Flutter app already has a complete, working AviationStack integration. The web must **mirror it**, not reinvent it. Source of truth: `lib/core/shared/data/remote/aviation_stack_remote_ds.dart`.
+
+### 13.1 The Endpoint & Params (exact)
+
+```
+GET https://api.aviationstack.com/v1/timetable
+  ?access_key={AVIATIONSTACK_API_KEY}   // same key as Flutter's AppConstants.aviationStackKey
+  &iataCode={AIRPORT_IATA_CODE}         // same as Flutter's AppConstants.airportIataCode
+  &type=arrival | departure             // call BOTH, separately
+```
+
+> ⚠️ The endpoint is `/v1/timetable`, **not** `/v1/flights`. Connect timeout 30s, receive timeout 30s.
+
+### 13.2 The Logic (mirror exactly)
+
+1. Fetch `type=arrival` and `type=departure` in two calls.
+2. From each response, take `data[]`. **Skip** any item where `codeshared != null` (drops duplicate codeshare rows) and any item with an empty `flight.iataNumber`.
+3. **Deduplicate** the combined list by key = `{externalId}_{flightType}` (arrival vs departure).
+4. Sort by scheduled arrival ascending.
+5. Insert into the `flights` table with `api_source = 'aviationstack'`.
+
+### 13.3 Field Mapping (API → flights table)
+
+| flights column | API source field |
+|---|---|
+| `flight_number` | `flight.iataNumber` |
+| `airline` | `airline.name` |
+| `origin` | `departure.iataCode` |
+| `destination` | `arrival.iataCode` |
+| `aircraft_type` | `aircraft.icaoCode` |
+| `aircraft_registration` | `aircraft.regNumber` |
+| `scheduled_arrival` | arrival/departure `scheduledTime` (parsed) |
+| `estimated_arrival` | `estimatedTime` (parsed) |
+| `actual_arrival` | `actualTime` (parsed) |
+| `external_id` | `flight.iataNumber` |
+| `api_source` | literal `'aviationstack'` |
+
+**Status mapping** (`item.status` → flight status): `scheduled`→`scheduled`, `active`→`landed`, `cancelled`→`cancelled`, anything else→`scheduled`.
+
+### 13.4 Rate Limits & Errors (handle like Flutter)
+- HTTP **429** → surface a clear "API rate limit exceeded" message (don't retry in a loop).
+- Connection/receive timeout → "connection timeout" message.
+- The free AviationStack tier is rate-limited — expect 429s during testing.
+
+### 13.5 Security — keep the key server-side
+Flutter ships the key in the app, but the web **must not** expose it to the browser. Do the AviationStack fetch in a **Next.js route handler** (`app/api/import-flights/route.ts`) or a Supabase Edge Function. The browser calls your route; your route calls AviationStack with the key from a server-only env var. The `AVIATIONSTACK_API_KEY` in `.env.local` must **not** have the `NEXT_PUBLIC_` prefix.
 
 ---
 
