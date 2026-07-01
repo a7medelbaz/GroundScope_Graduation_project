@@ -109,12 +109,6 @@ class _Header extends StatelessWidget {
       ),
       child: Row(
         children: [
-          GestureDetector(
-            onTap: () => Navigator.of(context).pop(),
-            child: Icon(Icons.arrow_back_ios_new,
-                size: rf(20), color: cc.textPrimary),
-          ),
-          SizedBox(width: rw(12)),
           Text('notifications'.tr(), style: AppTextStyles.font18SemiBold),
           const Spacer(),
           BlocBuilder<NotificationCubit, NotificationState>(
