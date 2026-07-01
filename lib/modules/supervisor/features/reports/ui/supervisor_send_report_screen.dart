@@ -233,7 +233,7 @@ class _UnitSelector extends StatelessWidget {
                   CircularProgressIndicator(color: AppColors.primary200)));
     }
     return DropdownButtonFormField<UnitModel>(
-      value: selected,
+      initialValue: selected,
       decoration: InputDecoration(
         filled: true,
         fillColor: cc.surface,

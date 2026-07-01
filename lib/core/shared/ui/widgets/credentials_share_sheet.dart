@@ -264,7 +264,7 @@ class _ShareButton extends StatelessWidget {
               .copyWith(color: AppColors.primary200),
         ),
         style: OutlinedButton.styleFrom(
-          side: BorderSide(color: AppColors.primary200),
+          side: const BorderSide(color: AppColors.primary200),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(rr(14)),
           ),
