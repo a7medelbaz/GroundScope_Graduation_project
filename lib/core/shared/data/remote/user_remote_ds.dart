@@ -98,6 +98,82 @@ class UserRemoteDs {
     }
   }
 
+  Future<List<String>> fetchSupervisorsByServiceType(
+      String serviceTypeId) async {
+    try {
+      final data = await _supabase.client
+          .from('users')
+          .select('id')
+          .eq('role', 'supervisor')
+          .eq('service_type_id', serviceTypeId)
+          .eq('is_active', true);
+      return (data as List).map((e) => e['id'] as String).toList();
+    } on PostgrestException catch (e) {
+      throw SupabaseErrorHandler.handle(e);
+    } catch (_) {
+      throw AppError.unknown();
+    }
+  }
+
+  Future<List<String>> fetchAllAdmins() async {
+    try {
+      final data = await _supabase.client
+          .from('users')
+          .select('id')
+          .eq('role', 'admin')
+          .eq('is_active', true);
+      return (data as List).map((e) => e['id'] as String).toList();
+    } on PostgrestException catch (e) {
+      throw SupabaseErrorHandler.handle(e);
+    } catch (_) {
+      throw AppError.unknown();
+    }
+  }
+
+  Future<List<String>> fetchUnitMemberIds(String unitId) async {
+    try {
+      final data = await _supabase.client
+          .from('unit_members')
+          .select('user_id')
+          .eq('unit_id', unitId);
+      return (data as List).map((e) => e['user_id'] as String).toList();
+    } on PostgrestException catch (e) {
+      throw SupabaseErrorHandler.handle(e);
+    } catch (_) {
+      throw AppError.unknown();
+    }
+  }
+
+  Future<List<String>> fetchAllNonAdminUserIds() async {
+    try {
+      final data = await _supabase.client
+          .from('users')
+          .select('id')
+          .neq('role', 'admin')
+          .eq('is_active', true);
+      return (data as List).map((e) => e['id'] as String).toList();
+    } on PostgrestException catch (e) {
+      throw SupabaseErrorHandler.handle(e);
+    } catch (_) {
+      throw AppError.unknown();
+    }
+  }
+
+  Future<List<String>> fetchSupervisorIds() async {
+    try {
+      final data = await _supabase.client
+          .from('users')
+          .select('id')
+          .eq('role', 'supervisor')
+          .eq('is_active', true);
+      return (data as List).map((e) => e['id'] as String).toList();
+    } on PostgrestException catch (e) {
+      throw SupabaseErrorHandler.handle(e);
+    } catch (_) {
+      throw AppError.unknown();
+    }
+  }
+
   /// Toggles the is_active flag for a user.
   Future<void> setActive(String userId, bool isActive) async {
     try {

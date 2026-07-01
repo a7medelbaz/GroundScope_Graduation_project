@@ -55,6 +55,7 @@ class AdminDashboardFeaturesGrid extends StatelessWidget {
       AdminFeatureCardData(
         title: 'reports',
         icon: Icons.bar_chart_outlined,
+        route: Routes.adminReportsScreen,
         iconColor: AppColors.primary300,
         subtitle: 'manage_reports'.tr(),
         isAvailable: true,

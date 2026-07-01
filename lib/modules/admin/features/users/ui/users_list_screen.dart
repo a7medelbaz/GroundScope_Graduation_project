@@ -134,7 +134,7 @@ class _AppBar extends StatelessWidget {
                 return SizedBox(
                   width: rw(20),
                   height: rw(20),
-                  child: CircularProgressIndicator(
+                  child: const CircularProgressIndicator(
                     strokeWidth: 2,
                     color: AppColors.primary200,
                   ),

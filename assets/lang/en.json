@@ -86,7 +86,43 @@
   "service_types": "Service Types",
   "users": "Users",
   "flights": "Flights",
-  "reports": "Reports",
+  "reports": {
+    "title": "Reports",
+    "send_report": "Send Report",
+    "broadcast": "Broadcast to All",
+    "forward_to_admin": "Forward to Admin",
+    "tabs": {
+      "all": "All",
+      "communication": "Communication",
+      "my_reports": "My Reports",
+      "sent": "Sent",
+      "received": "Received",
+      "inbox": "Inbox",
+      "from_admin": "From Admin"
+    },
+    "actions": {
+      "send_to_unit": "Send to Unit",
+      "broadcast": "Broadcast",
+      "acknowledge": "Acknowledge",
+      "resolve": "Resolve",
+      "forward": "Forward to Admin",
+      "add_notes": "Add Notes",
+      "notes_hint": "Enter forwarding notes...",
+      "select_supervisor": "Select Supervisors",
+      "select_unit": "Select Unit",
+      "broadcast_warning": "This report will be sent to all workers across all units in your service type."
+    },
+    "send_form": {
+      "type": "Report Type",
+      "severity": "Severity",
+      "description": "Description",
+      "attach_image": "Attach Image (optional)",
+      "send": "Send"
+    },
+    "empty": {
+      "no_sent": "No reports found"
+    }
+  },
   "coming_soon": "Coming Soon",
   "add_service_type": "Add Service Type",
   "edit_service_type": "Edit Service Type",

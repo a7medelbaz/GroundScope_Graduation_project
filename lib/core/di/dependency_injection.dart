@@ -83,6 +83,7 @@ import '../shared/data/remote/service_request_remote_ds.dart';
 import '../shared/data/repo/service_request_repo.dart';
 import '../shared/data/repo/service_request_repo_impl.dart';
 import '../../modules/admin/features/service_requests/logic/cubit/service_request_cubit.dart';
+import '../../modules/admin/features/reports/logic/cubit/admin_reports_cubit.dart';
 import '../notifications/data/remote/notification_remote_ds.dart';
 import '../notifications/data/repo/notification_repo.dart';
 import '../notifications/data/repo/notification_repo_impl.dart';
@@ -195,6 +196,7 @@ Future<void> setUpDependencies() async {
       reportRepo: getIt<ReportRepo>(),
       userService: getIt<UserService>(),
       taskRepo: getIt<TaskRepo>(),
+      userRemoteDs: getIt<UserRemoteDs>(),
     ),
   );
 
@@ -324,7 +326,7 @@ Future<void> setUpDependencies() async {
     () => SupervisorUnitsCubit(repo: getIt<SupervisorUnitsRepo>()),
   );
   getIt.registerLazySingleton<SupervisorReportsRemoteDs>(
-    () => SupervisorReportsRemoteDs(getIt<SupabaseService>()),
+    () => SupervisorReportsRemoteDs(getIt<SupabaseService>(), getIt<UserRemoteDs>()),
   );
   getIt.registerLazySingleton<SupervisorReportsRepo>(
     () => SupervisorReportsRepoImpl(getIt<SupervisorReportsRemoteDs>()),
@@ -351,6 +353,15 @@ Future<void> setUpDependencies() async {
     () => SupervisorAddReportCubit(
       repo: getIt<SupervisorAddReportRepo>(),
       userService: getIt<UserService>(),
+    ),
+  );
+
+  // === ADMIN REPORTS ===
+  getIt.registerFactory<AdminReportsCubit>(
+    () => AdminReportsCubit(
+      reportRepo: getIt<ReportRepo>(),
+      userService: getIt<UserService>(),
+      userRemoteDs: getIt<UserRemoteDs>(),
     ),
   );
 

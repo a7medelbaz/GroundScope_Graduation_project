@@ -11,6 +11,7 @@ import 'package:ground_scope/core/utils/extensions/datetime_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
 import 'package:ground_scope/core/widgets/ui/dialogs/app_dialogs.dart';
 import '../logic/cubit/supervisor_reports_cubit.dart';
+import 'supervisor_forward_report_screen.dart';
 
 // ─── Color / icon helpers ─────────────────────────────────────────────────────
 
@@ -68,15 +69,28 @@ class SupervisorReportDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SupervisorReportsCubit, SupervisorReportsState>(
-      buildWhen: (prev, curr) => prev.allReports != curr.allReports,
+      buildWhen: (prev, curr) =>
+          prev.inbox != curr.inbox ||
+          prev.sent != curr.sent ||
+          prev.fromAdmin != curr.fromAdmin ||
+          prev.actionReportId != curr.actionReportId ||
+          prev.status != curr.status,
       builder: (context, state) {
-        final live = state.allReports.firstWhere(
-          (r) => r.id == report.id,
-          orElse: () => report,
-        );
-        final isActionLoading = state.status ==
-                SupervisorReportsStatus.actionLoading &&
-            state.actionReportId == live.id;
+        ReportModel? find(List<ReportModel> list) {
+          try {
+            return list.firstWhere((r) => r.id == report.id);
+          } catch (_) {
+            return null;
+          }
+        }
+
+        final live = find(state.inbox) ??
+            find(state.sent) ??
+            find(state.fromAdmin) ??
+            report;
+        final isActionLoading =
+            state.status == SupervisorReportsStatus.actionLoading &&
+                state.actionReportId == live.id;
         return _ReportDetailView(
           report: live,
           isActionLoading: isActionLoading,
@@ -117,6 +131,18 @@ class _ReportDetailView extends StatelessWidget {
     );
   }
 
+  void _onForward(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: context.read<SupervisorReportsCubit>(),
+          child: SupervisorForwardReportScreen(report: report),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -149,6 +175,7 @@ class _ReportDetailView extends StatelessWidget {
                         isLoading: isActionLoading,
                         onAcknowledge: () => _onAcknowledge(context),
                         onResolve: () => _onResolve(context),
+                        onForward: () => _onForward(context),
                       ),
                     ],
                   ],
@@ -695,12 +722,14 @@ class _ActionSection extends StatelessWidget {
     required this.isLoading,
     required this.onAcknowledge,
     required this.onResolve,
+    required this.onForward,
   });
 
   final ReportModel report;
   final bool isLoading;
   final VoidCallback onAcknowledge;
   final VoidCallback onResolve;
+  final VoidCallback onForward;
 
   @override
   Widget build(BuildContext context) {
@@ -714,7 +743,7 @@ class _ActionSection extends StatelessWidget {
       children: [
         if (report.status == ReportStatus.open) ...[
           _ActionButton(
-            label: 'acknowledge'.tr(),
+            label: 'reports.actions.acknowledge'.tr(),
             icon: Icons.visibility_outlined,
             color: AppColors.blue200,
             onTap: onAcknowledge,
@@ -722,11 +751,20 @@ class _ActionSection extends StatelessWidget {
           verticalSpacing(10),
         ],
         _ActionButton(
-          label: 'resolve'.tr(),
+          label: 'reports.actions.resolve'.tr(),
           icon: Icons.check_circle_outline,
           color: AppColors.green200,
           onTap: onResolve,
         ),
+        if (report.direction == ReportDirection.workerToSupervisor) ...[
+          verticalSpacing(10),
+          _ActionButton(
+            label: 'reports.actions.forward'.tr(),
+            icon: Icons.forward_rounded,
+            color: AppColors.secondary200,
+            onTap: onForward,
+          ),
+        ],
       ],
     );
   }
