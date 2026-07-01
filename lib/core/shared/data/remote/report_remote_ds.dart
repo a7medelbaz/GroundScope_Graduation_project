@@ -67,7 +67,7 @@ class ReportRemoteDs {
   Future<List<ReportModel>> fetchSentReports(String userId) async {
     final data = await supabaseService.client
         .from('reports')
-        .select('*, reporter:reported_by(full_name, role)')
+        .select('*, reporter:profiles!reported_by(full_name, role)')
         .eq('reported_by', userId)
         .order('created_at', ascending: false);
     return (data as List).map((e) => ReportModel.fromMap(e)).toList();
@@ -76,7 +76,9 @@ class ReportRemoteDs {
   Future<List<ReportModel>> fetchReceivedReports(String userId) async {
     final data = await supabaseService.client
         .from('report_recipients')
-        .select('report:report_id(*, reporter:reported_by(full_name, role))')
+        .select(
+          'report:report_id(*, reporter:profiles!reported_by(full_name, role))',
+        )
         .eq('user_id', userId)
         .order('created_at', ascending: false);
 
@@ -90,7 +92,7 @@ class ReportRemoteDs {
   Future<List<ReportModel>> fetchAllReports() async {
     final data = await supabaseService.client
         .from('reports')
-        .select('*, reporter:reported_by(full_name, role)')
+        .select('*, reporter:profiles!reported_by(full_name, role)')
         .order('created_at', ascending: false);
     return (data as List).map((e) => ReportModel.fromMap(e)).toList();
   }
@@ -100,7 +102,7 @@ class ReportRemoteDs {
   ) async {
     final data = await supabaseService.client
         .from('reports')
-        .select('*, reporter:reported_by(full_name, role)')
+        .select('*, reporter:profiles!reported_by(full_name, role)')
         .eq('direction', direction.toDbString)
         .order('created_at', ascending: false);
     return (data as List).map((e) => ReportModel.fromMap(e)).toList();
