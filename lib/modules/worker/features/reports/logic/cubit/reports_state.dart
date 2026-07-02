@@ -31,8 +31,7 @@ class ReportsState extends Equatable {
         : base.where((r) => r.status == selectedFilter).toList();
   }
 
-  int get unreadCount =>
-      received.where((r) => r.recipientUserIds == null).length;
+  int get unreadCount => received.where((r) => r.isRead == false).length;
 
   ReportsState copyWith({
     ReportsStatus? status,

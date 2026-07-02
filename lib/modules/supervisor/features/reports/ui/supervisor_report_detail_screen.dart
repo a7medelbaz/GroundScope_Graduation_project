@@ -739,9 +739,15 @@ class _ActionSection extends StatelessWidget {
       );
     }
 
+    // Acknowledge/Resolve only apply to reports the supervisor received
+    // (worker alerts or admin messages) — not their own outgoing sent items.
+    final isReceived = report.direction == ReportDirection.workerToSupervisor ||
+        report.direction == ReportDirection.adminToSupervisor ||
+        report.direction == ReportDirection.adminBroadcast;
+
     return Column(
       children: [
-        if (report.status == ReportStatus.open) ...[
+        if (isReceived && report.status == ReportStatus.open) ...[
           _ActionButton(
             label: 'reports.actions.acknowledge'.tr(),
             icon: Icons.visibility_outlined,
@@ -750,12 +756,13 @@ class _ActionSection extends StatelessWidget {
           ),
           verticalSpacing(10),
         ],
-        _ActionButton(
-          label: 'reports.actions.resolve'.tr(),
-          icon: Icons.check_circle_outline,
-          color: AppColors.green200,
-          onTap: onResolve,
-        ),
+        if (isReceived)
+          _ActionButton(
+            label: 'reports.actions.resolve'.tr(),
+            icon: Icons.check_circle_outline,
+            color: AppColors.green200,
+            onTap: onResolve,
+          ),
         if (report.direction == ReportDirection.workerToSupervisor) ...[
           verticalSpacing(10),
           _ActionButton(

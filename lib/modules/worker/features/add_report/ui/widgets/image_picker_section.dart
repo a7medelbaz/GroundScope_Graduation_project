@@ -19,10 +19,6 @@ class ImagePickerSection extends StatelessWidget {
       child: state.imageFile != null
           ? const AddReportImagePreview(key: ValueKey('preview'))
           : const PickerButtons(key: ValueKey('buttons')),
-      // child: state.hasImage
-      //     // ? const AddReportImagePreview(key: ValueKey('preview'))
-      //     ? const AddReportImagePreview(key: ValueKey('preview'))
-      //     : const PickerButtons(key: ValueKey('buttons')),
     );
   }
 }

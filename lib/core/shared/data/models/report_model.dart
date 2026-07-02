@@ -138,6 +138,7 @@ class ReportModel {
     this.reporterName,
     this.reporterRole,
     this.recipientUserIds,
+    this.isRead,
   });
 
   final String id;
@@ -161,11 +162,11 @@ class ReportModel {
   final String? reporterName;
   final String? reporterRole;
   final List<String>? recipientUserIds;
+  final bool? isRead;
 
   factory ReportModel.fromMap(Map<String, dynamic> map) {
     final flightMap = map['flights'] as Map<String, dynamic>?;
-    // Support both 'reporter:reported_by(...)' alias and legacy 'users!reported_by(...)' join
-    final userMap = (map['reporter'] ?? map['users']) as Map<String, dynamic>?;
+    final userMap = map['reporter'] as Map<String, dynamic>?;
     return ReportModel(
       id: map['id'] as String,
       taskId: map['task_id'] as String?,
@@ -216,6 +217,7 @@ class ReportModel {
     String? reporterName,
     String? reporterRole,
     List<String>? recipientUserIds,
+    bool? isRead,
   }) {
     return ReportModel(
       id: id ?? this.id,
@@ -239,19 +241,7 @@ class ReportModel {
       reporterName: reporterName ?? this.reporterName,
       reporterRole: reporterRole ?? this.reporterRole,
       recipientUserIds: recipientUserIds ?? this.recipientUserIds,
+      isRead: isRead ?? this.isRead,
     );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'task_id': taskId,
-      'flight_id': flightId,
-      'reported_by': reportedBy,
-      'type': type.value,
-      'description': description,
-      'severity': severity.value,
-      'status': status.value,
-      'direction': direction.toDbString,
-    };
   }
 }

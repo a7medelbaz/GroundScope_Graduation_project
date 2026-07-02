@@ -100,6 +100,7 @@
       "inbox": "Inbox",
       "from_admin": "From Admin"
     },
+    "search_hint": "Search reports...",
     "actions": {
       "send_to_unit": "Send to Unit",
       "broadcast": "Broadcast",
@@ -110,7 +111,9 @@
       "notes_hint": "Enter forwarding notes...",
       "select_supervisor": "Select Supervisors",
       "select_unit": "Select Unit",
-      "broadcast_warning": "This report will be sent to all workers across all units in your service type."
+      "select_unit_load_failed": "Failed to load units. Please try again.",
+      "broadcast_warning": "This report will be sent to all workers across all units in your service type.",
+      "admin_broadcast_warning": "This report will be sent to every user in the app, across all roles."
     },
     "send_form": {
       "type": "Report Type",
@@ -120,7 +123,9 @@
       "send": "Send"
     },
     "empty": {
-      "no_sent": "No reports found"
+      "no_sent": "No reports found",
+      "no_inbox": "No reports received yet",
+      "no_from_admin": "No messages from admin yet"
     }
   },
   "coming_soon": "Coming Soon",
@@ -553,7 +558,8 @@
     "please_check_back": "Please check back later",
     "replace": "Replace",
     "service": "Service",
-    "stand": "Stand {code}"
+    "stand": "Stand {code}",
+    "description_required": "Please describe the issue before submitting"
   },
   "worker_reports": {
     "title": "My Reports",

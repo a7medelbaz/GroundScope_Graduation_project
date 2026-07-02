@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,9 +21,11 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
 
   final SupervisorReportsRepo _repo;
   final UserService _userService;
+  StreamSubscription<(List<ReportModel>, List<ReportModel>)>? _receivedSub;
 
   Future<void> load() async {
     emit(state.copyWith(status: SupervisorReportsStatus.loading));
+    String? supervisorId;
     try {
       final user = await _userService.getUser();
       if (user == null) {
@@ -31,24 +34,48 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
             error: AppError.unauthorized()));
         return;
       }
+      supervisorId = user.id;
 
-      final results = await Future.wait([
-        _repo.fetchInbox(user.id),
-        _repo.fetchSent(user.id),
-        _repo.fetchFromAdmin(user.id),
-      ]);
+      final receivedFuture = _repo.fetchReceived(user.id);
+      final sentFuture = _repo.fetchSent(user.id);
+      final received = await receivedFuture;
+      final sent = await sentFuture;
 
       emit(state.copyWith(
         status: SupervisorReportsStatus.loaded,
-        inbox: results[0],
-        sent: results[1],
-        fromAdmin: results[2],
+        inbox: received.$1,
+        fromAdmin: received.$2,
+        sent: sent,
       ));
     } catch (_) {
       emit(state.copyWith(
           status: SupervisorReportsStatus.failure,
           error: AppError.unknown()));
+      return;
     }
+
+    _watchReceived(supervisorId);
+  }
+
+  void _watchReceived(String supervisorId) {
+    try {
+      _receivedSub?.cancel();
+      _receivedSub = _repo.watchReceived(supervisorId).listen(
+        (received) => emit(state.copyWith(
+          inbox: received.$1,
+          fromAdmin: received.$2,
+        )),
+        onError: (_) {},
+      );
+    } catch (_) {
+      // Real-time is best-effort — the initial load already succeeded.
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _receivedSub?.cancel();
+    return super.close();
   }
 
   void switchTab(SupervisorReportsTab tab) =>
@@ -59,6 +86,17 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
       emit(state.copyWith(clearFilter: true));
     } else {
       emit(state.copyWith(selectedFilter: filter));
+    }
+  }
+
+  Future<void> markAsRead(String reportId) async {
+    final user = await _userService.getUser();
+    if (user == null) return;
+    try {
+      await _repo.markAsRead(reportId: reportId, supervisorId: user.id);
+    } catch (_) {
+      // Best-effort — the real-time stream will still reflect the true
+      // state on next update.
     }
   }
 
@@ -140,7 +178,7 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
       final user = await _userService.getUser();
       if (user == null) throw AppError.unknown();
 
-      final report = await _repo.sendToUnit(
+      final (report, recipientIds) = await _repo.sendToUnit(
         supervisorId: user.id,
         unitId: unitId,
         type: type,
@@ -150,7 +188,7 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
       );
 
       // Notifications are best-effort
-      _notifyUnitMembers(unitId, report, user.fullName);
+      _notifyRecipients(recipientIds, report, 'Supervisor Alert');
 
       emit(state.copyWith(
           status: SupervisorReportsStatus.submitSuccess,
@@ -176,7 +214,7 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
       final user = await _userService.getUser();
       if (user == null) throw AppError.unknown();
 
-      final report = await _repo.broadcast(
+      final (report, recipientIds) = await _repo.broadcast(
         supervisorId: user.id,
         serviceTypeId: serviceTypeId,
         type: type,
@@ -184,6 +222,8 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
         description: description,
         imageFile: imageFile,
       );
+
+      _notifyRecipients(recipientIds, report, 'Supervisor Broadcast');
 
       emit(state.copyWith(
           status: SupervisorReportsStatus.submitSuccess,
@@ -206,11 +246,13 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
       final user = await _userService.getUser();
       if (user == null) throw AppError.unknown();
 
-      final report = await _repo.forwardToAdmin(
+      final (report, recipientIds) = await _repo.forwardToAdmin(
         original: original,
         supervisorId: user.id,
         notes: notes,
       );
+
+      _notifyRecipients(recipientIds, report, 'Forwarded Report');
 
       emit(state.copyWith(
           status: SupervisorReportsStatus.submitSuccess,
@@ -242,18 +284,18 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
     return (update(state.inbox), update(state.sent), update(state.fromAdmin));
   }
 
-  void _notifyUnitMembers(
-      String unitId, ReportModel report, String senderName) {
-    // Fire-and-forget — unit member ids come from report_recipients; we just
-    // send one notification tagged with the report so each recipient's device
-    // can display it.
-    NotificationSender.send(
-      userId: unitId,
-      title: 'Supervisor Alert',
-      body: report.description,
-      type: NotificationType.alert,
-      referenceId: report.id,
-      referenceType: 'report',
-    );
+  void _notifyRecipients(
+      List<String> recipientIds, ReportModel report, String title) {
+    // Fire-and-forget — NotificationSender.send silently fails per recipient.
+    for (final userId in recipientIds) {
+      NotificationSender.send(
+        userId: userId,
+        title: title,
+        body: report.description,
+        type: NotificationType.alert,
+        referenceId: report.id,
+        referenceType: 'report',
+      );
+    }
   }
 }

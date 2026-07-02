@@ -56,7 +56,14 @@ class _SupervisorSendReportScreenState
       final units =
           await ds.fetchUnits(widget.serviceTypeId);
       if (mounted) setState(() => _units = units);
-    } catch (_) {}
+    } catch (_) {
+      if (mounted) {
+        context.showMessageSnackBar(
+          'reports.actions.select_unit_load_failed'.tr(),
+          type: SnackBarType.error,
+        );
+      }
+    }
     if (mounted) setState(() => _loadingUnits = false);
   }
 

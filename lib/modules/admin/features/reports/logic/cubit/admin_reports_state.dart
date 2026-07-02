@@ -33,7 +33,13 @@ class AdminReportsState extends Equatable {
   List<ReportModel> get displayList {
     List<ReportModel> base = switch (tab) {
       AdminReportsTab.all => all,
-      AdminReportsTab.communication => all,
+      // "Communication" = admin <-> supervisor direct exchanges, excluding
+      // worker-originated reports and broadcasts.
+      AdminReportsTab.communication => all
+          .where((r) =>
+              r.direction == ReportDirection.adminToSupervisor ||
+              r.direction == ReportDirection.supervisorToAdmin)
+          .toList(),
       AdminReportsTab.myReports => myReports,
     };
 

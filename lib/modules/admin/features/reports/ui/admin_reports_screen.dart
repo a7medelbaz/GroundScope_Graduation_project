@@ -7,9 +7,9 @@ import 'package:ground_scope/core/themes/app_colors.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
+import 'package:ground_scope/core/widgets/custom_text_form_.dart';
 
 import '../logic/cubit/admin_reports_cubit.dart';
-import 'admin_send_report_screen.dart';
 import 'widgets/admin_report_card.dart';
 
 class AdminReportsScreen extends StatefulWidget {
@@ -20,14 +20,6 @@ class AdminReportsScreen extends StatefulWidget {
 }
 
 class _AdminReportsScreenState extends State<AdminReportsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AdminReportsCubit>().load();
-    });
-  }
-
   void _showSendOptions() {
     showModalBottomSheet(
       context: context,
@@ -46,14 +38,13 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
                 label: 'reports.actions.select_supervisor'.tr(),
                 onTap: () {
                   Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => BlocProvider.value(
-                        value: context.read<AdminReportsCubit>(),
-                        child: const AdminSendReportScreen(isBroadcast: false),
-                      ),
-                    ),
+                  context.pushNamed(
+                    Routes.adminSendReportScreen,
+                    arguments: {
+                      'isBroadcast': false,
+                      'cubit': context.read<AdminReportsCubit>(),
+                    },
+                    rootNavigator: true,
                   );
                 },
               ),
@@ -63,14 +54,13 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
                 label: 'reports.broadcast'.tr(),
                 onTap: () {
                   Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => BlocProvider.value(
-                        value: context.read<AdminReportsCubit>(),
-                        child: const AdminSendReportScreen(isBroadcast: true),
-                      ),
-                    ),
+                  context.pushNamed(
+                    Routes.adminSendReportScreen,
+                    arguments: {
+                      'isBroadcast': true,
+                      'cubit': context.read<AdminReportsCubit>(),
+                    },
+                    rootNavigator: true,
                   );
                 },
               ),
@@ -102,6 +92,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
           child: Column(
             children: [
               _Header(onSend: _showSendOptions),
+              const _SearchField(),
               const _TabBar(),
               const _DirectionFilterChips(),
               const Expanded(child: _Body()),
@@ -180,6 +171,28 @@ class _Header extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ─── Search Field ───────────────────────────────────────────────────────────
+
+class _SearchField extends StatelessWidget {
+  const _SearchField();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(rw(16), rh(12), rw(16), 0),
+      child: CustomTextForm(
+        hintText: 'reports.search_hint'.tr(),
+        prefixIcon: Icon(
+          Icons.search_rounded,
+          color: context.customColors.iconSecondary,
+        ),
+        onChanged: (value) =>
+            context.read<AdminReportsCubit>().setSearch(value),
       ),
     );
   }

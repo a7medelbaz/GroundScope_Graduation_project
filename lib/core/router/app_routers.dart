@@ -46,6 +46,7 @@ import 'package:ground_scope/modules/worker/features/task_info/ui/task_info_scre
 import '../../modules/admin/features/reports/logic/cubit/admin_reports_cubit.dart';
 import '../../modules/admin/features/reports/ui/admin_report_detail_screen.dart';
 import '../../modules/admin/features/reports/ui/admin_reports_screen.dart';
+import '../../modules/admin/features/reports/ui/admin_send_report_screen.dart';
 import '../../modules/admin/features/service_requests/logic/cubit/service_request_cubit.dart';
 import '../../modules/admin/features/service_requests/ui/flight_service_request_screen.dart';
 import '../../modules/supervisor/core/main_navigation/supervisor_scaffold.dart';
@@ -333,6 +334,17 @@ class AppRouter {
           BlocProvider(
             create: (_) => getIt<AdminReportsCubit>()..load(),
             child: const AdminReportsScreen(),
+          ),
+          settings,
+        );
+
+      case Routes.adminSendReportScreen:
+        final isBroadcast = arguments?['isBroadcast'] as bool? ?? false;
+        final sendCubit = arguments?['cubit'] as AdminReportsCubit;
+        return _buildRoute(
+          BlocProvider.value(
+            value: sendCubit,
+            child: AdminSendReportScreen(isBroadcast: isBroadcast),
           ),
           settings,
         );

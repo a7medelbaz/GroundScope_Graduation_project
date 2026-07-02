@@ -10,18 +10,39 @@ class SupervisorReportsRemoteDs {
   final SupabaseService _supabaseService;
   final UserRemoteDs _userRemoteDs;
 
-  Future<List<ReportModel>> fetchInbox(String supervisorId) async {
+  /// Fetches all reports received by this supervisor in one round trip and
+  /// splits them into (workerInbox, fromAdmin) — inbox is worker alerts,
+  /// fromAdmin is admin-to-supervisor + admin broadcasts.
+  Future<(List<ReportModel>, List<ReportModel>)> fetchReceived(
+    String supervisorId,
+  ) async {
     final data = await _supabaseService.client
         .from('report_recipients')
-        .select('report:report_id(*, reporter:reported_by(full_name, role))')
+        .select(
+          'is_read, report:report_id(*, reporter:reported_by(full_name, role))',
+        )
         .eq('user_id', supervisorId)
         .order('created_at', ascending: false);
-    return (data as List)
+
+    final received = (data as List)
         .map(
-          (row) => ReportModel.fromMap(row['report'] as Map<String, dynamic>),
+          (row) => ReportModel.fromMap(row['report'] as Map<String, dynamic>)
+              .copyWith(isRead: row['is_read'] as bool?),
         )
+        .toList();
+
+    final inbox = received
         .where((r) => r.direction == ReportDirection.workerToSupervisor)
         .toList();
+    final fromAdmin = received
+        .where(
+          (r) =>
+              r.direction == ReportDirection.adminToSupervisor ||
+              r.direction == ReportDirection.adminBroadcast,
+        )
+        .toList();
+
+    return (inbox, fromAdmin);
   }
 
   Future<List<ReportModel>> fetchSent(String supervisorId) async {
@@ -33,25 +54,7 @@ class SupervisorReportsRemoteDs {
     return (data as List).map((e) => ReportModel.fromMap(e)).toList();
   }
 
-  Future<List<ReportModel>> fetchFromAdmin(String supervisorId) async {
-    final data = await _supabaseService.client
-        .from('report_recipients')
-        .select('report:report_id(*, reporter:reported_by(full_name, role))')
-        .eq('user_id', supervisorId)
-        .order('created_at', ascending: false);
-    return (data as List)
-        .map(
-          (row) => ReportModel.fromMap(row['report'] as Map<String, dynamic>),
-        )
-        .where(
-          (r) =>
-              r.direction == ReportDirection.adminToSupervisor ||
-              r.direction == ReportDirection.adminBroadcast,
-        )
-        .toList();
-  }
-
-  Future<ReportModel> sendToUnit({
+  Future<(ReportModel, List<String>)> sendToUnit({
     required String supervisorId,
     required String unitId,
     required ReportType type,
@@ -91,10 +94,10 @@ class SupervisorReportsRemoteDs {
           );
     }
 
-    return ReportModel.fromMap(reportData);
+    return (ReportModel.fromMap(reportData), unitMemberIds);
   }
 
-  Future<ReportModel> broadcast({
+  Future<(ReportModel, List<String>)> broadcast({
     required String supervisorId,
     required String serviceTypeId,
     required ReportType type,
@@ -145,10 +148,10 @@ class SupervisorReportsRemoteDs {
           );
     }
 
-    return ReportModel.fromMap(reportData);
+    return (ReportModel.fromMap(reportData), allMemberIds.toList());
   }
 
-  Future<ReportModel> forwardToAdmin({
+  Future<(ReportModel, List<String>)> forwardToAdmin({
     required ReportModel original,
     required String supervisorId,
     required String notes,
@@ -183,7 +186,18 @@ class SupervisorReportsRemoteDs {
           );
     }
 
-    return ReportModel.fromMap(reportData);
+    return (ReportModel.fromMap(reportData), adminIds);
+  }
+
+  Future<void> markAsRead({
+    required String reportId,
+    required String supervisorId,
+  }) async {
+    await _supabaseService.client
+        .from('report_recipients')
+        .update({'is_read': true, 'read_at': DateTime.now().toIso8601String()})
+        .eq('report_id', reportId)
+        .eq('user_id', supervisorId);
   }
 
   Future<void> acknowledgeReport({
@@ -214,9 +228,20 @@ class SupervisorReportsRemoteDs {
         .eq('id', reportId);
   }
 
+  Stream<(List<ReportModel>, List<ReportModel>)> watchReceived(
+    String supervisorId,
+  ) {
+    return _supabaseService.client
+        .from('report_recipients')
+        .stream(primaryKey: ['id'])
+        .eq('user_id', supervisorId)
+        .asyncMap((_) => fetchReceived(supervisorId));
+  }
+
   Future<String> _uploadImage(File file, String userId) async {
-    final fileName =
-        '${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
+    final originalName = file.path.split('/').last;
+    final sanitized = originalName.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
+    final fileName = '${DateTime.now().millisecondsSinceEpoch}_$sanitized';
     await _supabaseService.client.storage
         .from('reports')
         .upload(fileName, file);

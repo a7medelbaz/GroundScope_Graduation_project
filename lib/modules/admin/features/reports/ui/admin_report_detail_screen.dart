@@ -204,6 +204,36 @@ class AdminReportDetailScreen extends StatelessWidget {
                           height: rh(220),
                           width: double.infinity,
                           fit: BoxFit.cover,
+                          placeholder: (_, _) => Container(
+                            height: rh(220),
+                            color: cc.surfaceVariant,
+                            child: const Center(
+                              child: CircularProgressIndicator(
+                                color: AppColors.primary200,
+                                strokeWidth: 2,
+                              ),
+                            ),
+                          ),
+                          errorWidget: (_, _, _) => Container(
+                            height: rh(220),
+                            color: cc.surfaceVariant,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.broken_image_rounded,
+                                  size: rf(36),
+                                  color: cc.textDisabled,
+                                ),
+                                verticalSpacing(8),
+                                Text(
+                                  'image_unavailable'.tr(),
+                                  style: AppTextStyles.font12Light
+                                      .copyWith(color: cc.textHint),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ),
