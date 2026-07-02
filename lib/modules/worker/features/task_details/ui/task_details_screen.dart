@@ -56,10 +56,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
   }
 
   Future<void> _onStart() async {
-    await cubit.updateTaskStatus(
-      taskId: widget.task.id,
-      newStatus: TaskStatus.inProgress,
-    );
+    await cubit.updateTaskStatus(taskId: widget.task.id, newStatus: TaskStatus.inProgress);
   }
 
   Future<void> _onResume() async {
@@ -75,22 +72,12 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
   Future<void> _onComplete(TaskDetailsState state) async {
     final allChecked = state.checklist.every((e) => e.isChecked);
     Future<void> complete() async {
-      await cubit.updateTaskStatus(
-        taskId: widget.task.id,
-        newStatus: TaskStatus.completed,
-      );
+      await cubit.updateTaskStatus(taskId: widget.task.id, newStatus: TaskStatus.completed);
       _popWithResult();
     }
 
     if (!allChecked && state.status == TaskStatus.inProgress) {
-      AppDialogs.showConfirm(
-        context,
-        title: 'worker_task_details.checklist_incomplete'.tr(),
-        message: 'worker_task_details.finish_anyway'.tr(),
-        confirmText: 'worker_task_details.finish'.tr(),
-        cancelText: 'cancel'.tr(),
-        onConfirm: complete,
-      );
+      AppDialogs.showConfirm(context, title: 'worker_task_details.checklist_incomplete'.tr(), message: 'worker_task_details.finish_anyway'.tr(), confirmText: 'worker_task_details.finish'.tr(), cancelText: 'cancel'.tr(), onConfirm: complete);
       return;
     }
 
@@ -107,9 +94,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
       },
       builder: (context, state) {
         if (state.isLoading && state.checklist.isEmpty) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
         }
 
         final task = widget.task.copyWith(status: state.status);
@@ -119,10 +104,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
           extendBodyBehindAppBar: true,
           body: Column(
             children: [
-              TaskDetailsHeader(
-                task: task,
-                onBackButtonPressed: () => _onBack(state),
-              ),
+              TaskDetailsHeader(task: task, onBackButtonPressed: () => _onBack(state)),
 
               Expanded(
                 child: SingleChildScrollView(
@@ -153,12 +135,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
 
   Widget _buildQuickActions(TaskModel task, TaskDetailsState state) {
     return TaskDetailsQuickActionsRow(
-      onInfoTap: () => context.pushNamed(
-        Routes.taskDetailsInfoScreen,
-        arguments: {'task': task, 'pauses': state.pauses},
-      ),
-      onReportTap: () =>
-          context.pushNamed(Routes.addReportScreen, arguments: {'preSelectedTask': task}),
+      onInfoTap: () => context.pushNamed(Routes.taskDetailsInfoScreen, arguments: {'task': task, 'pauses': state.pauses}),
+      onReportTap: () => context.pushNamed(Routes.addReportScreen, arguments: {'preSelectedTask': task}),
       taskStatus: state.status!,
     );
   }
@@ -184,21 +162,14 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
   }
 
   Widget? _buildActions(TaskDetailsState state) {
-    if (state.status == TaskStatus.completed ||
-        state.status == TaskStatus.cancelled) {
+    if (state.status == TaskStatus.completed || state.status == TaskStatus.cancelled) {
       return null;
     }
 
     return Container(
       padding: EdgeInsets.fromLTRB(rw(20), rh(16), rw(20), rh(32)),
       decoration: BoxDecoration(color: context.customColors.background),
-      child: TaskActionButton(
-        status: state.status,
-        onStart: _onStart,
-        onPause: _onPause,
-        onResume: _onResume,
-        onComplete: () => _onComplete(state),
-      ),
+      child: TaskActionButton(status: state.status, onStart: _onStart, onPause: _onPause, onResume: _onResume, onComplete: () => _onComplete(state)),
     );
   }
 }

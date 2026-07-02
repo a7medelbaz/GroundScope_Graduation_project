@@ -27,28 +27,15 @@ class LoginScreen extends StatelessWidget {
             return OverlayLoader(
               isLoading: state is AuthChecking,
               child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: rw(16),
-                  vertical: rh(8),
-                ),
+                padding: EdgeInsets.symmetric(horizontal: rw(16), vertical: rh(8)),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       verticalSpacing(40),
-                      Text(
-                        'auth.login_title'.tr(),
-                        style: AppTextStyles.font20ExtraBold,
-                        textAlign: TextAlign.center,
-                      ),
+                      Text('auth.login_title'.tr(), style: AppTextStyles.font20ExtraBold, textAlign: TextAlign.center),
                       verticalSpacing(12),
-                      Text(
-                        'auth.login_desc'.tr(),
-                        style: AppTextStyles.font14Light.copyWith(
-                          color: context.customColors.textSecondary,
-                          height: 1.8,
-                        ),
-                      ),
+                      Text('auth.login_desc'.tr(), style: AppTextStyles.font14Light.copyWith(color: context.customColors.textSecondary, height: 1.8)),
                       verticalSpacing(80),
                       const LoginForm(),
                       verticalSpacing(60),

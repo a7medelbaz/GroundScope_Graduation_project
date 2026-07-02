@@ -26,14 +26,7 @@ class HomeScreen extends StatelessWidget {
           final user = authState.userModel;
           return BlocBuilder<HomeCubit, HomeState>(
             builder: (context, homeState) {
-              final unit = homeState is HomeLoaded
-                  ? homeState.unit
-                  : const UnitModel(
-                      id: "",
-                      name: "",
-                      serviceTypeId: "",
-                      status: "",
-                    );
+              final unit = homeState is HomeLoaded ? homeState.unit : const UnitModel(id: "", name: "", serviceTypeId: "", status: "");
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
