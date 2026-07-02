@@ -25,7 +25,8 @@ class AddReportScreen extends StatefulWidget {
   State<AddReportScreen> createState() => _AddReportScreenState();
 }
 
-class _AddReportScreenState extends State<AddReportScreen> with SingleTickerProviderStateMixin {
+class _AddReportScreenState extends State<AddReportScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _descController = TextEditingController();
 
@@ -36,7 +37,10 @@ class _AddReportScreenState extends State<AddReportScreen> with SingleTickerProv
   void initState() {
     super.initState();
 
-    _animController = AnimationController(vsync: this, duration: const Duration(milliseconds: 600));
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
     _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeOut);
 
     _animController.forward();
@@ -66,11 +70,17 @@ class _AddReportScreenState extends State<AddReportScreen> with SingleTickerProv
         if (state.status == AddReportStatus.submitted) {
           HapticFeedback.mediumImpact();
           _descController.clear();
-          context.showMessageSnackBar('worker_add_report.success_message'.tr(), type: SnackBarType.success);
+          context.showMessageSnackBar(
+            'worker_add_report.success_message'.tr(),
+            type: SnackBarType.success,
+          );
           context.read<AddReportCubit>().resetForm();
         } else if (state.status == AddReportStatus.failure) {
           HapticFeedback.mediumImpact();
-          context.showMessageSnackBar(state.error!.messageKey, type: SnackBarType.error);
+          context.showMessageSnackBar(
+            state.error!.messageKey,
+            type: SnackBarType.error,
+          );
         }
       },
       child: Scaffold(
@@ -90,7 +100,10 @@ class _AddReportScreenState extends State<AddReportScreen> with SingleTickerProv
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         verticalSpacing(8),
-                        TaskSelectorTile(tasks: const [], preSelectedTask: widget.preSelectedTask),
+                        TaskSelectorTile(
+                          tasks: const [],
+                          preSelectedTask: widget.preSelectedTask,
+                        ),
                         verticalSpacing(24),
                         SectionLabel(label: 'report_type'.tr()),
                         verticalSpacing(10),
@@ -100,15 +113,26 @@ class _AddReportScreenState extends State<AddReportScreen> with SingleTickerProv
                         verticalSpacing(10),
                         const ReportSeveritySelector(),
                         verticalSpacing(24),
-                        SectionLabel(label: 'worker_add_report.description'.tr()),
+                        SectionLabel(
+                          label: 'worker_add_report.description'.tr(),
+                        ),
                         verticalSpacing(10),
-                        CustomTextForm(hintText: 'worker_add_report.description_hint'.tr(), controller: _descController, maxLines: 5),
+                        CustomTextForm(
+                          hintText: 'worker_add_report.description_hint'.tr(),
+                          controller: _descController,
+                          maxLines: 5,
+                        ),
                         verticalSpacing(24),
-                        SectionLabel(label: 'worker_add_report.attach_photo'.tr()),
+                        SectionLabel(
+                          label: 'worker_add_report.attach_photo'.tr(),
+                        ),
                         verticalSpacing(10),
                         const ImagePickerSection(),
                         verticalSpacing(36),
-                        CustomTextButton(text: 'worker_add_report.submit'.tr(), onPressed: () => _handleSubmit(context)),
+                        CustomTextButton(
+                          text: 'worker_add_report.submit'.tr(),
+                          onPressed: () => _handleSubmit(context),
+                        ),
                         verticalSpacing(40),
                       ],
                     ),
@@ -126,7 +150,9 @@ class _AddReportScreenState extends State<AddReportScreen> with SingleTickerProv
     if (!_formKey.currentState!.validate()) return;
 
     HapticFeedback.lightImpact();
-    context.read<AddReportCubit>().submit(description: _descController.text.trim());
+    context.read<AddReportCubit>().submit(
+      description: _descController.text.trim(),
+    );
   }
 }
 
