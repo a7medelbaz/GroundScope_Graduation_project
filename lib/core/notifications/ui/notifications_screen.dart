@@ -4,13 +4,14 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/notifications/data/models/notification_model.dart';
 import 'package:ground_scope/core/notifications/logic/cubit/notification_cubit.dart';
-import 'package:ground_scope/core/notifications/service/notification_navigator.dart';
+import 'package:ground_scope/core/router/routes.dart';
 import 'package:ground_scope/core/service/user_service.dart';
 import 'package:ground_scope/core/themes/app_colors.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/extensions/datetime_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
+import 'package:ground_scope/core/widgets/gradient_header.dart';
 import 'package:get_it/get_it.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -36,25 +37,63 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cc = context.customColors;
 
     return Scaffold(
-      backgroundColor: cc.background,
       body: SafeArea(
         child: Column(
           children: [
-            _Header(onMarkAllRead: _markAllRead),
+            GradientHeader(
+              title: 'notifications'.tr(),
+              trailing: BlocBuilder<NotificationCubit, NotificationState>(
+                builder: (context, state) {
+                  if (state.unreadCount == 0) return const SizedBox.shrink();
+                  return GestureDetector(
+                    onTap: _markAllRead,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: rw(12),
+                        vertical: rh(6),
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(rr(20)),
+                        border: Border.all(
+                          color: AppColors.white.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.done_all_rounded,
+                            size: rf(14),
+                            color: AppColors.white,
+                          ),
+                          horizontalSpacing(4),
+                          Text(
+                            'mark_all_read'.tr(),
+                            style: AppTextStyles.font12SemiBold.copyWith(
+                              color: AppColors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
             Expanded(
               child: BlocBuilder<NotificationCubit, NotificationState>(
                 builder: (context, state) {
                   if (state.status == NotificationListStatus.loading) {
                     return _ShimmerList();
                   }
-
+        
                   if (state.notifications.isEmpty) {
                     return _EmptyState();
                   }
-
+        
                   return RefreshIndicator(
                     color: AppColors.primary200,
                     onRefresh: () =>
@@ -89,86 +128,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _Header extends StatelessWidget {
-  const _Header({required this.onMarkAllRead});
-  final VoidCallback onMarkAllRead;
-
-  @override
-  Widget build(BuildContext context) {
-    final cc = context.customColors;
-    final canPop = Navigator.of(context).canPop();
-
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: rw(12), vertical: rh(14)),
-      decoration: BoxDecoration(
-        color: cc.surface,
-        border: Border(bottom: BorderSide(color: cc.border, width: 0.5)),
-      ),
-      child: Row(
-        children: [
-          if (canPop)
-            GestureDetector(
-              onTap: () => Navigator.of(context).maybePop(),
-              child: Container(
-                width: rw(36),
-                height: rw(36),
-                decoration: BoxDecoration(
-                  color: cc.surfaceVariant,
-                  borderRadius: BorderRadius.circular(rr(10)),
-                ),
-                child: Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  size: rf(16),
-                  color: cc.iconPrimary,
-                ),
-              ),
-            ),
-          if (canPop) horizontalSpacing(12),
-          Text(
-            'notifications'.tr(),
-            style:
-                AppTextStyles.font18ExtraBold.copyWith(color: cc.textPrimary),
-          ),
-          const Spacer(),
-          BlocBuilder<NotificationCubit, NotificationState>(
-            builder: (context, state) {
-              if (state.unreadCount == 0) return const SizedBox.shrink();
-              return GestureDetector(
-                onTap: onMarkAllRead,
-                child: Container(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: rw(10), vertical: rh(6)),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary200.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(rr(20)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.done_all_rounded,
-                        size: rf(14),
-                        color: AppColors.primary200,
-                      ),
-                      horizontalSpacing(4),
-                      Text(
-                        'mark_all_read'.tr(),
-                        style: AppTextStyles.font12SemiBold.copyWith(
-                          color: AppColors.primary200,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ],
       ),
     );
   }
@@ -210,8 +169,13 @@ class _NotificationTile extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        context.read<NotificationCubit>().markAsRead(notification.id);
-        NotificationNavigator.navigateToReference(context, notification);
+        Navigator.of(context).pushNamed(
+          Routes.notificationDetailScreen,
+          arguments: {
+            'notification': notification,
+            'cubit': context.read<NotificationCubit>(),
+          },
+        );
       },
       child: Container(
         margin: EdgeInsets.only(bottom: rh(8)),

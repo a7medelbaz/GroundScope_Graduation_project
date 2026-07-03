@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/auth/data/models/user_date.dart';
 import 'package:ground_scope/core/di/dependency_injection.dart';
+import 'package:ground_scope/core/notifications/data/models/notification_model.dart';
 import 'package:ground_scope/core/router/routes.dart';
 import 'package:ground_scope/core/shared/data/models/flight_model.dart';
 import 'package:ground_scope/core/shared/data/models/report_model.dart';
@@ -59,6 +60,7 @@ import '../../modules/supervisor/features/tasks/ui/supervisor_task_detail_screen
 import '../../modules/worker/core/main_navigation/ui/worker_scaffold.dart';
 import '../auth/ui/login_screen.dart';
 import '../notifications/logic/cubit/notification_cubit.dart';
+import '../notifications/ui/notification_detail_screen.dart';
 import '../notifications/ui/notifications_screen.dart';
 import '../onboarding/ui/on_boarding_screen.dart';
 
@@ -297,6 +299,17 @@ class AppRouter {
           BlocProvider.value(
             value: getIt<NotificationCubit>(),
             child: const NotificationsScreen(),
+          ),
+          settings,
+        );
+
+      case Routes.notificationDetailScreen:
+        final notification = arguments?['notification'] as NotificationModel;
+        final cubit = arguments?['cubit'] as NotificationCubit;
+        return _buildRoute(
+          BlocProvider.value(
+            value: cubit,
+            child: NotificationDetailScreen(notification: notification),
           ),
           settings,
         );

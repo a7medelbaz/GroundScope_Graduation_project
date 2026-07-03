@@ -453,6 +453,13 @@
     "report": "Report",
     "flight_landed": "Flight Landed"
   },
+  "notification_details": "Notification Details",
+  "message": "Message",
+  "status": "Status",
+  "read": "Read",
+  "notification": {
+    "view_related": "View Related Item"
+  },
   "english": "English",
   "arabic": "العربية",
   "start_time": "Start Time",

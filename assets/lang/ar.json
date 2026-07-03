@@ -454,6 +454,13 @@
     "report": "بلاغ",
     "flight_landed": "هبطت الرحلة"
   },
+  "notification_details": "تفاصيل الإشعار",
+  "message": "الرسالة",
+  "status": "الحالة",
+  "read": "مقروء",
+  "notification": {
+    "view_related": "عرض العنصر المرتبط"
+  },
   "english": "English",
   "arabic": "العربية",
   "start_time": "وقت البداية",
