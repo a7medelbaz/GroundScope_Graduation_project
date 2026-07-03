@@ -101,6 +101,8 @@ class DashboardCubit extends Cubit<DashboardState> {
         try {
           final joined =
               await _dashboardRepo.fetchPendingServiceRequests(serviceTypeId);
+          // Cubit may have closed during the async re-fetch.
+          if (isClosed || state.status != DashboardStatus.loaded) return;
           emit(state.copyWith(
             pendingRequests: joined,
             pendingRequestCount: joined.length,
