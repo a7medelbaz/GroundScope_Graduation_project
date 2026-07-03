@@ -55,11 +55,7 @@ class _WorkerScaffoldState extends State<WorkerScaffold> {
       // RReport
       PersistentBottomNavBarItem(
         icon: Icon(Icons.analytics_outlined, size: rr(28), color: activeColor),
-        inactiveIcon: Icon(
-          Icons.analytics_outlined,
-          size: rr(28),
-          color: inactiveColor,
-        ),
+        inactiveIcon: Icon(Icons.analytics_outlined, size: rr(28), color: inactiveColor),
       ),
       // Add Report
       PersistentBottomNavBarItem(
@@ -68,16 +64,8 @@ class _WorkerScaffoldState extends State<WorkerScaffold> {
       ),
       // Notifications
       PersistentBottomNavBarItem(
-        icon: Icon(
-          Icons.notifications_outlined,
-          color: activeColor,
-          size: rr(24),
-        ),
-        inactiveIcon: Icon(
-          Icons.notifications,
-          color: inactiveColor,
-          size: rr(24),
-        ),
+        icon: Icon(Icons.notifications_outlined, color: activeColor, size: rr(24)),
+        inactiveIcon: Icon(Icons.notifications, color: inactiveColor, size: rr(24)),
       ),
       // Profile
       PersistentBottomNavBarItem(
@@ -89,13 +77,7 @@ class _WorkerScaffoldState extends State<WorkerScaffold> {
 
   @override
   Widget build(final BuildContext context) {
-    _screens = [
-      const HomeScreen(),
-      const ReportsScreen(),
-      const AddReportScreen(),
-      const NotificationsScreen(),
-      const ProfileScreen(),
-    ];
+    _screens = [const HomeScreen(), const ReportsScreen(), const AddReportScreen(), const NotificationsScreen(), const ProfileScreen()];
     return PersistentTabView(
       context,
       controller: _controller,
@@ -107,13 +89,7 @@ class _WorkerScaffoldState extends State<WorkerScaffold> {
       padding: const EdgeInsets.only(top: 2, bottom: 8),
       decoration: NavBarDecoration(
         colorBehindNavBar: context.customColors.background,
-        boxShadow: [
-          BoxShadow(
-            color: context.customColors.textPrimary.withValues(alpha: 0.1),
-            blurRadius: 2,
-            offset: const Offset(0, -2),
-          ),
-        ],
+        boxShadow: [BoxShadow(color: context.customColors.textPrimary.withValues(alpha: 0.1), blurRadius: 2, offset: const Offset(0, -2))],
       ),
       confineToSafeArea: true,
     );

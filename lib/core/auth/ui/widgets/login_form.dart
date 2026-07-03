@@ -32,10 +32,7 @@ class _LoginFormState extends State<LoginForm> {
 
   void _submit() {
     if (_formKey.currentState?.validate() ?? false) {
-      context.read<AuthCubit>().login(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+      context.read<AuthCubit>().login(email: _emailController.text.trim(), password: _passwordController.text.trim());
     }
   }
 
@@ -46,12 +43,7 @@ class _LoginFormState extends State<LoginForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CustomTextForm(
-            controller: _emailController,
-            hintText: 'auth.email'.tr(),
-            keyboardType: TextInputType.emailAddress,
-            validator: Validators.email,
-          ),
+          CustomTextForm(controller: _emailController, hintText: 'auth.email'.tr(), keyboardType: TextInputType.emailAddress, validator: Validators.email),
           verticalSpacing(24),
           CustomTextForm(
             controller: _passwordController,
@@ -60,15 +52,10 @@ class _LoginFormState extends State<LoginForm> {
             isPassword: !_isPasswordVisible,
             validator: Validators.password,
             suffixIcon: IconButton(
-              icon: Icon(
-                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                color: _isPasswordVisible ? Colors.red : Colors.grey,
-              ),
-              onPressed: () =>
-                  setState(() => _isPasswordVisible = !_isPasswordVisible),
+              icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off, color: _isPasswordVisible ? Colors.red : Colors.grey),
+              onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
             ),
           ),
-
           verticalSpacing(60),
           CustomTextButton(
             text: 'auth.login'.tr(),
@@ -82,9 +69,7 @@ class _LoginFormState extends State<LoginForm> {
             child: Text(
               'auth.forgot_password'.tr(),
               textAlign: TextAlign.center,
-              style: AppTextStyles.font14Light.copyWith(
-                color: AppColors.primary300,
-              ),
+              style: AppTextStyles.font14Light.copyWith(color: AppColors.primary300),
             ),
           ),
         ],

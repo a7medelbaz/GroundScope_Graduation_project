@@ -112,7 +112,9 @@ class _AddReportScreenState extends State<AddReportScreen>
                         verticalSpacing(10),
                         const ReportSeveritySelector(),
                         verticalSpacing(24),
-                        SectionLabel(label: 'worker_add_report.description'.tr()),
+                        SectionLabel(
+                          label: 'worker_add_report.description'.tr(),
+                        ),
                         verticalSpacing(10),
                         CustomTextForm(
                           hintText: 'worker_add_report.description_hint'.tr(),
@@ -124,7 +126,9 @@ class _AddReportScreenState extends State<AddReportScreen>
                                   : null,
                         ),
                         verticalSpacing(24),
-                        SectionLabel(label: 'worker_add_report.attach_photo'.tr()),
+                        SectionLabel(
+                          label: 'worker_add_report.attach_photo'.tr(),
+                        ),
                         verticalSpacing(10),
                         const ImagePickerSection(),
                         verticalSpacing(36),

@@ -16,48 +16,47 @@ import 'supervisor_forward_report_screen.dart';
 // ─── Color / icon helpers ─────────────────────────────────────────────────────
 
 Color _severityColor(ReportSeverity s) => switch (s) {
-      ReportSeverity.low => AppColors.green200,
-      ReportSeverity.medium => AppColors.amber200,
-      ReportSeverity.high => AppColors.secondary200,
-      ReportSeverity.critical => AppColors.red200,
-    };
+  ReportSeverity.low => AppColors.green200,
+  ReportSeverity.medium => AppColors.amber200,
+  ReportSeverity.high => AppColors.secondary200,
+  ReportSeverity.critical => AppColors.red200,
+};
 
 Color _statusColor(ReportStatus s) => switch (s) {
-      ReportStatus.open => AppColors.amber200,
-      ReportStatus.acknowledged => AppColors.blue200,
-      ReportStatus.inProgress => AppColors.primary200,
-      ReportStatus.resolved => AppColors.green200,
-    };
+  ReportStatus.open => AppColors.amber200,
+  ReportStatus.acknowledged => AppColors.blue200,
+  ReportStatus.inProgress => AppColors.primary200,
+  ReportStatus.resolved => AppColors.green200,
+};
 
 IconData _typeIcon(ReportType t) => switch (t) {
-      ReportType.issue => Icons.warning_rounded,
-      ReportType.delay => Icons.timer_off_rounded,
-      ReportType.damage => Icons.build_rounded,
-      ReportType.safety => Icons.shield_rounded,
-      ReportType.other => Icons.description_rounded,
-    };
+  ReportType.issue => Icons.warning_rounded,
+  ReportType.delay => Icons.timer_off_rounded,
+  ReportType.damage => Icons.build_rounded,
+  ReportType.safety => Icons.shield_rounded,
+  ReportType.other => Icons.description_rounded,
+};
 
 IconData _statusIcon(ReportStatus s) => switch (s) {
-      ReportStatus.open => Icons.radio_button_unchecked_rounded,
-      ReportStatus.acknowledged => Icons.visibility_rounded,
-      ReportStatus.inProgress => Icons.pending_actions_rounded,
-      ReportStatus.resolved => Icons.check_circle_rounded,
-    };
+  ReportStatus.open => Icons.radio_button_unchecked_rounded,
+  ReportStatus.acknowledged => Icons.visibility_rounded,
+  ReportStatus.inProgress => Icons.pending_actions_rounded,
+  ReportStatus.resolved => Icons.check_circle_rounded,
+};
 
 String _roleLabel(String? role) => switch (role) {
-      'admin' => 'role_admin',
-      'supervisor' => 'role_supervisor',
-      _ => 'role_worker',
-    };
+  'admin' => 'role_admin',
+  'supervisor' => 'role_supervisor',
+  _ => 'role_worker',
+};
 
 Color _roleColor(String? role) => switch (role) {
-      'admin' => AppColors.red200,
-      'supervisor' => AppColors.primary200,
-      _ => AppColors.green200,
-    };
+  'admin' => AppColors.red200,
+  'supervisor' => AppColors.primary200,
+  _ => AppColors.green200,
+};
 
-String _shortId(String id) =>
-    id.length >= 8 ? id.substring(0, 8).toUpperCase() : id.toUpperCase();
+String _shortId(String id) => id.length >= 8 ? id.substring(0, 8).toUpperCase() : id.toUpperCase();
 
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
@@ -69,32 +68,18 @@ class SupervisorReportDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SupervisorReportsCubit, SupervisorReportsState>(
-      buildWhen: (prev, curr) =>
-          prev.inbox != curr.inbox ||
-          prev.sent != curr.sent ||
-          prev.fromAdmin != curr.fromAdmin ||
-          prev.actionReportId != curr.actionReportId ||
-          prev.status != curr.status,
+      buildWhen: (prev, curr) => prev.inbox != curr.inbox || prev.sent != curr.sent || prev.fromAdmin != curr.fromAdmin || prev.actionReportId != curr.actionReportId || prev.status != curr.status,
       builder: (context, state) {
         ReportModel? find(List<ReportModel> list) {
-          try {
-            return list.firstWhere((r) => r.id == report.id);
-          } catch (_) {
-            return null;
+          for (final r in list) {
+            if (r.id == report.id) return r;
           }
+          return null;
         }
 
-        final live = find(state.inbox) ??
-            find(state.sent) ??
-            find(state.fromAdmin) ??
-            report;
-        final isActionLoading =
-            state.status == SupervisorReportsStatus.actionLoading &&
-                state.actionReportId == live.id;
-        return _ReportDetailView(
-          report: live,
-          isActionLoading: isActionLoading,
-        );
+        final live = find(state.inbox) ?? find(state.sent) ?? find(state.fromAdmin) ?? report;
+        final isActionLoading = state.status == SupervisorReportsStatus.actionLoading && state.actionReportId == live.id;
+        return _ReportDetailView(report: live, isActionLoading: isActionLoading);
       },
     );
   }
@@ -103,32 +88,17 @@ class SupervisorReportDetailScreen extends StatelessWidget {
 // ─── View ─────────────────────────────────────────────────────────────────────
 
 class _ReportDetailView extends StatelessWidget {
-  const _ReportDetailView({
-    required this.report,
-    required this.isActionLoading,
-  });
+  const _ReportDetailView({required this.report, required this.isActionLoading});
 
   final ReportModel report;
   final bool isActionLoading;
 
   void _onAcknowledge(BuildContext context) {
-    AppDialogs.showConfirm(
-      context,
-      message: 'acknowledge_confirm'.tr(),
-      confirmText: 'acknowledge'.tr(),
-      onConfirm: () =>
-          context.read<SupervisorReportsCubit>().acknowledgeReport(report.id),
-    );
+    AppDialogs.showConfirm(context, message: 'acknowledge_confirm'.tr(), confirmText: 'acknowledge'.tr(), onConfirm: () => context.read<SupervisorReportsCubit>().acknowledgeReport(report.id));
   }
 
   void _onResolve(BuildContext context) {
-    AppDialogs.showConfirm(
-      context,
-      message: 'resolve_confirm'.tr(),
-      confirmText: 'resolve'.tr(),
-      onConfirm: () =>
-          context.read<SupervisorReportsCubit>().resolveReport(report.id),
-    );
+    AppDialogs.showConfirm(context, message: 'resolve_confirm'.tr(), confirmText: 'resolve'.tr(), onConfirm: () => context.read<SupervisorReportsCubit>().resolveReport(report.id));
   }
 
   void _onForward(BuildContext context) {
@@ -170,13 +140,7 @@ class _ReportDetailView extends StatelessWidget {
                     _TimelineSection(report: report),
                     if (report.status != ReportStatus.resolved) ...[
                       verticalSpacing(24),
-                      _ActionSection(
-                        report: report,
-                        isLoading: isActionLoading,
-                        onAcknowledge: () => _onAcknowledge(context),
-                        onResolve: () => _onResolve(context),
-                        onForward: () => _onForward(context),
-                      ),
+                      _ActionSection(report: report, isLoading: isActionLoading, onAcknowledge: () => _onAcknowledge(context), onResolve: () => _onResolve(context), onForward: () => _onForward(context)),
                     ],
                   ],
                 ),
@@ -204,22 +168,10 @@ class _GradientHeader extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: EdgeInsets.fromLTRB(
-          rw(20), topPadding + rh(12), rw(20), rh(24)),
+      padding: EdgeInsets.fromLTRB(rw(20), topPadding + rh(12), rw(20), rh(24)),
       decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.primary400,
-            AppColors.primary300,
-            AppColors.primary200,
-          ],
-        ),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(28),
-          bottomRight: Radius.circular(28),
-        ),
+        gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [AppColors.primary400, AppColors.primary300, AppColors.primary200]),
+        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(28), bottomRight: Radius.circular(28)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,36 +187,21 @@ class _GradientHeader extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: AppColors.white.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
-                    border: Border.all(
-                      color: AppColors.white.withValues(alpha: 0.2),
-                    ),
+                    border: Border.all(color: AppColors.white.withValues(alpha: 0.2)),
                   ),
-                  child: const Icon(
-                    Icons.arrow_back_ios_new_rounded,
-                    color: AppColors.white,
-                    size: 16,
-                  ),
+                  child: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.white, size: 16),
                 ),
               ),
               horizontalSpacing(12),
               Expanded(
-                child: Text(
-                  'report_details'.tr(),
-                  style: AppTextStyles.font16ExtraBold.copyWith(
-                    color: AppColors.white,
-                    letterSpacing: 0.3,
-                  ),
-                ),
+                child: Text('report_details'.tr(), style: AppTextStyles.font16ExtraBold.copyWith(color: AppColors.white, letterSpacing: 0.3)),
               ),
               Container(
-                padding: EdgeInsets.symmetric(
-                    horizontal: rw(10), vertical: rh(5)),
+                padding: EdgeInsets.symmetric(horizontal: rw(10), vertical: rh(5)),
                 decoration: BoxDecoration(
                   color: severityColor.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(rr(20)),
-                  border: Border.all(
-                    color: severityColor.withValues(alpha: 0.5),
-                  ),
+                  border: Border.all(color: severityColor.withValues(alpha: 0.5)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -272,19 +209,10 @@ class _GradientHeader extends StatelessWidget {
                     Container(
                       width: rw(6),
                       height: rw(6),
-                      decoration: BoxDecoration(
-                        color: severityColor,
-                        shape: BoxShape.circle,
-                      ),
+                      decoration: BoxDecoration(color: severityColor, shape: BoxShape.circle),
                     ),
                     horizontalSpacing(5),
-                    Text(
-                      'severity_${report.severity.value}'.tr().toUpperCase(),
-                      style: AppTextStyles.font12SemiBold.copyWith(
-                        color: severityColor,
-                        letterSpacing: 0.8,
-                      ),
-                    ),
+                    Text('severity_${report.severity.value}'.tr().toUpperCase(), style: AppTextStyles.font12SemiBold.copyWith(color: severityColor, letterSpacing: 0.8)),
                   ],
                 ),
               ),
@@ -301,35 +229,18 @@ class _GradientHeader extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppColors.white.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(rr(14)),
-                  border: Border.all(
-                    color: AppColors.white.withValues(alpha: 0.25),
-                  ),
+                  border: Border.all(color: AppColors.white.withValues(alpha: 0.25)),
                 ),
-                child: Icon(
-                  _typeIcon(report.type),
-                  color: AppColors.white,
-                  size: rf(26),
-                ),
+                child: Icon(_typeIcon(report.type), color: AppColors.white, size: rf(26)),
               ),
               horizontalSpacing(14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      '${report.type.label} ${'report'.tr()}',
-                      style: AppTextStyles.font22ExtraBold.copyWith(
-                        color: AppColors.white,
-                      ),
-                    ),
+                    Text('${report.type.label} ${'report'.tr()}', style: AppTextStyles.font22ExtraBold.copyWith(color: AppColors.white)),
                     verticalSpacing(4),
-                    Text(
-                      '#${_shortId(report.id)}',
-                      style: AppTextStyles.font12Light.copyWith(
-                        color: AppColors.white.withValues(alpha: 0.7),
-                        letterSpacing: 1.2,
-                      ),
-                    ),
+                    Text('#${_shortId(report.id)}', style: AppTextStyles.font12Light.copyWith(color: AppColors.white.withValues(alpha: 0.7), letterSpacing: 1.2)),
                   ],
                 ),
               ),
@@ -338,35 +249,18 @@ class _GradientHeader extends StatelessWidget {
           verticalSpacing(18),
           // ── Status badge ─────────────────────────────────────────────────
           Container(
-            padding:
-                EdgeInsets.symmetric(horizontal: rw(16), vertical: rh(9)),
+            padding: EdgeInsets.symmetric(horizontal: rw(16), vertical: rh(9)),
             decoration: BoxDecoration(
               color: statusColor,
               borderRadius: BorderRadius.circular(rr(14)),
-              boxShadow: [
-                BoxShadow(
-                  color: statusColor.withValues(alpha: 0.5),
-                  blurRadius: 14,
-                  offset: const Offset(0, 5),
-                ),
-              ],
+              boxShadow: [BoxShadow(color: statusColor.withValues(alpha: 0.5), blurRadius: 14, offset: const Offset(0, 5))],
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  _statusIcon(report.status),
-                  size: rr(16),
-                  color: AppColors.white,
-                ),
+                Icon(_statusIcon(report.status), size: rr(16), color: AppColors.white),
                 horizontalSpacing(8),
-                Text(
-                  report.status.label.toUpperCase(),
-                  style: AppTextStyles.font14SemiBold.copyWith(
-                    color: AppColors.white,
-                    letterSpacing: 1.0,
-                  ),
-                ),
+                Text(report.status.label.toUpperCase(), style: AppTextStyles.font14SemiBold.copyWith(color: AppColors.white, letterSpacing: 1.0)),
               ],
             ),
           ),
@@ -393,54 +287,17 @@ class _PrimaryInfoSection extends StatelessWidget {
       title: 'primary_info'.tr().toUpperCase(),
       child: Column(
         children: [
-          _InfoRow(
-            icon: Icons.tag_rounded,
-            label: 'report_id'.tr(),
-            value: _shortId(report.id),
-            valueColor: cc.textPrimary,
-          ),
+          _InfoRow(icon: Icons.tag_rounded, label: 'report_id'.tr(), value: _shortId(report.id), valueColor: cc.textPrimary),
           _RowDivider(),
-          _InfoRow(
-            icon: _typeIcon(report.type),
-            label: 'report_type'.tr(),
-            value: report.type.label,
-            valueColor: cc.textPrimary,
-          ),
+          _InfoRow(icon: _typeIcon(report.type), label: 'report_type'.tr(), value: report.type.label, valueColor: cc.textPrimary),
           _RowDivider(),
-          _InfoRow(
-            icon: Icons.flag_rounded,
-            label: 'report_severity'.tr(),
-            value: 'severity_${report.severity.value}'.tr(),
-            valueColor: severityColor,
-            isBadge: true,
-            badgeColor: severityColor,
-          ),
+          _InfoRow(icon: Icons.flag_rounded, label: 'report_severity'.tr(), value: 'severity_${report.severity.value}'.tr(), valueColor: severityColor, isBadge: true, badgeColor: severityColor),
           _RowDivider(),
           // Filed by: name + role badge
-          _InfoRowWithBadge(
-            icon: Icons.person_rounded,
-            label: 'filed_by'.tr(),
-            name: report.reporterName ?? '—',
-            badgeLabel: _roleLabel(report.reporterRole).tr(),
-            badgeColor: roleColor,
-          ),
+          _InfoRowWithBadge(icon: Icons.person_rounded, label: 'filed_by'.tr(), name: report.reporterName ?? '—', badgeLabel: _roleLabel(report.reporterRole).tr(), badgeColor: roleColor),
           _RowDivider(),
-          if (report.flight != null) ...[
-            _InfoRow(
-              icon: Icons.flight_rounded,
-              label: 'flight_number'.tr(),
-              value: report.flight!.flightNumber,
-              valueColor: cc.textSecondary,
-            ),
-            _RowDivider(),
-          ],
-          _InfoRow(
-            icon: Icons.access_time_rounded,
-            label: 'filed_at'.tr(),
-            value:
-                '${report.createdAt.formattedDate} · ${report.createdAt.formattedTime}',
-            valueColor: cc.textSecondary,
-          ),
+          if (report.flight != null) ...[_InfoRow(icon: Icons.flight_rounded, label: 'flight_number'.tr(), value: report.flight!.flightNumber, valueColor: cc.textSecondary), _RowDivider()],
+          _InfoRow(icon: Icons.access_time_rounded, label: 'filed_at'.tr(), value: '${report.createdAt.formattedDate} · ${report.createdAt.formattedTime}', valueColor: cc.textSecondary),
         ],
       ),
     );
@@ -459,21 +316,13 @@ class _EvidenceSection extends StatelessWidget {
     return _SectionCard(
       title: 'attached_evidence'.tr().toUpperCase(),
       padding: report.imageUrl != null ? EdgeInsets.zero : null,
-      child: report.imageUrl != null
-          ? _ImageThumbnail(
-              imageUrl: report.imageUrl!,
-              statusColor: _statusColor(report.status),
-            )
-          : const _NoEvidencePlaceholder(),
+      child: report.imageUrl != null ? _ImageThumbnail(imageUrl: report.imageUrl!, statusColor: _statusColor(report.status)) : const _NoEvidencePlaceholder(),
     );
   }
 }
 
 class _ImageThumbnail extends StatelessWidget {
-  const _ImageThumbnail({
-    required this.imageUrl,
-    required this.statusColor,
-  });
+  const _ImageThumbnail({required this.imageUrl, required this.statusColor});
 
   final String imageUrl;
   final Color statusColor;
@@ -505,32 +354,17 @@ class _ImageThumbnail extends StatelessWidget {
                 placeholder: (_, p) => Container(
                   color: context.customColors.surfaceVariant,
                   child: Center(
-                    child: Icon(
-                      Icons.image_outlined,
-                      size: rf(36),
-                      color: statusColor.withValues(alpha: 0.3),
-                    ),
+                    child: Icon(Icons.image_outlined, size: rf(36), color: statusColor.withValues(alpha: 0.3)),
                   ),
-                )
-                    .animate(onPlay: (c) => c.repeat(reverse: true))
-                    .shimmer(
-                      duration: 1200.ms,
-                      color: statusColor.withValues(alpha: 0.15),
-                    ),
+                ).animate(onPlay: (c) => c.repeat(reverse: true)).shimmer(duration: 1200.ms, color: statusColor.withValues(alpha: 0.15)),
                 errorWidget: (_, p, e) => Container(
                   color: context.customColors.surfaceVariant,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.broken_image_rounded,
-                          size: rf(36),
-                          color: context.customColors.textDisabled),
+                      Icon(Icons.broken_image_rounded, size: rf(36), color: context.customColors.textDisabled),
                       verticalSpacing(8),
-                      Text(
-                        'image_unavailable'.tr(),
-                        style: AppTextStyles.font12Light.copyWith(
-                            color: context.customColors.textHint),
-                      ),
+                      Text('image_unavailable'.tr(), style: AppTextStyles.font12Light.copyWith(color: context.customColors.textHint)),
                     ],
                   ),
                 ),
@@ -538,15 +372,7 @@ class _ImageThumbnail extends StatelessWidget {
               Positioned.fill(
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      stops: const [0.45, 1.0],
-                      colors: [
-                        AppColors.transparent,
-                        AppColors.black.withValues(alpha: 0.55),
-                      ],
-                    ),
+                    gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, stops: const [0.45, 1.0], colors: [AppColors.transparent, AppColors.black.withValues(alpha: 0.55)]),
                   ),
                 ),
               ),
@@ -554,25 +380,14 @@ class _ImageThumbnail extends StatelessWidget {
                 top: rh(10),
                 left: rw(10),
                 child: Container(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: rw(10), vertical: rh(5)),
-                  decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha: 0.85),
-                    borderRadius: BorderRadius.circular(rr(8)),
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: rw(10), vertical: rh(5)),
+                  decoration: BoxDecoration(color: statusColor.withValues(alpha: 0.85), borderRadius: BorderRadius.circular(rr(8))),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.camera_alt_rounded,
-                          size: rr(12), color: AppColors.white),
+                      Icon(Icons.camera_alt_rounded, size: rr(12), color: AppColors.white),
                       horizontalSpacing(5),
-                      Text(
-                        'evidence'.tr().toUpperCase(),
-                        style: AppTextStyles.font12SemiBold.copyWith(
-                          color: AppColors.white,
-                          letterSpacing: 0.8,
-                        ),
-                      ),
+                      Text('evidence'.tr().toUpperCase(), style: AppTextStyles.font12SemiBold.copyWith(color: AppColors.white, letterSpacing: 0.8)),
                     ],
                   ),
                 ),
@@ -581,23 +396,14 @@ class _ImageThumbnail extends StatelessWidget {
                 bottom: rh(10),
                 right: rw(10),
                 child: Container(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: rw(10), vertical: rh(5)),
-                  decoration: BoxDecoration(
-                    color: AppColors.black.withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(rr(8)),
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: rw(10), vertical: rh(5)),
+                  decoration: BoxDecoration(color: AppColors.black.withValues(alpha: 0.5), borderRadius: BorderRadius.circular(rr(8))),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.fullscreen_rounded,
-                          size: rr(15), color: AppColors.white),
+                      Icon(Icons.fullscreen_rounded, size: rr(15), color: AppColors.white),
                       horizontalSpacing(4),
-                      Text(
-                        'tap_to_expand'.tr(),
-                        style: AppTextStyles.font12Light
-                            .copyWith(color: AppColors.white),
-                      ),
+                      Text('tap_to_expand'.tr(), style: AppTextStyles.font12Light.copyWith(color: AppColors.white)),
                     ],
                   ),
                 ),
@@ -623,21 +429,13 @@ class _NoEvidencePlaceholder extends StatelessWidget {
           Container(
             width: rw(40),
             height: rh(40),
-            decoration: BoxDecoration(
-              color: cc.surfaceVariant,
-              borderRadius: BorderRadius.circular(rr(10)),
-            ),
+            decoration: BoxDecoration(color: cc.surfaceVariant, borderRadius: BorderRadius.circular(rr(10))),
             child: Center(
-              child: Icon(Icons.camera_alt_outlined,
-                  size: rf(20), color: cc.textDisabled),
+              child: Icon(Icons.camera_alt_outlined, size: rf(20), color: cc.textDisabled),
             ),
           ),
           horizontalSpacing(12),
-          Text(
-            'no_photo_attached'.tr(),
-            style:
-                AppTextStyles.font14Light.copyWith(color: cc.textHint),
-          ),
+          Text('no_photo_attached'.tr(), style: AppTextStyles.font14Light.copyWith(color: cc.textHint)),
         ],
       ),
     );
@@ -655,13 +453,7 @@ class _DescriptionSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return _SectionCard(
       title: 'description'.tr().toUpperCase(),
-      child: Text(
-        report.description,
-        style: AppTextStyles.font14Light.copyWith(
-          color: context.customColors.textSecondary,
-          height: 1.6,
-        ),
-      ),
+      child: Text(report.description, style: AppTextStyles.font14Light.copyWith(color: context.customColors.textSecondary, height: 1.6)),
     );
   }
 }
@@ -682,32 +474,10 @@ class _TimelineSection extends StatelessWidget {
       title: 'timeline'.tr().toUpperCase(),
       child: Column(
         children: [
-          _TimelineItem(
-            color: AppColors.amber200,
-            icon: Icons.radio_button_unchecked_rounded,
-            label: 'filed'.tr(),
-            date:
-                '${report.createdAt.formattedDate} ${'at'.tr()} ${report.createdAt.formattedTime}',
-            isLast: !hasAcknowledged && !hasResolved,
-          ),
+          _TimelineItem(color: AppColors.amber200, icon: Icons.radio_button_unchecked_rounded, label: 'filed'.tr(), date: '${report.createdAt.formattedDate} ${'at'.tr()} ${report.createdAt.formattedTime}', isLast: !hasAcknowledged && !hasResolved),
           if (hasAcknowledged)
-            _TimelineItem(
-              color: AppColors.blue200,
-              icon: Icons.visibility_rounded,
-              label: 'acknowledged'.tr(),
-              date:
-                  '${report.acknowledgedAt!.formattedDate} ${'at'.tr()} ${report.acknowledgedAt!.formattedTime}',
-              isLast: !hasResolved,
-            ),
-          if (hasResolved)
-            _TimelineItem(
-              color: AppColors.green200,
-              icon: Icons.check_circle_rounded,
-              label: 'resolved'.tr(),
-              date:
-                  '${report.resolvedAt!.formattedDate} ${'at'.tr()} ${report.resolvedAt!.formattedTime}',
-              isLast: true,
-            ),
+            _TimelineItem(color: AppColors.blue200, icon: Icons.visibility_rounded, label: 'acknowledged'.tr(), date: '${report.acknowledgedAt!.formattedDate} ${'at'.tr()} ${report.acknowledgedAt!.formattedTime}', isLast: !hasResolved),
+          if (hasResolved) _TimelineItem(color: AppColors.green200, icon: Icons.check_circle_rounded, label: 'resolved'.tr(), date: '${report.resolvedAt!.formattedDate} ${'at'.tr()} ${report.resolvedAt!.formattedTime}', isLast: true),
         ],
       ),
     );
@@ -717,13 +487,7 @@ class _TimelineSection extends StatelessWidget {
 // ─── Action Section ───────────────────────────────────────────────────────────
 
 class _ActionSection extends StatelessWidget {
-  const _ActionSection({
-    required this.report,
-    required this.isLoading,
-    required this.onAcknowledge,
-    required this.onResolve,
-    required this.onForward,
-  });
+  const _ActionSection({required this.report, required this.isLoading, required this.onAcknowledge, required this.onResolve, required this.onForward});
 
   final ReportModel report;
   final bool isLoading;
@@ -802,17 +566,8 @@ class _FullScreenViewer extends StatelessWidget {
                 child: CachedNetworkImage(
                   imageUrl: imageUrl,
                   fit: BoxFit.contain,
-                  placeholder: (_, p) => const Center(
-                    child: CircularProgressIndicator(
-                      color: AppColors.white,
-                      strokeWidth: 2,
-                    ),
-                  ),
-                  errorWidget: (_, p, e) => Icon(
-                    Icons.broken_image_rounded,
-                    color: AppColors.white.withValues(alpha: 0.4),
-                    size: rf(48),
-                  ),
+                  placeholder: (_, p) => const Center(child: CircularProgressIndicator(color: AppColors.white, strokeWidth: 2)),
+                  errorWidget: (_, p, e) => Icon(Icons.broken_image_rounded, color: AppColors.white.withValues(alpha: 0.4), size: rf(48)),
                 ),
               ),
             ),
@@ -824,13 +579,9 @@ class _FullScreenViewer extends StatelessWidget {
                 child: Container(
                   width: rw(38),
                   height: rh(38),
-                  decoration: BoxDecoration(
-                    color: AppColors.white.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(rr(10)),
-                  ),
+                  decoration: BoxDecoration(color: AppColors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(rr(10))),
                   child: Center(
-                    child: Icon(Icons.close_rounded,
-                        color: AppColors.white, size: rf(20)),
+                    child: Icon(Icons.close_rounded, color: AppColors.white, size: rf(20)),
                   ),
                 ),
               ),
@@ -845,11 +596,7 @@ class _FullScreenViewer extends StatelessWidget {
 // ─── Shared sub-widgets ───────────────────────────────────────────────────────
 
 class _SectionCard extends StatelessWidget {
-  const _SectionCard({
-    required this.title,
-    required this.child,
-    this.padding,
-  });
+  const _SectionCard({required this.title, required this.child, this.padding});
 
   final String title;
   final Widget child;
@@ -862,13 +609,7 @@ class _SectionCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: AppTextStyles.font12SemiBold.copyWith(
-            color: cc.textHint,
-            letterSpacing: 1.2,
-          ),
-        ),
+        Text(title, style: AppTextStyles.font12SemiBold.copyWith(color: cc.textHint, letterSpacing: 1.2)),
         verticalSpacing(8),
         Container(
           width: double.infinity,
@@ -878,13 +619,7 @@ class _SectionCard extends StatelessWidget {
             color: cc.surface,
             borderRadius: BorderRadius.circular(rr(16)),
             border: Border.all(color: cc.border.withValues(alpha: 0.6)),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.black.withValues(alpha: 0.04),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
+            boxShadow: [BoxShadow(color: AppColors.black.withValues(alpha: 0.04), blurRadius: 10, offset: const Offset(0, 2))],
           ),
           child: child,
         ),
@@ -894,14 +629,7 @@ class _SectionCard extends StatelessWidget {
 }
 
 class _InfoRow extends StatelessWidget {
-  const _InfoRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.valueColor,
-    this.isBadge = false,
-    this.badgeColor,
-  });
+  const _InfoRow({required this.icon, required this.label, required this.value, required this.valueColor, this.isBadge = false, this.badgeColor});
 
   final IconData icon;
   final String label;
@@ -921,35 +649,20 @@ class _InfoRow extends StatelessWidget {
           Icon(icon, size: rr(16), color: cc.iconSecondary),
           horizontalSpacing(10),
           Expanded(
-            child: Text(
-              label,
-              style: AppTextStyles.font14Light.copyWith(
-                color: cc.textSecondary,
-              ),
-            ),
+            child: Text(label, style: AppTextStyles.font14Light.copyWith(color: cc.textSecondary)),
           ),
           if (isBadge && badgeColor != null)
             Container(
-              padding: EdgeInsets.symmetric(
-                  horizontal: rw(10), vertical: rh(3)),
+              padding: EdgeInsets.symmetric(horizontal: rw(10), vertical: rh(3)),
               decoration: BoxDecoration(
                 color: badgeColor!.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(rr(8)),
-                border:
-                    Border.all(color: badgeColor!.withValues(alpha: 0.3)),
+                border: Border.all(color: badgeColor!.withValues(alpha: 0.3)),
               ),
-              child: Text(
-                value,
-                style: AppTextStyles.font12SemiBold
-                    .copyWith(color: badgeColor),
-              ),
+              child: Text(value, style: AppTextStyles.font12SemiBold.copyWith(color: badgeColor)),
             )
           else
-            Text(
-              value,
-              style:
-                  AppTextStyles.font14SemiBold.copyWith(color: valueColor),
-            ),
+            Text(value, style: AppTextStyles.font14SemiBold.copyWith(color: valueColor)),
         ],
       ),
     );
@@ -957,13 +670,7 @@ class _InfoRow extends StatelessWidget {
 }
 
 class _InfoRowWithBadge extends StatelessWidget {
-  const _InfoRowWithBadge({
-    required this.icon,
-    required this.label,
-    required this.name,
-    required this.badgeLabel,
-    required this.badgeColor,
-  });
+  const _InfoRowWithBadge({required this.icon, required this.label, required this.name, required this.badgeLabel, required this.badgeColor});
 
   final IconData icon;
   final String label;
@@ -985,23 +692,14 @@ class _InfoRowWithBadge extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  label,
-                  style: AppTextStyles.font14Light
-                      .copyWith(color: cc.textSecondary),
-                ),
+                Text(label, style: AppTextStyles.font14Light.copyWith(color: cc.textSecondary)),
                 verticalSpacing(2),
-                Text(
-                  name,
-                  style: AppTextStyles.font14SemiBold
-                      .copyWith(color: cc.textPrimary),
-                ),
+                Text(name, style: AppTextStyles.font14SemiBold.copyWith(color: cc.textPrimary)),
               ],
             ),
           ),
           Container(
-            padding:
-                EdgeInsets.symmetric(horizontal: rw(10), vertical: rh(4)),
+            padding: EdgeInsets.symmetric(horizontal: rw(10), vertical: rh(4)),
             decoration: BoxDecoration(
               color: badgeColor.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(rr(20)),
@@ -1013,17 +711,10 @@ class _InfoRowWithBadge extends StatelessWidget {
                 Container(
                   width: rw(6),
                   height: rw(6),
-                  decoration: BoxDecoration(
-                    color: badgeColor,
-                    shape: BoxShape.circle,
-                  ),
+                  decoration: BoxDecoration(color: badgeColor, shape: BoxShape.circle),
                 ),
                 horizontalSpacing(5),
-                Text(
-                  badgeLabel,
-                  style: AppTextStyles.font12SemiBold
-                      .copyWith(color: badgeColor),
-                ),
+                Text(badgeLabel, style: AppTextStyles.font12SemiBold.copyWith(color: badgeColor)),
               ],
             ),
           ),
@@ -1036,22 +727,12 @@ class _InfoRowWithBadge extends StatelessWidget {
 class _RowDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Divider(
-      height: 1,
-      thickness: 1,
-      color: context.customColors.divider,
-    );
+    return Divider(height: 1, thickness: 1, color: context.customColors.divider);
   }
 }
 
 class _TimelineItem extends StatelessWidget {
-  const _TimelineItem({
-    required this.color,
-    required this.icon,
-    required this.label,
-    required this.date,
-    required this.isLast,
-  });
+  const _TimelineItem({required this.color, required this.icon, required this.label, required this.date, required this.isLast});
 
   final Color color;
   final IconData icon;
@@ -1095,17 +776,9 @@ class _TimelineItem extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                label,
-                style: AppTextStyles.font14SemiBold
-                    .copyWith(color: cc.textPrimary),
-              ),
+              Text(label, style: AppTextStyles.font14SemiBold.copyWith(color: cc.textPrimary)),
               verticalSpacing(2),
-              Text(
-                date,
-                style: AppTextStyles.font12Light
-                    .copyWith(color: cc.textHint),
-              ),
+              Text(date, style: AppTextStyles.font12Light.copyWith(color: cc.textHint)),
               if (!isLast) verticalSpacing(8),
             ],
           ),
@@ -1116,12 +789,7 @@ class _TimelineItem extends StatelessWidget {
 }
 
 class _ActionButton extends StatelessWidget {
-  const _ActionButton({
-    required this.label,
-    required this.icon,
-    required this.color,
-    required this.onTap,
-  });
+  const _ActionButton({required this.label, required this.icon, required this.color, required this.onTap});
 
   final String label;
   final IconData icon;
@@ -1145,10 +813,7 @@ class _ActionButton extends StatelessWidget {
           children: [
             Icon(icon, color: color, size: rf(18)),
             horizontalSpacing(8),
-            Text(
-              label,
-              style: AppTextStyles.font14SemiBold.copyWith(color: color),
-            ),
+            Text(label, style: AppTextStyles.font14SemiBold.copyWith(color: color)),
           ],
         ),
       ),

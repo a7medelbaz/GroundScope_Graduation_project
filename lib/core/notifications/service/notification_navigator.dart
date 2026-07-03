@@ -25,7 +25,9 @@ class NotificationNavigator {
 
   /// Called when tapping a notification tile inside the app.
   static void navigateToReference(
-      BuildContext context, NotificationModel notification) {
+    BuildContext context,
+    NotificationModel notification,
+  ) {
     _navigateByType(
       context,
       type: notification.type.toDbString,

@@ -45,67 +45,37 @@ class _SupervisorUnitsScreenState extends State<SupervisorUnitsScreen> {
         children: [
           BlocBuilder<SupervisorUnitsCubit, SupervisorUnitsState>(
             buildWhen: (p, c) => p.allUnits.length != c.allUnits.length,
-            builder: (context, state) => SupervisorScreenHeader(
-              icon: Icons.local_shipping_outlined,
-              title: 'supervisor_units_title'.tr(),
-              subtitle: '${state.allUnits.length} ${'units'.tr()}',
-            ),
+            builder: (context, state) => SupervisorScreenHeader(icon: Icons.local_shipping_outlined, title: 'supervisor_units_title'.tr(), subtitle: '${state.allUnits.length} ${'units'.tr()}'),
           ),
           // Search + counter
           BlocBuilder<SupervisorUnitsCubit, SupervisorUnitsState>(
-            buildWhen: (p, c) =>
-                p.resultCount != c.resultCount ||
-                p.searchQuery != c.searchQuery,
-            builder: (context, state) => SearchWithCounter(
-              hintText: 'search_by_unit_name'.tr(),
-              onChanged: context.read<SupervisorUnitsCubit>().setSearch,
-              resultCount: state.resultCount,
-            ),
+            buildWhen: (p, c) => p.resultCount != c.resultCount || p.searchQuery != c.searchQuery,
+            builder: (context, state) => SearchWithCounter(hintText: 'search_by_unit_name'.tr(), onChanged: context.read<SupervisorUnitsCubit>().setSearch, resultCount: state.resultCount),
           ),
           // Filter pills
           BlocBuilder<SupervisorUnitsCubit, SupervisorUnitsState>(
             buildWhen: (p, c) => p.activeFilter != c.activeFilter,
-            builder: (context, state) => FilterPills(
-              filters: _filters,
-              filterLabels: [
-                'filter_all'.tr(),
-                'filter_available'.tr(),
-                'filter_busy'.tr(),
-                'filter_offline'.tr(),
-              ],
-              activeFilter: state.activeFilter,
-              onFilterChanged: context.read<SupervisorUnitsCubit>().setFilter,
-            ),
+            builder: (context, state) =>
+                FilterPills(filters: _filters, filterLabels: ['filter_all'.tr(), 'filter_available'.tr(), 'filter_busy'.tr(), 'filter_offline'.tr()], activeFilter: state.activeFilter, onFilterChanged: context.read<SupervisorUnitsCubit>().setFilter),
           ),
           // Body
           Expanded(
             child: BlocBuilder<SupervisorUnitsCubit, SupervisorUnitsState>(
               builder: (context, state) {
-                if (state.status == SupervisorUnitsStatus.loading ||
-                    state.status == SupervisorUnitsStatus.initial) {
-                  return const Center(
-                    child: CircularProgressIndicator(
-                        color: AppColors.primary200),
-                  );
+                if (state.status == SupervisorUnitsStatus.loading || state.status == SupervisorUnitsStatus.initial) {
+                  return const Center(child: CircularProgressIndicator(color: AppColors.primary200));
                 }
                 if (state.status == SupervisorUnitsStatus.failure) {
-                  return ErrorScreen(
-                    error: state.error?.messageKey,
-                    onRetry: () => context
-                        .read<SupervisorUnitsCubit>()
-                        .loadUnits(_serviceTypeId),
-                  );
+                  return ErrorScreen(error: state.error?.messageKey, onRetry: () => context.read<SupervisorUnitsCubit>().loadUnits(_serviceTypeId));
                 }
                 if (state.filteredUnits.isEmpty) {
                   return _EmptyState();
                 }
                 // No RefreshIndicator — realtime handles updates
                 return ListView.builder(
-                  padding:
-                      EdgeInsets.fromLTRB(rw(16), rh(8), rw(16), rh(24)),
+                  padding: EdgeInsets.fromLTRB(rw(16), rh(8), rw(16), rh(24)),
                   itemCount: state.filteredUnits.length,
-                  itemBuilder: (_, i) =>
-                      UnitStatusCard(unit: state.filteredUnits[i]),
+                  itemBuilder: (_, i) => UnitStatusCard(unit: state.filteredUnits[i]),
                 );
               },
             ),
@@ -126,13 +96,11 @@ class _EmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.local_shipping_outlined,
-                size: rf(64), color: cc.iconSecondary),
+            Icon(Icons.local_shipping_outlined, size: rf(64), color: cc.iconSecondary),
             verticalSpacing(16),
             Text(
               'no_results_found'.tr(),
-              style: AppTextStyles.font16SemiBold
-                  .copyWith(color: cc.textSecondary),
+              style: AppTextStyles.font16SemiBold.copyWith(color: cc.textSecondary),
               textAlign: TextAlign.center,
             ),
           ],

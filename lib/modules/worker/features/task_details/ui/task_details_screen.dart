@@ -157,8 +157,10 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
         Routes.taskDetailsInfoScreen,
         arguments: {'task': task, 'pauses': state.pauses},
       ),
-      onReportTap: () =>
-          context.pushNamed(Routes.addReportScreen, arguments: {'preSelectedTask': task}),
+      onReportTap: () => context.pushNamed(
+        Routes.addReportScreen,
+        arguments: {'preSelectedTask': task},
+      ),
       taskStatus: state.status!,
     );
   }
