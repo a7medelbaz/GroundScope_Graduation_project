@@ -53,15 +53,20 @@ class InfoCard extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    Text(
-                      row.value,
-                      style: AppTextStyles.font12SemiBold.copyWith(
-                        color:
-                            row.valueColor ??
-                            (row.highlight ? cc.textPrimary : cc.textSecondary),
-                        fontWeight: row.highlight
-                            ? FontWeight.w700
-                            : FontWeight.w500,
+                    Flexible(
+                      child: Text(
+                        row.value,
+                        textAlign: TextAlign.end,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.font12SemiBold.copyWith(
+                          color:
+                              row.valueColor ??
+                              (row.highlight ? cc.textPrimary : cc.textSecondary),
+                          fontWeight: row.highlight
+                              ? FontWeight.w700
+                              : FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],

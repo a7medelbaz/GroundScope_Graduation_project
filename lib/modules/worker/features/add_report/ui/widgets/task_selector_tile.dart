@@ -13,11 +13,9 @@ class TaskSelectorTile extends StatelessWidget {
   const TaskSelectorTile({
     super.key,
     this.preSelectedTask,
-    required this.tasks,
   });
 
   final TaskModel? preSelectedTask;
-  final List<TaskModel> tasks;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +24,7 @@ class TaskSelectorTile extends StatelessWidget {
     final isLocked = preSelectedTask != null;
 
     return GestureDetector(
-      onTap: isLocked ? null : () => _openTaskSheet(context, tasks: tasks),
+      onTap: isLocked ? null : () => _openTaskSheet(context),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: EdgeInsets.symmetric(horizontal: rw(16), vertical: rh(14)),
@@ -112,7 +110,7 @@ class TaskSelectorTile extends StatelessWidget {
     );
   }
 
-  void _openTaskSheet(BuildContext context, {required List<TaskModel> tasks}) {
+  void _openTaskSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,

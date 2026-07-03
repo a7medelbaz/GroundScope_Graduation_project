@@ -9,6 +9,12 @@ class TaskRemoteDs {
 
   final SupabaseService supabaseService;
 
+  /// Rolling window: only surface tasks from the last 12 hours.
+  static const Duration _window = Duration(hours: 12);
+
+  static String get _windowCutoff =>
+      DateTime.now().toUtc().subtract(_window).toIso8601String();
+
   Future<int> countPendingTasks() async {
     try {
       final data = await supabaseService.client
@@ -34,6 +40,8 @@ class TaskRemoteDs {
           )
         ''')
           .eq('unit_id', unitId)
+          .gte('created_at', _windowCutoff)
+          .not('status', 'in', '(completed,cancelled)')
           .order('scheduled_start', ascending: true);
 
       final dataList = response as List<dynamic>;

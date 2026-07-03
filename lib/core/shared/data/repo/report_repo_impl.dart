@@ -44,17 +44,21 @@ class ReportRepoImpl implements ReportRepo {
       reportRemoteDs.fetchReceivedReports(userId);
 
   @override
+  Future<ReportModel> fetchReportById(String id) =>
+      reportRemoteDs.fetchReportById(id);
+
+  @override
   Future<List<ReportModel>> fetchAllReports() =>
       reportRemoteDs.fetchAllReports();
+
+  @override
+  Stream<List<ReportModel>> watchAllReports() =>
+      reportRemoteDs.watchAllReports();
 
   @override
   Future<List<ReportModel>> fetchReportsByDirection(
           ReportDirection direction) =>
       reportRemoteDs.fetchReportsByDirection(direction);
-
-  @override
-  Future<List<ReportModel>> getMyReports(String userId) =>
-      reportRemoteDs.getMyReports(userId);
 
   @override
   Future<int> countOpenReports() => reportRemoteDs.countOpenReports();

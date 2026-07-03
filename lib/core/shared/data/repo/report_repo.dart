@@ -20,11 +20,12 @@ abstract class ReportRepo {
   // Fetch
   Future<List<ReportModel>> fetchSentReports(String userId);
   Future<List<ReportModel>> fetchReceivedReports(String userId);
+  Future<ReportModel> fetchReportById(String id);
   Future<List<ReportModel>> fetchAllReports();
+  Stream<List<ReportModel>> watchAllReports();
   Future<List<ReportModel>> fetchReportsByDirection(ReportDirection direction);
 
   // Legacy
-  Future<List<ReportModel>> getMyReports(String userId);
   Future<int> countOpenReports();
 
   // Actions

@@ -54,9 +54,14 @@ class SupervisorReportBody extends StatelessWidget {
         final reports = state.filteredList;
 
         if (reports.isEmpty) {
+          final emptyKey = switch (state.tab) {
+            SupervisorReportsTab.inbox => 'reports.empty.no_inbox',
+            SupervisorReportsTab.sent => 'reports.empty.no_sent',
+            SupervisorReportsTab.fromAdmin => 'reports.empty.no_from_admin',
+          };
           return Center(
             child: Text(
-              'reports.empty.no_sent'.tr(),
+              emptyKey.tr(),
               style: AppTextStyles.font14Light.copyWith(
                 color: context.customColors.textHint,
               ),
@@ -73,14 +78,17 @@ class SupervisorReportBody extends StatelessWidget {
             physics: const AlwaysScrollableScrollPhysics(),
             itemCount: reports.length,
             itemBuilder: (context, i) => GestureDetector(
-              onTap: () => context.pushNamed(
-                Routes.supervisorReportDetailScreen,
-                arguments: {
-                  'report': reports[i],
-                  'cubit': context.read<SupervisorReportsCubit>(),
-                },
-                rootNavigator: true,
-              ),
+              onTap: () {
+                context.read<SupervisorReportsCubit>().markAsRead(reports[i].id);
+                context.pushNamed(
+                  Routes.supervisorReportDetailScreen,
+                  arguments: {
+                    'report': reports[i],
+                    'cubit': context.read<SupervisorReportsCubit>(),
+                  },
+                  rootNavigator: true,
+                );
+              },
               child: SupervisorReportCard(report: reports[i]),
             ),
           ),

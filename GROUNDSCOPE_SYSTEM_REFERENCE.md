@@ -677,6 +677,9 @@ CredentialsGenerator.generatePassword()       // → GroundScope{4digits}{specia
 | FCM V1 (legacy disabled) | Switched to V1 with service account JWT |
 | notifications INSERT RLS missing | Added `notifications_insert` policy |
 | report reference_id NOT NULL | `ALTER TABLE reports ALTER COLUMN reference_id DROP NOT NULL` |
+| report flight_id NOT NULL (blocked standalone admin/supervisor reports) | `ALTER TABLE reports ALTER COLUMN flight_id DROP NOT NULL` |
+| reports query joined non-existent `profiles` table (`PGRST200`) | Changed `reporter:profiles!reported_by(...)` to `reporter:users!reported_by(...)` in `report_remote_ds.dart` |
+| report/alert notifications didn't navigate anywhere on tap | Added `report`/`alert` cases to `NotificationNavigator._navigateByType`, fetching the report and routing by current user's role |
 | Android build: desugar mismatch | Pinned versions (see section 12) |
 | Flutter pub upgrade breaking build | Pinned `supabase_flutter: 2.12.4` + `flutter_local_notifications: 18.0.1` |
 

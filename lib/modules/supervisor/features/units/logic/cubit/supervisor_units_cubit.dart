@@ -22,6 +22,7 @@ class SupervisorUnitsCubit extends Cubit<SupervisorUnitsState> {
     try {
       // 1. Initial fetch — includes unit_members via join
       final units = await _repo.getUnits(serviceTypeId);
+      if (isClosed) return;
       emit(state.copyWith(
         status: SupervisorUnitsStatus.loaded,
         allUnits: units,
@@ -33,6 +34,7 @@ class SupervisorUnitsCubit extends Cubit<SupervisorUnitsState> {
       await _subscription?.cancel();
       _subscription = _repo.watchUnits(serviceTypeId).listen(
         (updated) {
+          if (isClosed) return;
           final merged = updated.map((u) {
             final existing = state.allUnits.firstWhere(
               (e) => e.id == u.id,
@@ -51,9 +53,11 @@ class SupervisorUnitsCubit extends Cubit<SupervisorUnitsState> {
         onError: (e) => debugPrint('SupervisorUnitsCubit stream error: $e'),
       );
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: SupervisorUnitsStatus.failure, error: e));
     } catch (e, st) {
       debugPrint('SupervisorUnitsCubit.loadUnits error: $e\n$st');
+      if (isClosed) return;
       emit(state.copyWith(
           status: SupervisorUnitsStatus.failure, error: AppError.unknown()));
     }

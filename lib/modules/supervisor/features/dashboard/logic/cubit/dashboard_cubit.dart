@@ -96,16 +96,33 @@ class DashboardCubit extends Cubit<DashboardState> {
       (_) async {
         // The realtime stream cannot carry the flights(*) join, so its rows have
         // flight == null. Use the stream purely as a change signal and re-fetch
-        // the joined list so flight details are populated.
+        // the joined list so flight details are populated. A completing task
+        // also writes flight_service_requests (status -> completed), so this
+        // same signal is used to recompute the task/unit KPI counts.
         if (state.status != DashboardStatus.loaded) return;
         try {
-          final joined =
-              await _dashboardRepo.fetchPendingServiceRequests(serviceTypeId);
+          final results = await Future.wait([
+            _dashboardRepo.fetchPendingServiceRequests(serviceTypeId),
+            _dashboardRepo.fetchTaskStats(serviceTypeId),
+            _dashboardRepo.fetchUnitStats(serviceTypeId),
+            _dashboardRepo.fetchOpenReportCount(serviceTypeId),
+          ]);
           // Cubit may have closed during the async re-fetch.
           if (isClosed || state.status != DashboardStatus.loaded) return;
+
+          final joined = results[0] as List<ServiceRequestModel>;
+          final taskStats = results[1] as Map<String, int>;
+          final unitStats = results[2] as Map<String, int>;
+          final openReportCount = results[3] as int;
+
           emit(state.copyWith(
             pendingRequests: joined,
             pendingRequestCount: joined.length,
+            activeTaskCount:
+                (taskStats['in_progress'] ?? 0) + (taskStats['assigned'] ?? 0),
+            availableUnitCount: unitStats['available'] ?? 0,
+            totalUnitCount: unitStats.values.fold<int>(0, (a, b) => a + b),
+            openReportCount: openReportCount,
           ));
         } catch (e) {
           debugPrint('Dashboard re-fetch after stream event failed: $e');

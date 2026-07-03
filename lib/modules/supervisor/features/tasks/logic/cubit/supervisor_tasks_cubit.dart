@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,27 +15,63 @@ class SupervisorTasksCubit extends Cubit<SupervisorTasksState> {
         super(const SupervisorTasksState());
 
   final SupervisorTaskRepo _repo;
+  StreamSubscription<List<TaskModel>>? _subscription;
 
   Future<void> loadTasks(String serviceTypeId) async {
     emit(state.copyWith(status: SupervisorTasksStatus.loading));
     try {
       final tasks = await _repo.getTasks(serviceTypeId);
+      if (isClosed) return;
       final filtered = _applyFilters(tasks, state.activeFilter, state.searchQuery);
       emit(state.copyWith(
         status: SupervisorTasksStatus.loaded,
         allTasks: tasks,
         filteredTasks: filtered,
       ));
+
+      _watchTasks(serviceTypeId);
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: SupervisorTasksStatus.failure, error: e));
     } catch (e, st) {
       debugPrint('SupervisorTasksCubit.loadTasks error: $e\n$st');
+      if (isClosed) return;
       emit(state.copyWith(
           status: SupervisorTasksStatus.failure, error: AppError.unknown()));
     }
   }
 
+  /// Live updates: when a worker completes a task (or any task changes), the
+  /// re-fetched, windowed, active list is pushed so the screen reflects it
+  /// without a manual refresh.
+  void _watchTasks(String serviceTypeId) {
+    try {
+      _subscription?.cancel();
+      _subscription = _repo.watchTasks(serviceTypeId).listen(
+        (tasks) {
+          if (isClosed) return;
+          emit(state.copyWith(
+            status: SupervisorTasksStatus.loaded,
+            allTasks: tasks,
+            filteredTasks:
+                _applyFilters(tasks, state.activeFilter, state.searchQuery),
+          ));
+        },
+        onError: (e) =>
+            debugPrint('SupervisorTasksCubit stream error: $e'),
+      );
+    } catch (e, st) {
+      debugPrint('SupervisorTasksCubit._watchTasks setup error: $e\n$st');
+    }
+  }
+
   Future<void> refresh(String serviceTypeId) => loadTasks(serviceTypeId);
+
+  @override
+  Future<void> close() {
+    _subscription?.cancel();
+    return super.close();
+  }
 
   void setFilter(String filter) {
     final filtered = _applyFilters(state.allTasks, filter, state.searchQuery);

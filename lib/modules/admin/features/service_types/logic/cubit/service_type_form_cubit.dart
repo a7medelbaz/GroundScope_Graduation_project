@@ -40,6 +40,7 @@ class ServiceTypeFormCubit extends Cubit<ServiceTypeFormState> {
             isActive: isActive,
           ),
         );
+        if (isClosed) return true;
         emit(state.copyWith(status: ServiceTypeFormStatus.success));
         return true;
       } else {
@@ -67,6 +68,7 @@ class ServiceTypeFormCubit extends Cubit<ServiceTypeFormState> {
             role: UserRole.supervisor,
             serviceTypeId: created.id,
           );
+          if (isClosed) return true;
           emit(state.copyWith(
             status: ServiceTypeFormStatus.success,
             generatedCredentials: GeneratedCredentials(
@@ -79,6 +81,7 @@ class ServiceTypeFormCubit extends Cubit<ServiceTypeFormState> {
           ));
         } catch (_) {
           // Account creation failed — service type still created successfully
+          if (isClosed) return true;
           emit(state.copyWith(
             status: ServiceTypeFormStatus.success,
             credentialsError: true,
@@ -88,9 +91,11 @@ class ServiceTypeFormCubit extends Cubit<ServiceTypeFormState> {
         return true;
       }
     } on AppError catch (e) {
+      if (isClosed) return false;
       emit(state.copyWith(status: ServiceTypeFormStatus.failure, error: e));
       return false;
     } catch (_) {
+      if (isClosed) return false;
       emit(state.copyWith(
         status: ServiceTypeFormStatus.failure,
         error: AppError.unknown(),

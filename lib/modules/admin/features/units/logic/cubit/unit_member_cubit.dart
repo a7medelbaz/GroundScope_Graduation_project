@@ -47,12 +47,15 @@ class UnitMemberCubit extends Cubit<UnitMemberState> {
           ),
         );
       }
+      if (isClosed) return true;
       emit(state.copyWith(status: UnitMemberFormStatus.success));
       return true;
     } on AppError catch (e) {
+      if (isClosed) return false;
       emit(state.copyWith(status: UnitMemberFormStatus.failure, error: e));
       return false;
     } catch (_) {
+      if (isClosed) return false;
       emit(state.copyWith(
           status: UnitMemberFormStatus.failure, error: AppError.unknown()));
       return false;

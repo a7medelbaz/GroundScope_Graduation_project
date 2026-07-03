@@ -1,15 +1,17 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/notifications/data/models/notification_model.dart';
 import 'package:ground_scope/core/notifications/logic/cubit/notification_cubit.dart';
-import 'package:ground_scope/core/notifications/service/notification_navigator.dart';
+import 'package:ground_scope/core/router/routes.dart';
 import 'package:ground_scope/core/service/user_service.dart';
 import 'package:ground_scope/core/themes/app_colors.dart';
 import 'package:ground_scope/core/themes/app_text_styles.dart';
 import 'package:ground_scope/core/utils/extensions/context_ext.dart';
 import 'package:ground_scope/core/utils/extensions/datetime_ext.dart';
 import 'package:ground_scope/core/utils/spacing.dart';
+import 'package:ground_scope/core/widgets/gradient_header.dart';
 import 'package:get_it/get_it.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -35,25 +37,63 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cc = context.customColors;
 
     return Scaffold(
-      backgroundColor: cc.background,
       body: SafeArea(
         child: Column(
           children: [
-            _Header(onMarkAllRead: _markAllRead),
+            GradientHeader(
+              title: 'notifications'.tr(),
+              trailing: BlocBuilder<NotificationCubit, NotificationState>(
+                builder: (context, state) {
+                  if (state.unreadCount == 0) return const SizedBox.shrink();
+                  return GestureDetector(
+                    onTap: _markAllRead,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: rw(12),
+                        vertical: rh(6),
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(rr(20)),
+                        border: Border.all(
+                          color: AppColors.white.withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.done_all_rounded,
+                            size: rf(14),
+                            color: AppColors.white,
+                          ),
+                          horizontalSpacing(4),
+                          Text(
+                            'mark_all_read'.tr(),
+                            style: AppTextStyles.font12SemiBold.copyWith(
+                              color: AppColors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
             Expanded(
               child: BlocBuilder<NotificationCubit, NotificationState>(
                 builder: (context, state) {
                   if (state.status == NotificationListStatus.loading) {
                     return _ShimmerList();
                   }
-
+        
                   if (state.notifications.isEmpty) {
                     return _EmptyState();
                   }
-
+        
                   return RefreshIndicator(
                     color: AppColors.primary200,
                     onRefresh: () =>
@@ -88,44 +128,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _Header extends StatelessWidget {
-  const _Header({required this.onMarkAllRead});
-  final VoidCallback onMarkAllRead;
-
-  @override
-  Widget build(BuildContext context) {
-    final cc = context.customColors;
-
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: rw(16), vertical: rh(16)),
-      decoration: BoxDecoration(
-        color: cc.surface,
-        border: Border(bottom: BorderSide(color: cc.border, width: 0.5)),
-      ),
-      child: Row(
-        children: [
-          Text('notifications'.tr(), style: AppTextStyles.font18SemiBold),
-          const Spacer(),
-          BlocBuilder<NotificationCubit, NotificationState>(
-            builder: (context, state) {
-              if (state.unreadCount == 0) return const SizedBox.shrink();
-              return GestureDetector(
-                onTap: onMarkAllRead,
-                child: Text(
-                  'mark_all_read'.tr(),
-                  style: AppTextStyles.font12SemiBold.copyWith(
-                    color: AppColors.primary200,
-                  ),
-                ),
-              );
-            },
-          ),
-        ],
       ),
     );
   }
@@ -167,8 +169,13 @@ class _NotificationTile extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        context.read<NotificationCubit>().markAsRead(notification.id);
-        NotificationNavigator.navigateToReference(context, notification);
+        Navigator.of(context).pushNamed(
+          Routes.notificationDetailScreen,
+          arguments: {
+            'notification': notification,
+            'cubit': context.read<NotificationCubit>(),
+          },
+        );
       },
       child: Container(
         margin: EdgeInsets.only(bottom: rh(8)),
@@ -210,18 +217,17 @@ class _NotificationTile extends StatelessWidget {
                     children: [
                       Container(
                         padding: EdgeInsets.symmetric(
-                          horizontal: rw(6),
-                          vertical: rh(2),
+                          horizontal: rw(8),
+                          vertical: rh(3),
                         ),
                         decoration: BoxDecoration(
                           color: notification.type.color.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(rr(4)),
+                          borderRadius: BorderRadius.circular(rr(6)),
                         ),
                         child: Text(
-                          notification.type.label,
-                          style: AppTextStyles.font12ExtraBold.copyWith(
+                          notification.type.labelKey.tr(),
+                          style: AppTextStyles.font12SemiBold.copyWith(
                             color: notification.type.color,
-                            fontSize: 10,
                           ),
                         ),
                       ),
@@ -229,8 +235,7 @@ class _NotificationTile extends StatelessWidget {
                       Text(
                         notification.createdAt.timeAgo,
                         style: AppTextStyles.font12Light.copyWith(
-                          color: cc.textSecondary,
-                          fontSize: 10,
+                          color: cc.textHint,
                         ),
                       ),
                       if (isUnread) ...[
@@ -251,6 +256,7 @@ class _NotificationTile extends StatelessWidget {
                     notification.title,
                     style: isUnread
                         ? AppTextStyles.font14SemiBold
+                            .copyWith(color: cc.textPrimary)
                         : AppTextStyles.font14Light
                             .copyWith(color: cc.textSecondary),
                     maxLines: 1,
@@ -261,6 +267,7 @@ class _NotificationTile extends StatelessWidget {
                     notification.body,
                     style: AppTextStyles.font12Light.copyWith(
                       color: cc.textSecondary,
+                      height: 1.4,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -271,7 +278,12 @@ class _NotificationTile extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ).animate().fadeIn(duration: 250.ms).slideY(
+          begin: 0.08,
+          end: 0,
+          duration: 250.ms,
+          curve: Curves.easeOut,
+        );
   }
 }
 
@@ -317,11 +329,61 @@ class _ShimmerList extends StatelessWidget {
       itemCount: 6,
       itemBuilder: (_, i) => Container(
         margin: EdgeInsets.only(bottom: rh(10)),
-        height: rh(72),
+        padding: EdgeInsets.all(rw(12)),
         decoration: BoxDecoration(
           color: cc.surface,
           borderRadius: BorderRadius.circular(rr(12)),
+          border: Border.all(color: cc.border.withValues(alpha: 0.5)),
         ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _ShimmerBox(width: rw(36), height: rw(36), radius: rr(10)),
+            horizontalSpacing(10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _ShimmerBox(width: rw(70), height: rh(12), radius: rr(4)),
+                  verticalSpacing(8),
+                  _ShimmerBox(
+                      width: double.infinity, height: rh(12), radius: rr(4)),
+                  verticalSpacing(6),
+                  _ShimmerBox(width: rw(180), height: rh(10), radius: rr(4)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      )
+          .animate(onPlay: (c) => c.repeat())
+          .shimmer(
+            duration: 1100.ms,
+            color: cc.surfaceVariant.withValues(alpha: 0.6),
+          ),
+    );
+  }
+}
+
+class _ShimmerBox extends StatelessWidget {
+  const _ShimmerBox({
+    required this.width,
+    required this.height,
+    required this.radius,
+  });
+
+  final double width;
+  final double height;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: context.customColors.surfaceVariant,
+        borderRadius: BorderRadius.circular(radius),
       ),
     );
   }

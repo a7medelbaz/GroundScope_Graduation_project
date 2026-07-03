@@ -498,14 +498,44 @@ class _ActionSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.primary200));
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.primary200),
+      );
     }
+
+    // Acknowledge/Resolve only apply to reports the supervisor received
+    // (worker alerts or admin messages) — not their own outgoing sent items.
+    final isReceived = report.direction == ReportDirection.workerToSupervisor ||
+        report.direction == ReportDirection.adminToSupervisor ||
+        report.direction == ReportDirection.adminBroadcast;
 
     return Column(
       children: [
-        if (report.status == ReportStatus.open) ...[_ActionButton(label: 'reports.actions.acknowledge'.tr(), icon: Icons.visibility_outlined, color: AppColors.blue200, onTap: onAcknowledge), verticalSpacing(10)],
-        _ActionButton(label: 'reports.actions.resolve'.tr(), icon: Icons.check_circle_outline, color: AppColors.green200, onTap: onResolve),
-        if (report.direction == ReportDirection.workerToSupervisor) ...[verticalSpacing(10), _ActionButton(label: 'reports.actions.forward'.tr(), icon: Icons.forward_rounded, color: AppColors.secondary200, onTap: onForward)],
+        if (isReceived && report.status == ReportStatus.open) ...[
+          _ActionButton(
+            label: 'reports.actions.acknowledge'.tr(),
+            icon: Icons.visibility_outlined,
+            color: AppColors.blue200,
+            onTap: onAcknowledge,
+          ),
+          verticalSpacing(10),
+        ],
+        if (isReceived)
+          _ActionButton(
+            label: 'reports.actions.resolve'.tr(),
+            icon: Icons.check_circle_outline,
+            color: AppColors.green200,
+            onTap: onResolve,
+          ),
+        if (report.direction == ReportDirection.workerToSupervisor) ...[
+          verticalSpacing(10),
+          _ActionButton(
+            label: 'reports.actions.forward'.tr(),
+            icon: Icons.forward_rounded,
+            color: AppColors.secondary200,
+            onTap: onForward,
+          ),
+        ],
       ],
     );
   }

@@ -33,6 +33,15 @@ enum NotificationType {
         NotificationType.flightLanded => 'Flight Landed',
       };
 
+  /// Localization key for the type label — resolve with `.tr()` in the UI.
+  String get labelKey => switch (this) {
+        NotificationType.taskAssigned => 'notification_type.task_assigned',
+        NotificationType.alert => 'notification_type.alert',
+        NotificationType.delay => 'notification_type.delay',
+        NotificationType.report => 'notification_type.report',
+        NotificationType.flightLanded => 'notification_type.flight_landed',
+      };
+
   IconData get icon => switch (this) {
         NotificationType.taskAssigned => Icons.assignment_rounded,
         NotificationType.alert => Icons.warning_amber_rounded,
