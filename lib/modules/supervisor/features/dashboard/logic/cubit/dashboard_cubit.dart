@@ -93,12 +93,22 @@ class DashboardCubit extends Cubit<DashboardState> {
     _requestSubscription = _dashboardRepo
         .watchPendingServiceRequests(serviceTypeId)
         .listen(
-      (requests) {
-        if (state.status == DashboardStatus.loaded) {
+      (_) async {
+        // The realtime stream cannot carry the flights(*) join, so its rows have
+        // flight == null. Use the stream purely as a change signal and re-fetch
+        // the joined list so flight details are populated.
+        if (state.status != DashboardStatus.loaded) return;
+        try {
+          final joined =
+              await _dashboardRepo.fetchPendingServiceRequests(serviceTypeId);
+          // Cubit may have closed during the async re-fetch.
+          if (isClosed || state.status != DashboardStatus.loaded) return;
           emit(state.copyWith(
-            pendingRequests: requests,
-            pendingRequestCount: requests.length,
+            pendingRequests: joined,
+            pendingRequestCount: joined.length,
           ));
+        } catch (e) {
+          debugPrint('Dashboard re-fetch after stream event failed: $e');
         }
       },
       onError: (e) => debugPrint('Dashboard real-time error: $e'),
