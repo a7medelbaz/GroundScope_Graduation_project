@@ -45,12 +45,15 @@ class StandFormCubit extends Cubit<StandFormState> {
           ),
         );
       }
+      if (isClosed) return true;
       emit(state.copyWith(status: StandFormStatus.success));
       return true;
     } on AppError catch (e) {
+      if (isClosed) return false;
       emit(state.copyWith(status: StandFormStatus.failure, error: e));
       return false;
     } catch (_) {
+      if (isClosed) return false;
       emit(state.copyWith(
           status: StandFormStatus.failure, error: AppError.unknown()));
       return false;

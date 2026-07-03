@@ -92,14 +92,41 @@ class UnitDetailBottomSheet extends StatelessWidget {
                       label: 'service_type'.tr(),
                       value: unit.serviceTypeName ?? '—',
                     ),
-                    InfoRowData(
-                      icon: Icons.airplanemode_active_outlined,
-                      label: 'compatible_aircraft'.tr(),
-                      value: unit.compatibleAircraft.isNotEmpty
-                          ? unit.compatibleAircraft.join(', ')
-                          : '—',
-                    ),
                   ]),
+                  verticalSpacing(16),
+                  // Compatible aircraft — rendered as wrapping chips so long
+                  // lists don't overflow the info row.
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.airplanemode_active_outlined,
+                        size: rf(18),
+                        color: cc.iconSecondary,
+                      ),
+                      horizontalSpacing(8),
+                      Text(
+                        'compatible_aircraft'.tr(),
+                        style: AppTextStyles.font14SemiBold
+                            .copyWith(color: cc.textSecondary),
+                      ),
+                    ],
+                  ),
+                  verticalSpacing(10),
+                  if (unit.compatibleAircraft.isEmpty)
+                    Text(
+                      '—',
+                      style: AppTextStyles.font14Light
+                          .copyWith(color: cc.textHint),
+                    )
+                  else
+                    Wrap(
+                      spacing: rw(8),
+                      runSpacing: rh(8),
+                      children: unit.compatibleAircraft
+                          .map((a) =>
+                              _Badge(label: a, color: AppColors.primary200))
+                          .toList(),
+                    ),
                   verticalSpacing(20),
                   // Crew section title
                   Text(

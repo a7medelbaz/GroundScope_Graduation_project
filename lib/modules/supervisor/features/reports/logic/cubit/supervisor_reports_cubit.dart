@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ground_scope/core/error/handlers/supabase_error_handler.dart';
 import 'package:ground_scope/core/error/models/app_error.dart';
 import 'package:ground_scope/core/notifications/data/models/notification_model.dart';
 import 'package:ground_scope/core/notifications/service/notification_sender.dart';
@@ -47,10 +49,11 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
         fromAdmin: received.$2,
         sent: sent,
       ));
-    } catch (_) {
+    } catch (e, st) {
+      debugPrint('[SupervisorReportsCubit.load] failed: $e\n$st');
       emit(state.copyWith(
           status: SupervisorReportsStatus.failure,
-          error: AppError.unknown()));
+          error: SupabaseErrorHandler.handle(e)));
       return;
     }
 
@@ -61,10 +64,13 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
     try {
       _receivedSub?.cancel();
       _receivedSub = _repo.watchReceived(supervisorId).listen(
-        (received) => emit(state.copyWith(
-          inbox: received.$1,
-          fromAdmin: received.$2,
-        )),
+        (received) {
+          if (isClosed) return;
+          emit(state.copyWith(
+            inbox: received.$1,
+            fromAdmin: received.$2,
+          ));
+        },
         onError: (_) {},
       );
     } catch (_) {
@@ -118,6 +124,7 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
                 acknowledgedAt: DateTime.now(),
               ));
 
+      if (isClosed) return;
       emit(state.copyWith(
         status: SupervisorReportsStatus.loaded,
         inbox: updated.$1,
@@ -126,6 +133,7 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
         actionReportId: null,
       ));
     } catch (_) {
+      if (isClosed) return;
       emit(state.copyWith(
           status: SupervisorReportsStatus.loaded,
           error: AppError.unknown(),
@@ -151,6 +159,7 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
                 resolvedAt: DateTime.now(),
               ));
 
+      if (isClosed) return;
       emit(state.copyWith(
         status: SupervisorReportsStatus.loaded,
         inbox: updated.$1,
@@ -159,6 +168,7 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
         actionReportId: null,
       ));
     } catch (_) {
+      if (isClosed) return;
       emit(state.copyWith(
           status: SupervisorReportsStatus.loaded,
           error: AppError.unknown(),
@@ -190,13 +200,16 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
       // Notifications are best-effort
       _notifyRecipients(recipientIds, report, 'Supervisor Alert');
 
+      if (isClosed) return;
       emit(state.copyWith(
           status: SupervisorReportsStatus.submitSuccess,
           sent: [report, ...state.sent]));
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(
           status: SupervisorReportsStatus.failure, error: e));
     } catch (_) {
+      if (isClosed) return;
       emit(state.copyWith(
           status: SupervisorReportsStatus.failure, error: AppError.unknown()));
     }
@@ -225,13 +238,16 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
 
       _notifyRecipients(recipientIds, report, 'Supervisor Broadcast');
 
+      if (isClosed) return;
       emit(state.copyWith(
           status: SupervisorReportsStatus.submitSuccess,
           sent: [report, ...state.sent]));
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(
           status: SupervisorReportsStatus.failure, error: e));
     } catch (_) {
+      if (isClosed) return;
       emit(state.copyWith(
           status: SupervisorReportsStatus.failure, error: AppError.unknown()));
     }
@@ -254,13 +270,16 @@ class SupervisorReportsCubit extends Cubit<SupervisorReportsState> {
 
       _notifyRecipients(recipientIds, report, 'Forwarded Report');
 
+      if (isClosed) return;
       emit(state.copyWith(
           status: SupervisorReportsStatus.submitSuccess,
           sent: [report, ...state.sent]));
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(
           status: SupervisorReportsStatus.failure, error: e));
     } catch (_) {
+      if (isClosed) return;
       emit(state.copyWith(
           status: SupervisorReportsStatus.failure, error: AppError.unknown()));
     }

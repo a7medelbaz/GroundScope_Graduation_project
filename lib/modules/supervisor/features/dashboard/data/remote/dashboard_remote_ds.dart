@@ -11,6 +11,13 @@ class DashboardRemoteDs {
 
   final SupabaseService _supabaseService;
 
+  /// Rolling window: only show items from the last 12 hours to keep the
+  /// dashboard fast and focused on active work.
+  static const Duration _window = Duration(hours: 12);
+
+  static String get _windowCutoff =>
+      DateTime.now().toUtc().subtract(_window).toIso8601String();
+
   Future<Map<String, int>> fetchTaskStats(String serviceTypeId) async {
     try {
       final rows = await _supabaseService.client
@@ -92,6 +99,7 @@ class DashboardRemoteDs {
           .select('*, flights(*, stands(*)), service_types(id, name)')
           .eq('service_type_id', serviceTypeId)
           .eq('status', 'pending')
+          .gte('created_at', _windowCutoff)
           .order('created_at', ascending: true);
 
       return rows
@@ -127,12 +135,16 @@ class DashboardRemoteDs {
   /// Real-time stream of pending service requests for this service type.
   Stream<List<ServiceRequestModel>> watchPendingServiceRequests(
       String serviceTypeId) {
+    final cutoff = _windowCutoff;
     return _supabaseService.client
         .from('flight_service_requests')
         .stream(primaryKey: ['id'])
         .eq('service_type_id', serviceTypeId)
         .map((rows) => rows
-            .where((r) => r['status'] == 'pending')
+            .where((r) =>
+                r['status'] == 'pending' &&
+                (r['created_at'] as String?) != null &&
+                (r['created_at'] as String).compareTo(cutoff) >= 0)
             .map((r) => ServiceRequestModel.fromJson(r))
             .toList());
   }

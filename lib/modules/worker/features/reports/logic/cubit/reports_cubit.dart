@@ -33,15 +33,18 @@ class ReportsCubit extends Cubit<ReportsState> {
         reportRepo.fetchReceivedReports(user.id),
       ]);
 
+      if (isClosed) return;
       emit(state.copyWith(
         status: ReportsStatus.loaded,
         sent: results[0],
         received: results[1],
       ));
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: ReportsStatus.failure, error: e));
       return;
     } catch (_) {
+      if (isClosed) return;
       emit(state.copyWith(
           status: ReportsStatus.failure, error: AppError.unknown()));
       return;
@@ -67,7 +70,10 @@ class ReportsCubit extends Cubit<ReportsState> {
     try {
       _receivedSub?.cancel();
       _receivedSub = reportRepo.watchReceivedReports(userId).listen(
-        (received) => emit(state.copyWith(received: received)),
+        (received) {
+          if (isClosed) return;
+          emit(state.copyWith(received: received));
+        },
         onError: (_) {},
       );
     } catch (_) {

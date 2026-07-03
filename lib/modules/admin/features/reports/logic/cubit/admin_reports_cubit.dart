@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ground_scope/core/error/handlers/supabase_error_handler.dart';
 import 'package:ground_scope/core/error/models/app_error.dart';
 import 'package:ground_scope/core/notifications/data/models/notification_model.dart';
 import 'package:ground_scope/core/notifications/service/notification_sender.dart';
@@ -46,6 +47,7 @@ class AdminReportsCubit extends Cubit<AdminReportsState> {
         _reportRepo.fetchSentReports(user.id),
       ]);
 
+      if (isClosed) return;
       emit(state.copyWith(
         status: AdminReportsStatus.loaded,
         all: results[0],
@@ -53,6 +55,7 @@ class AdminReportsCubit extends Cubit<AdminReportsState> {
       ));
     } catch (e, st) {
       debugPrint('[AdminReportsCubit.load] failed: $e\n$st');
+      if (isClosed) return;
       emit(state.copyWith(
           status: AdminReportsStatus.failure, error: AppError.unknown()));
       return;
@@ -65,12 +68,15 @@ class AdminReportsCubit extends Cubit<AdminReportsState> {
     try {
       _allSub?.cancel();
       _allSub = _reportRepo.watchAllReports().listen(
-        (all) => emit(state.copyWith(
-          all: all,
-          myReports: _currentUserId == null
-              ? state.myReports
-              : all.where((r) => r.reportedBy == _currentUserId).toList(),
-        )),
+        (all) {
+          if (isClosed) return;
+          emit(state.copyWith(
+            all: all,
+            myReports: _currentUserId == null
+                ? state.myReports
+                : all.where((r) => r.reportedBy == _currentUserId).toList(),
+          ));
+        },
         onError: (e, st) =>
             debugPrint('[AdminReportsCubit._watchAll] stream error: $e\n$st'),
       );
@@ -126,17 +132,21 @@ class AdminReportsCubit extends Cubit<AdminReportsState> {
         );
       }
 
+      if (isClosed) return;
       emit(state.copyWith(
           status: AdminReportsStatus.submitSuccess,
           all: [report, ...state.all],
           myReports: [report, ...state.myReports]));
     } on AppError catch (e) {
       debugPrint('[AdminReportsCubit.sendToSupervisors] failed: $e');
+      if (isClosed) return;
       emit(state.copyWith(status: AdminReportsStatus.failure, error: e));
     } catch (e, st) {
       debugPrint('[AdminReportsCubit.sendToSupervisors] failed: $e\n$st');
+      if (isClosed) return;
       emit(state.copyWith(
-          status: AdminReportsStatus.failure, error: AppError.unknown()));
+          status: AdminReportsStatus.failure,
+          error: SupabaseErrorHandler.handle(e)));
     }
   }
 
@@ -174,17 +184,21 @@ class AdminReportsCubit extends Cubit<AdminReportsState> {
         );
       }
 
+      if (isClosed) return;
       emit(state.copyWith(
           status: AdminReportsStatus.submitSuccess,
           all: [report, ...state.all],
           myReports: [report, ...state.myReports]));
     } on AppError catch (e) {
       debugPrint('[AdminReportsCubit.broadcast] failed: $e');
+      if (isClosed) return;
       emit(state.copyWith(status: AdminReportsStatus.failure, error: e));
     } catch (e, st) {
       debugPrint('[AdminReportsCubit.broadcast] failed: $e\n$st');
+      if (isClosed) return;
       emit(state.copyWith(
-          status: AdminReportsStatus.failure, error: AppError.unknown()));
+          status: AdminReportsStatus.failure,
+          error: SupabaseErrorHandler.handle(e)));
     }
   }
 

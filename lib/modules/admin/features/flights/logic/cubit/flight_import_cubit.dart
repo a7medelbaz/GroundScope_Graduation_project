@@ -20,6 +20,7 @@ class FlightImportCubit extends Cubit<FlightImportState> {
     emit(state.copyWith(status: FlightImportStatus.fetching));
     try {
       final flights = await _aviationDs.fetchTodaysFlights();
+      if (isClosed) return;
       emit(
         state.copyWith(
           status: FlightImportStatus.preview,
@@ -30,8 +31,10 @@ class FlightImportCubit extends Cubit<FlightImportState> {
     } on AppError catch (e) {
       debugPrint('IMPORT ERROR: $e');
       debugPrint('STACK: ${e.details}');
+      if (isClosed) return;
       emit(state.copyWith(status: FlightImportStatus.failure, error: e));
     } catch (_) {
+      if (isClosed) return;
       emit(
         state.copyWith(
           status: FlightImportStatus.failure,
@@ -67,6 +70,7 @@ class FlightImportCubit extends Cubit<FlightImportState> {
           .where((f) => state.selectedIds.contains(f.externalId))
           .toList();
       await _repo.importFlights(toImport);
+      if (isClosed) return true;
       emit(
         state.copyWith(
           status: FlightImportStatus.success,
@@ -75,9 +79,11 @@ class FlightImportCubit extends Cubit<FlightImportState> {
       );
       return true;
     } on AppError catch (e) {
+      if (isClosed) return false;
       emit(state.copyWith(status: FlightImportStatus.failure, error: e));
       return false;
     } catch (_) {
+      if (isClosed) return false;
       emit(
         state.copyWith(
           status: FlightImportStatus.failure,

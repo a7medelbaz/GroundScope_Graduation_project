@@ -21,6 +21,7 @@ class ProfileCubit extends Cubit<ProfileState> {
         _unitRepo.fetchUnitById(unitId),
         _unitMemberRepo.fetchUnitMembers(unitId),
       ]);
+      if (isClosed) return;
       emit(
         state.copyWith(
           status: ProfileStatus.success,
@@ -29,8 +30,10 @@ class ProfileCubit extends Cubit<ProfileState> {
         ),
       );
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: ProfileStatus.failure, error: e));
     } catch (_) {
+      if (isClosed) return;
       emit(
         state.copyWith(
           status: ProfileStatus.failure,

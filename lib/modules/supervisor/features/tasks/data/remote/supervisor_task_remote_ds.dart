@@ -11,12 +11,20 @@ class SupervisorTaskRemoteDs {
 
   final SupabaseService _supabaseService;
 
+  /// Rolling window: only surface tasks from the last 12 hours.
+  static const Duration _window = Duration(hours: 12);
+
+  static String get _windowCutoff =>
+      DateTime.now().toUtc().subtract(_window).toIso8601String();
+
   Future<List<TaskModel>> fetchTasks(String serviceTypeId) async {
     try {
       final rows = await _supabaseService.client
           .from('tasks')
           .select('*, flights(*, stands(*)), units(*), service_types(*)')
           .eq('service_type_id', serviceTypeId)
+          .gte('created_at', _windowCutoff)
+          .not('status', 'in', '(completed,cancelled)')
           .order('created_at', ascending: false);
       return rows.map((row) => TaskModel.fromMap(row)).toList();
     } on PostgrestException catch (e) {
@@ -25,6 +33,17 @@ class SupervisorTaskRemoteDs {
       debugPrint('SupervisorTaskRemoteDs.fetchTasks error: $e\n$st');
       throw AppError.unknown(e.toString());
     }
+  }
+
+  /// Real-time stream of the (windowed, active) task list for this service
+  /// type. The Supabase stream cannot carry joins, so any change re-fetches
+  /// the full joined+filtered list via [fetchTasks].
+  Stream<List<TaskModel>> watchTasks(String serviceTypeId) {
+    return _supabaseService.client
+        .from('tasks')
+        .stream(primaryKey: ['id'])
+        .eq('service_type_id', serviceTypeId)
+        .asyncMap((_) => fetchTasks(serviceTypeId));
   }
 
   Future<(TaskModel, List<TaskCheckListModel>)> fetchTaskById(

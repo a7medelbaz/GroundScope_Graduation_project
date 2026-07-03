@@ -24,6 +24,7 @@ class UnitFormCubit extends Cubit<UnitFormState> {
   Future<void> init() async {
     try {
       final serviceTypes = await _serviceTypeRepo.fetchAll(isActive: true);
+      if (isClosed) return;
       emit(state.copyWith(serviceTypes: serviceTypes));
     } catch (_) {}
   }
@@ -53,6 +54,7 @@ class UnitFormCubit extends Cubit<UnitFormState> {
             shiftEndTime: shiftEndTime,
           ),
         );
+        if (isClosed) return true;
         emit(state.copyWith(status: UnitFormStatus.success));
         return true;
       } else {
@@ -81,6 +83,7 @@ class UnitFormCubit extends Cubit<UnitFormState> {
             role: UserRole.unitManager,
             unitId: created.id,
           );
+          if (isClosed) return true;
           emit(state.copyWith(
             status: UnitFormStatus.success,
             generatedCredentials: GeneratedCredentials(
@@ -93,6 +96,7 @@ class UnitFormCubit extends Cubit<UnitFormState> {
           ));
         } catch (_) {
           // Account creation failed — unit still created successfully
+          if (isClosed) return true;
           emit(state.copyWith(
             status: UnitFormStatus.success,
             credentialsError: true,
@@ -102,9 +106,11 @@ class UnitFormCubit extends Cubit<UnitFormState> {
         return true;
       }
     } on AppError catch (e) {
+      if (isClosed) return false;
       emit(state.copyWith(status: UnitFormStatus.failure, error: e));
       return false;
     } catch (_) {
+      if (isClosed) return false;
       emit(state.copyWith(
           status: UnitFormStatus.failure, error: AppError.unknown()));
       return false;

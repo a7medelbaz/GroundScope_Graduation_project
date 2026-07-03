@@ -36,6 +36,7 @@ class ServiceRequestCubit extends Cubit<ServiceRequestState> {
         _serviceTypeRepo.fetchAll(isActive: true),
       ]);
 
+      if (isClosed) return;
       emit(state.copyWith(
         status:          SrLoadStatus.success,
         existingRequests: results[0] as List<AdminServiceRequestModel>,
@@ -44,9 +45,11 @@ class ServiceRequestCubit extends Cubit<ServiceRequestState> {
 
       _startRealTimeWatch(flight.id);
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: SrLoadStatus.failure, error: e));
     } catch (e, st) {
       debugPrint('ServiceRequestCubit.init: $e\n$st');
+      if (isClosed) return;
       emit(state.copyWith(
         status: SrLoadStatus.failure,
         error: AppError.unknown(),
@@ -58,6 +61,7 @@ class ServiceRequestCubit extends Cubit<ServiceRequestState> {
     _subscription?.cancel();
     _subscription = _requestRepo.watchForFlight(flightId).listen(
       (requests) {
+        if (isClosed) return;
         if (state.status == SrLoadStatus.success) {
           // stream() has no joins — enrich serviceTypeName from loaded service types
           final enriched = requests.map((r) {
@@ -126,6 +130,7 @@ class ServiceRequestCubit extends Cubit<ServiceRequestState> {
       final allRequests =
           await _requestRepo.fetchForFlight(state.flight!.id);
 
+      if (isClosed) return;
       emit(state.copyWith(
         status:                 SrLoadStatus.success,
         existingRequests:       allRequests,
@@ -133,9 +138,11 @@ class ServiceRequestCubit extends Cubit<ServiceRequestState> {
         notes:                  '',
       ));
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: SrLoadStatus.failure, error: e));
     } catch (e, st) {
       debugPrint('ServiceRequestCubit.submitRequests: $e\n$st');
+      if (isClosed) return;
       emit(state.copyWith(
         status: SrLoadStatus.failure,
         error: AppError.unknown(),
@@ -147,11 +154,14 @@ class ServiceRequestCubit extends Cubit<ServiceRequestState> {
     try {
       await _requestRepo.cancel(requestId);
       final updated = await _requestRepo.fetchForFlight(state.flight!.id);
+      if (isClosed) return;
       emit(state.copyWith(existingRequests: updated));
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(error: e));
     } catch (e, st) {
       debugPrint('ServiceRequestCubit.cancelRequest: $e\n$st');
+      if (isClosed) return;
       emit(state.copyWith(error: AppError.unknown()));
     }
   }

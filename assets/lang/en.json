@@ -441,6 +441,18 @@
   "units_managed": "Units Managed",
   "dark_mode": "Dark Mode",
   "notifications": "Notifications",
+  "unread": "Unread",
+  "earlier": "Earlier",
+  "mark_all_read": "Mark all read",
+  "no_notifications": "No notifications yet",
+  "no_notifications_subtitle": "You're all caught up. New alerts will appear here.",
+  "notification_type": {
+    "task_assigned": "Task Assigned",
+    "alert": "Alert",
+    "delay": "Delay",
+    "report": "Report",
+    "flight_landed": "Flight Landed"
+  },
   "english": "English",
   "arabic": "العربية",
   "start_time": "Start Time",

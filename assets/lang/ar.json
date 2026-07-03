@@ -442,6 +442,18 @@
   "units_managed": "الوحدات المُدارة",
   "dark_mode": "الوضع الداكن",
   "notifications": "الإشعارات",
+  "unread": "غير المقروءة",
+  "earlier": "الأقدم",
+  "mark_all_read": "تعليم الكل كمقروء",
+  "no_notifications": "لا توجد إشعارات بعد",
+  "no_notifications_subtitle": "أنت على اطلاع بكل شيء. ستظهر التنبيهات الجديدة هنا.",
+  "notification_type": {
+    "task_assigned": "مهمة مسندة",
+    "alert": "تنبيه",
+    "delay": "تأخير",
+    "report": "بلاغ",
+    "flight_landed": "هبطت الرحلة"
+  },
   "english": "English",
   "arabic": "العربية",
   "start_time": "وقت البداية",

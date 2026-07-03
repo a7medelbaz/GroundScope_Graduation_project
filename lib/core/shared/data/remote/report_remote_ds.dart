@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:ground_scope/core/error/handlers/supabase_error_handler.dart';
 import 'package:ground_scope/core/networking/supabase_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -61,10 +62,10 @@ class ReportRemoteDs {
     } on PostgrestException catch (e, st) {
       debugPrint('[ReportRemoteDs.submitReport] PostgrestException: '
           '${e.message} (code: ${e.code}, details: ${e.details}, hint: ${e.hint})\n$st');
-      rethrow;
+      throw SupabaseErrorHandler.handle(e);
     } catch (e, st) {
       debugPrint('[ReportRemoteDs.submitReport] failed: $e\n$st');
-      rethrow;
+      throw SupabaseErrorHandler.handle(e);
     }
   }
 
