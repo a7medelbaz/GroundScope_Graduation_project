@@ -39,8 +39,8 @@ class ProfileHeader extends StatelessWidget {
         children: [
           // Avatar circle with initials
           Container(
-            width: rw(52),
-            height: rw(52),
+            width: rw(56),
+            height: rw(56),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: AppColors.white.withValues(alpha: 0.18),
@@ -59,20 +59,24 @@ class ProfileHeader extends StatelessWidget {
             ),
           ),
           horizontalSpacing(14),
+          // Name (primary) + role label (secondary)
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'supervisor_profile_title'.tr(),
-                  style: AppTextStyles.font22ExtraBold.copyWith(
+                  user.fullName,
+                  style: AppTextStyles.font18ExtraBold.copyWith(
                     color: AppColors.white,
                     letterSpacing: 0.2,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 verticalSpacing(3),
                 Text(
-                  user.fullName,
+                  'supervisor'.tr(),
                   style: AppTextStyles.font12Light.copyWith(
                     color: AppColors.primary100,
                     letterSpacing: 0.3,
@@ -81,24 +85,6 @@ class ProfileHeader extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
-            ),
-          ),
-          // Role badge
-          Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: rw(10), vertical: rh(5)),
-            decoration: BoxDecoration(
-              color: AppColors.white.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(rr(20)),
-              border: Border.all(
-                  color: AppColors.white.withValues(alpha: 0.25)),
-            ),
-            child: Text(
-              'supervisor'.tr(),
-              style: AppTextStyles.font12SemiBold.copyWith(
-                color: AppColors.white,
-                letterSpacing: 0.5,
-              ),
             ),
           ),
         ],
