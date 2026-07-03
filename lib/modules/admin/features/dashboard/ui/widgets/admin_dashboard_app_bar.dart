@@ -36,11 +36,7 @@ class AdminDashboardAppBar extends StatelessWidget {
               ],
             ),
           ),
-          Icon(
-            Icons.notifications_sharp,
-            size: rw(24),
-            color: context.customColors.iconPrimary,
-          ),
+
           horizontalSpacing(16),
           GestureDetector(
             onTap: () => showAdminSettingsSheet(context),
