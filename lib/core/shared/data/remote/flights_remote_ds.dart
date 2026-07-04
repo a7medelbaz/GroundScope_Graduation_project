@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../error/handlers/supabase_error_handler.dart';
@@ -183,21 +184,46 @@ class FlightsRemoteDs {
   }
 
   /// Imports a list of flights from the API into the DB.
-  /// Uses upsert on external_id to avoid duplicates on re-fetch.
+  /// Deletes existing flights with same external_id, then inserts fresh ones.
   Future<void> importFlights(List<FlightModel> flights) async {
     try {
       if (flights.isEmpty) return;
 
+      final externalIds = flights
+          .map((f) => f.externalId)
+          .whereType<String>()
+          .toList();
+
+      debugPrint('IMPORT: Starting import for ${flights.length} flights');
+      debugPrint('IMPORT: External IDs to delete: $externalIds');
+
+      // Delete existing flights with same external_id to avoid conflicts
+      if (externalIds.isNotEmpty) {
+        debugPrint('IMPORT: Deleting existing flights...');
+        await supabaseService.client
+            .from('flights')
+            .delete()
+            .inFilter('external_id', externalIds);
+        debugPrint('IMPORT: Delete completed');
+      }
+
+      // Insert fresh flights
       final maps = flights
           .map((f) => f.toMap()..remove('id')) // let Supabase generate the ID
           .toList();
 
+      debugPrint('IMPORT: Inserting ${maps.length} flights...');
       await supabaseService.client
           .from('flights')
-          .upsert(maps, onConflict: 'external_id');
+          .insert(maps);
+      debugPrint('IMPORT: Insert completed successfully');
     } on PostgrestException catch (e) {
+      debugPrint('IMPORT DB ERROR: ${e.message}');
+      debugPrint('IMPORT DB DETAILS: ${e.details}');
       throw SupabaseErrorHandler.handle(e);
-    } catch (_) {
+    } catch (e, st) {
+      debugPrint('IMPORT ERROR: $e');
+      debugPrint('IMPORT STACK: $st');
       throw AppError.unknown();
     }
   }

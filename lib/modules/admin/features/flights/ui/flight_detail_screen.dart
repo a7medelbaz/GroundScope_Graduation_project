@@ -134,6 +134,21 @@ class FlightDetailScreen extends StatelessWidget {
                                   ? 'departure'.tr()
                                   : 'arrival'.tr(),
                             ),
+                            if (current.depTerminal != null || current.depGate != null)
+                              _DetailRow(
+                                label: 'departure_terminal_gate'.tr(),
+                                value: '${current.depTerminal ?? '—'} / ${current.depGate ?? '—'}',
+                              ),
+                            if (current.arrTerminal != null || current.arrGate != null)
+                              _DetailRow(
+                                label: 'arrival_terminal_gate'.tr(),
+                                value: '${current.arrTerminal ?? '—'} / ${current.arrGate ?? '—'}',
+                              ),
+                            if (current.delayMinutes != null && current.delayMinutes! > 0)
+                              _DetailRow(
+                                label: 'delay'.tr(),
+                                value: 'delay_minutes_value'.tr(namedArgs: {'count': '${current.delayMinutes}'}),
+                              ),
                           ],
                         ),
                         verticalSpacing(20),

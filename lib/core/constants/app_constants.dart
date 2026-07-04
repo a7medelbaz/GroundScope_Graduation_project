@@ -5,5 +5,6 @@ class AppConstants {
 
   /// Read from .env — never hardcode the key here.
   static String get aviationStackKey => AppConfig.aviationStackKey;
+  static String get airLabsApiKey => AppConfig.airLabsApiKey;
   static const String airportIataCode = 'CAI';
 }

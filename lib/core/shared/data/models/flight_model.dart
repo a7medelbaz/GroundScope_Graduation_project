@@ -65,6 +65,11 @@ class FlightModel {
   final String? externalId;
   final FlightType flightType;
   final StandModel? stand;
+  final String? depTerminal;
+  final String? depGate;
+  final String? arrTerminal;
+  final String? arrGate;
+  final int? delayMinutes;
 
   const FlightModel({
     required this.id,
@@ -86,6 +91,11 @@ class FlightModel {
     this.externalId,
     this.flightType = FlightType.arrival,
     this.stand,
+    this.depTerminal,
+    this.depGate,
+    this.arrTerminal,
+    this.arrGate,
+    this.delayMinutes,
   });
 
   factory FlightModel.fromMap(Map<String, dynamic> map) {
@@ -120,6 +130,11 @@ class FlightModel {
       flightType: FlightType.fromString(map['flight_type']?.toString()),
       // Supabase returns the joined table as a nested Map
       stand: map['stands'] != null ? StandModel.fromMap(map['stands']) : null,
+      depTerminal: map['dep_terminal'],
+      depGate: map['dep_gate'],
+      arrTerminal: map['arr_terminal'],
+      arrGate: map['arr_gate'],
+      delayMinutes: map['delay_minutes'] as int?,
     );
   }
 
@@ -145,6 +160,11 @@ class FlightModel {
       'flight_type': flightType == FlightType.departure
           ? 'departure'
           : 'arrival',
+      'dep_terminal': depTerminal,
+      'dep_gate': depGate,
+      'arr_terminal': arrTerminal,
+      'arr_gate': arrGate,
+      'delay_minutes': delayMinutes,
     };
   }
 }

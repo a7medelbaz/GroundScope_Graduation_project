@@ -3,23 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/error/models/app_error.dart';
 import 'package:ground_scope/core/shared/data/models/flight_model.dart';
-import 'package:ground_scope/core/shared/data/remote/aviation_stack_remote_ds.dart';
+import 'package:ground_scope/core/shared/data/remote/airlabs_remote_ds.dart';
 import 'package:ground_scope/core/shared/data/repo/flight_repo.dart';
 
 part 'flight_import_state.dart';
 
 class FlightImportCubit extends Cubit<FlightImportState> {
-  FlightImportCubit(this._aviationDs, this._repo)
+  FlightImportCubit(this._airLabsDs, this._repo)
     : super(const FlightImportState());
 
-  final AviationStackRemoteDs _aviationDs;
+  final AirLabsRemoteDs _airLabsDs;
   final FlightRepo _repo;
 
-  /// Step 1: Fetch from AviationStack and show preview
+  /// Step 1: Fetch from AirLabs and show preview
   Future<void> fetchPreview() async {
     emit(state.copyWith(status: FlightImportStatus.fetching));
     try {
-      final flights = await _aviationDs.fetchTodaysFlights();
+      final flights = await _airLabsDs.fetchTodaysFlights();
       if (isClosed) return;
       emit(
         state.copyWith(
