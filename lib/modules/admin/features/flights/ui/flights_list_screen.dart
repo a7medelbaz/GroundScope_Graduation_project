@@ -234,7 +234,7 @@ class _FlightsListScreenState extends State<FlightsListScreen> {
               },
               childCount: sections.fold(
                 0,
-                (sum, s) => sum ?? 0 + 1 + s.flights.length,
+                (sum, s) => (sum ?? 0) + 1 + s.flights.length,
               ),
             ),
           ),

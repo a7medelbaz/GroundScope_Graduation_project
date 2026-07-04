@@ -115,6 +115,36 @@ class FlightsRemoteDs {
     }
   }
 
+  /// Fetches ALL flights without any filtering.
+  /// Used by the "All" filter to show complete flight list.
+  Future<List<FlightModel>> fetchAllFlights() async {
+    try {
+      debugPrint('FETCH_ALL: Starting fetchAllFlights');
+      final response = await supabaseService.client
+          .from('flights')
+          .select('*, stands(*)')
+          .order('scheduled_arrival', ascending: true);
+
+      debugPrint('FETCH_ALL: Response type: ${response.runtimeType}');
+      debugPrint('FETCH_ALL: Response length: ${(response as List).length}');
+
+      final flights = (response as List)
+          .cast<Map<String, dynamic>>()
+          .map((e) => FlightModel.fromMap(e))
+          .toList();
+
+      debugPrint('FETCH_ALL: Parsed ${flights.length} flights');
+      return flights;
+    } on PostgrestException catch (e) {
+      debugPrint('FETCH_ALL DB ERROR: ${e.message}');
+      throw SupabaseErrorHandler.handle(e);
+    } catch (e, st) {
+      debugPrint('FETCH_ALL ERROR: $e');
+      debugPrint('FETCH_ALL STACK: $st');
+      throw AppError.unknown();
+    }
+  }
+
   /// Updates multiple flights to a new status in one call.
   Future<void> batchUpdateStatus({
     required List<String> flightIds,

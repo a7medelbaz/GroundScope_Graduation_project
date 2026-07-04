@@ -17,20 +17,24 @@ class FlightsListCubit extends Cubit<FlightsListState> {
   Future<void> load() async {
     emit(state.copyWith(status: FlightsListStatus.loading));
     try {
-      // 1. Fetch active flights (today + next 12h)
-      final flights = await _repo.fetchActiveFlights();
+      // 1. Fetch all flights
+      final flights = await _repo.fetchAllFlights();
+      debugPrint('FLIGHTS LOAD: Fetched ${flights.length} flights');
 
       // 2. Auto-update statuses silently (best-effort, won't block UI)
       await _runAutoStatusUpdates(flights);
 
       // 3. Re-fetch to get updated statuses
-      final updated = await _repo.fetchActiveFlights();
+      final updated = await _repo.fetchAllFlights();
+      debugPrint('FLIGHTS LOAD: After status update: ${updated.length} flights');
 
       // 4. Sort
       final sorted = [...updated]..sort(FlightStatusChecker.sortFlights);
+      debugPrint('FLIGHTS LOAD: After sort: ${sorted.length} flights');
 
       // 5. Warning flights
       final warnings = sorted.where(FlightStatusChecker.isWarning).toList();
+      debugPrint('FLIGHTS LOAD: Warning flights: ${warnings.length}');
 
       emit(state.copyWith(
         status: FlightsListStatus.success,
@@ -38,9 +42,12 @@ class FlightsListCubit extends Cubit<FlightsListState> {
         filtered: _buildFiltered(sorted, state.filter, state.searchQuery),
         warningFlights: warnings,
       ));
+      debugPrint('FLIGHTS LOAD: State emitted with ${sorted.length} flights, filtered: ${state.filtered.length}');
     } on AppError catch (e) {
+      debugPrint('FLIGHTS LOAD ERROR: $e');
       emit(state.copyWith(status: FlightsListStatus.failure, error: e));
-    } catch (_) {
+    } catch (e) {
+      debugPrint('FLIGHTS LOAD ERROR: $e');
       emit(state.copyWith(
         status: FlightsListStatus.failure,
         error: AppError.unknown(),
