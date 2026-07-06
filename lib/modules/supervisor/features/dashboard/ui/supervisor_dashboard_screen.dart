@@ -97,10 +97,8 @@ class _SupervisorDashboardScreenState extends State<SupervisorDashboardScreen> {
     final serviceTypeName =
         state.serviceTypeName ??
         (authState is AuthSuccess
-            ? (authState.userModel.serviceTypeName ??
-                  authState.userModel.serviceTypeId ??
-                  '')
-            : '');
+            ? (authState.userModel.serviceTypeName ?? 'service_types'.tr())
+            : 'service_types'.tr());
 
     return RefreshIndicator(
       color: AppColors.primary200,

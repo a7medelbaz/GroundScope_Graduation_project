@@ -130,13 +130,18 @@ class UserRemoteDs {
     }
   }
 
+  /// Returns the login-account user id(s) tied to this unit (i.e. the unit
+  /// manager account(s), via `users.unit_id`) — the correct target for
+  /// notifications. Note: `unit_members` is a crew roster (name/phone/
+  /// position) with no `user_id` column; it has no login accounts.
   Future<List<String>> fetchUnitMemberIds(String unitId) async {
     try {
       final data = await _supabase.client
-          .from('unit_members')
-          .select('user_id')
-          .eq('unit_id', unitId);
-      return (data as List).map((e) => e['user_id'] as String).toList();
+          .from('users')
+          .select('id')
+          .eq('unit_id', unitId)
+          .eq('is_active', true);
+      return (data as List).map((e) => e['id'] as String).toList();
     } on PostgrestException catch (e) {
       throw SupabaseErrorHandler.handle(e);
     } catch (_) {

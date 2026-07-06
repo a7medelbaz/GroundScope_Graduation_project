@@ -6,8 +6,8 @@ import 'package:ground_scope/core/error/models/app_error.dart';
 import 'package:ground_scope/core/error/types/error_type.dart';
 import 'package:ground_scope/core/shared/data/models/flight_model.dart';
 
-class AviationStackRemoteDs {
-  static const String _baseUrl = 'https://api.aviationstack.com/v1/timetable';
+class AirLabsRemoteDs {
+  static const String _baseUrl = 'https://airlabs.co/api/v9/schedules';
 
   final Dio _dio = Dio(
     BaseOptions(
@@ -17,12 +17,12 @@ class AviationStackRemoteDs {
   );
 
   /// Fetches both arrivals and departures for the configured airport.
-  /// Filters out codeshared duplicates automatically.
+  /// Filters out duplicates automatically.
   /// Returns a deduplicated list of [FlightModel].
   Future<List<FlightModel>> fetchTodaysFlights() async {
     try {
-      final arrivals = await _fetch(type: 'arrival');
-      final departures = await _fetch(type: 'departure');
+      final arrivals = await _fetch(arrIata: AppConstants.airportIataCode);
+      final departures = await _fetch(depIata: AppConstants.airportIataCode);
 
       // Deduplicate by external_id + flight type
       final seen = <String>{};
@@ -47,33 +47,40 @@ class AviationStackRemoteDs {
     }
   }
 
-  Future<List<FlightModel>> _fetch({required String type}) async {
+  Future<List<FlightModel>> _fetch({String? arrIata, String? depIata}) async {
     try {
+      final params = {'api_key': AppConstants.airLabsApiKey};
+      if (arrIata != null) params['arr_iata'] = arrIata;
+      if (depIata != null) params['dep_iata'] = depIata;
+
       final response = await _dio.get<Map<String, dynamic>>(
         _baseUrl,
-        queryParameters: {
-          'access_key': AppConstants.aviationStackKey,
-          'iataCode': AppConstants.airportIataCode,
-          'type': type,
-        },
+        queryParameters: params,
       );
 
       debugPrint('API STATUS: ${response.statusCode}');
-      debugPrint('API DATA KEYS: ${response.data?.keys}');
-      debugPrint('API ERROR: ${response.data?['error']}');
+      debugPrint('API KEYS: ${response.data?.keys}');
 
       final json = response.data ?? {};
-      final data = json['data'] as List? ?? [];
+
+      // Check for API errors
+      if (json['error'] != null) {
+        debugPrint('API ERROR: ${json['error']}');
+        throw AppError.unknown();
+      }
+
+      final data = json['response'] as List? ?? [];
       debugPrint('FLIGHTS COUNT: ${data.length}');
+
+      final isArrival = arrIata != null;
 
       return data
           .cast<Map<String, dynamic>>()
-          .where((item) => item['codeshared'] == null)
           .where((item) {
-            final num = item['flight']?['iataNumber']?.toString() ?? '';
+            final num = item['flight_iata']?.toString() ?? '';
             return num.isNotEmpty;
           })
-          .map((item) => _mapToModel(item, type))
+          .map((item) => _mapToModel(item, isArrival: isArrival))
           .toList();
     } on DioException catch (e) {
       debugPrint('DIO ERROR: ${e.type} — ${e.message}');
@@ -102,61 +109,61 @@ class AviationStackRemoteDs {
     }
   }
 
-  FlightModel _mapToModel(Map<String, dynamic> item, String type) {
-    final arrival = item['arrival'] as Map<String, dynamic>? ?? {};
-    final departure = item['departure'] as Map<String, dynamic>? ?? {};
-    final aircraft = item['aircraft'] as Map<String, dynamic>? ?? {};
-    final airline = item['airline'] as Map<String, dynamic>? ?? {};
-    final flight = item['flight'] as Map<String, dynamic>? ?? {};
-
-    final isArrival = type == 'arrival';
-
+  FlightModel _mapToModel(
+    Map<String, dynamic> item, {
+    required bool isArrival,
+  }) {
     return FlightModel(
       id: '', // Will be assigned by Supabase on insert
-      flightNumber: flight['iataNumber']?.toString() ?? '',
-      airline: airline['name']?.toString() ?? '',
+      flightNumber: item['flight_iata']?.toString() ?? '',
+      airline: item['airline_iata']?.toString() ?? '', // AirLabs only provides iata/icao codes
       origin: isArrival
-          ? departure['iataCode']?.toString() ??
-                '' // came FROM here
-          : departure['iataCode']?.toString() ?? '', // CAI (departing)
+          ? item['dep_iata']?.toString() ?? ''
+          : item['dep_iata']?.toString() ?? '',
       destination: isArrival
-          ? arrival['iataCode']?.toString() ??
-                '' // CAI (arriving)
-          : arrival['iataCode']?.toString() ?? '', // going TO here
-      aircraftType: aircraft['icaoCode']?.toString(),
-      aircraftRegistration: aircraft['regNumber']?.toString(),
-      scheduledArrival:
-          _parseDate(
-            isArrival ? arrival['scheduledTime'] : departure['scheduledTime'],
-          ) ??
+          ? item['arr_iata']?.toString() ?? ''
+          : item['arr_iata']?.toString() ?? '',
+      aircraftType: item['aircraft_icao']?.toString(),
+      aircraftRegistration: null, // Not available in AirLabs schedules
+      scheduledArrival: _parseDate(
+        isArrival ? item['arr_time'] : item['dep_time'],
+      ) ??
           DateTime.now(),
       estimatedArrival: _parseDate(
-        isArrival ? arrival['estimatedTime'] : departure['estimatedTime'],
+        isArrival ? item['arr_estimated'] : item['dep_estimated'],
       ),
       actualArrival: _parseDate(
-        isArrival ? arrival['actualTime'] : departure['actualTime'],
+        isArrival ? item['arr_actual'] : item['dep_actual'],
       ),
       scheduledDeparture: _parseDate(
-        isArrival ? departure['scheduledTime'] : arrival['scheduledTime'],
+        isArrival ? item['dep_time'] : item['arr_time'],
       ),
       actualDeparture: _parseDate(
-        isArrival ? departure['actualTime'] : arrival['actualTime'],
+        isArrival ? item['dep_actual'] : item['arr_actual'],
       ),
       standId: null,
       status: FlightStatus.fromString(
         _mapApiStatus(item['status']?.toString() ?? ''),
       ),
       paxCount: null,
-      apiSource: 'aviationstack',
-      externalId: flight['iataNumber']?.toString(),
+      apiSource: 'airlabs',
+      externalId: item['flight_iata']?.toString(),
       flightType: isArrival ? FlightType.arrival : FlightType.departure,
+      depTerminal: item['dep_terminal']?.toString(),
+      depGate: item['dep_gate']?.toString(),
+      arrTerminal: item['arr_terminal']?.toString(),
+      arrGate: item['arr_gate']?.toString(),
+      delayMinutes: item['delayed'] is int ? item['delayed'] as int : null,
     );
   }
 
   String _mapApiStatus(String apiStatus) => switch (apiStatus.toLowerCase()) {
     'scheduled' => 'scheduled',
     'active' => 'landed',
+    'landed' => 'landed',
     'cancelled' => 'cancelled',
+    'delayed' => 'scheduled', // treat as scheduled, delay minutes will show separately
+    'diverted' => 'scheduled',
     _ => 'scheduled',
   };
 

@@ -40,6 +40,7 @@ class SupervisorProfileCubit extends Cubit<SupervisorProfileState> {
         memberCount = counts.$2;
       }
 
+      if (isClosed) return;
       emit(state.copyWith(
         status: SupervisorProfileStatus.loaded,
         user: user,
@@ -48,8 +49,10 @@ class SupervisorProfileCubit extends Cubit<SupervisorProfileState> {
         memberCount: memberCount,
       ));
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: SupervisorProfileStatus.failure, error: e));
     } catch (_) {
+      if (isClosed) return;
       emit(state.copyWith(
         status: SupervisorProfileStatus.failure,
         error: AppError.unknown(),

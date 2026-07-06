@@ -100,6 +100,7 @@
       "inbox": "Inbox",
       "from_admin": "From Admin"
     },
+    "search_hint": "Search reports...",
     "actions": {
       "send_to_unit": "Send to Unit",
       "broadcast": "Broadcast",
@@ -110,7 +111,9 @@
       "notes_hint": "Enter forwarding notes...",
       "select_supervisor": "Select Supervisors",
       "select_unit": "Select Unit",
-      "broadcast_warning": "This report will be sent to all workers across all units in your service type."
+      "select_unit_load_failed": "Failed to load units. Please try again.",
+      "broadcast_warning": "This report will be sent to all workers across all units in your service type.",
+      "admin_broadcast_warning": "This report will be sent to every user in the app, across all roles."
     },
     "send_form": {
       "type": "Report Type",
@@ -120,7 +123,9 @@
       "send": "Send"
     },
     "empty": {
-      "no_sent": "No reports found"
+      "no_sent": "No reports found",
+      "no_inbox": "No reports received yet",
+      "no_from_admin": "No messages from admin yet"
     }
   },
   "coming_soon": "Coming Soon",
@@ -271,6 +276,10 @@
   "scheduled_departure": "Scheduled Departure",
   "estimated_arrival": "Estimated Arrival",
   "flight_type": "Type",
+  "departure_terminal_gate": "Departure Terminal / Gate",
+  "arrival_terminal_gate": "Arrival Terminal / Gate",
+  "delay": "Delay",
+  "delay_minutes_value": "{count} minutes",
   "arrival": "Arrival",
   "departure": "Departure",
   "stand_assignment": "Stand Assignment",
@@ -436,6 +445,25 @@
   "units_managed": "Units Managed",
   "dark_mode": "Dark Mode",
   "notifications": "Notifications",
+  "unread": "Unread",
+  "earlier": "Earlier",
+  "mark_all_read": "Mark all read",
+  "no_notifications": "No notifications yet",
+  "no_notifications_subtitle": "You're all caught up. New alerts will appear here.",
+  "notification_type": {
+    "task_assigned": "Task Assigned",
+    "alert": "Alert",
+    "delay": "Delay",
+    "report": "Report",
+    "flight_landed": "Flight Landed"
+  },
+  "notification_details": "Notification Details",
+  "message": "Message",
+  "status": "Status",
+  "read": "Read",
+  "notification": {
+    "view_related": "View Related Item"
+  },
   "english": "English",
   "arabic": "العربية",
   "start_time": "Start Time",
@@ -553,7 +581,8 @@
     "please_check_back": "Please check back later",
     "replace": "Replace",
     "service": "Service",
-    "stand": "Stand {code}"
+    "stand": "Stand {code}",
+    "description_required": "Please describe the issue before submitting"
   },
   "worker_reports": {
     "title": "My Reports",

@@ -37,6 +37,10 @@ class AppConfig {
   static String get aviationStackKey =>
       dotenv.env['AVIATION_STACK_API_KEY'] ?? '';
 
+  // AirLabs Config
+  static String get airLabsApiKey =>
+      dotenv.env['AIRLABS_API_KEY'] ?? '';
+
   // Developer Info
 
   static const String developerName = 'Mustafa Elbaz';

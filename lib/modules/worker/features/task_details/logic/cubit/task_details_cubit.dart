@@ -29,6 +29,7 @@ class TaskDetailsCubit extends Cubit<TaskDetailsState> {
         taskRepo.getTaskCheckList(taskId: task.id),
         taskRepo.getTaskPauseHistory(taskId: task.id),
       ]);
+      if (isClosed) return;
       emit(
         state.copyWith(
           checklist: results[0] as List<TaskCheckListModel>,
@@ -38,6 +39,7 @@ class TaskDetailsCubit extends Cubit<TaskDetailsState> {
         ),
       );
     } catch (e) {
+      if (isClosed) return;
       emit(
         state.copyWith(
           isLoading: false,
@@ -68,6 +70,7 @@ class TaskDetailsCubit extends Cubit<TaskDetailsState> {
         userId: user.id,
       );
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(checklist: old, error: ErrorHandler.handle(e)));
     }
   }
@@ -107,8 +110,10 @@ class TaskDetailsCubit extends Cubit<TaskDetailsState> {
         userId: user.id,
       );
       final freshPauses = await taskRepo.getTaskPauseHistory(taskId: taskId);
+      if (isClosed) return;
       emit(state.copyWith(pauses: freshPauses));
     } catch (e) {
+      if (isClosed) return;
       emit(
         state.copyWith(
           status: oldStatus,
@@ -147,6 +152,7 @@ class TaskDetailsCubit extends Cubit<TaskDetailsState> {
         taskId: taskId,
       );
     } catch (e) {
+      if (isClosed) return;
       emit(
         state.copyWith(
           status: oldStatus,
@@ -173,6 +179,7 @@ class TaskDetailsCubit extends Cubit<TaskDetailsState> {
         newStatus: newStatus,
       );
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: oldStatus, error: ErrorHandler.handle(e)));
     }
   }

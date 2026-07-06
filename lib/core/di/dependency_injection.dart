@@ -29,7 +29,7 @@ import '../auth/logic/cubit/auth_cubit.dart';
 import '../networking/supabase_service.dart';
 import '../service/secure_storage.dart';
 import '../service/user_service.dart';
-import '../shared/data/remote/aviation_stack_remote_ds.dart';
+import '../shared/data/remote/airlabs_remote_ds.dart';
 import '../shared/data/remote/flights_remote_ds.dart';
 import '../shared/data/remote/task_remote_ds.dart';
 import '../shared/data/remote/unit_remote_ds.dart';
@@ -75,10 +75,6 @@ import '../../modules/supervisor/features/reports/data/repo/supervisor_reports_r
 import '../../modules/supervisor/features/reports/data/repo/supervisor_reports_repo_impl.dart';
 import '../../modules/supervisor/features/reports/logic/cubit/supervisor_reports_cubit.dart';
 import '../../modules/supervisor/features/profile/logic/cubit/supervisor_profile_cubit.dart';
-import '../../modules/supervisor/features/add_report/data/remote/supervisor_add_report_remote_ds.dart';
-import '../../modules/supervisor/features/add_report/data/repo/supervisor_add_report_repo.dart';
-import '../../modules/supervisor/features/add_report/data/repo/supervisor_add_report_repo_impl.dart';
-import '../../modules/supervisor/features/add_report/logic/cubit/supervisor_add_report_cubit.dart';
 import '../shared/data/remote/service_request_remote_ds.dart';
 import '../shared/data/repo/service_request_repo.dart';
 import '../shared/data/repo/service_request_repo_impl.dart';
@@ -164,14 +160,14 @@ Future<void> setUpDependencies() async {
   getIt.registerLazySingleton<FlightRepo>(
     () => FlightRepoImpl(flightsRemoteDs: getIt<FlightsRemoteDs>()),
   );
-  getIt.registerLazySingleton<AviationStackRemoteDs>(
-    () => AviationStackRemoteDs(),
+  getIt.registerLazySingleton<AirLabsRemoteDs>(
+    () => AirLabsRemoteDs(),
   );
   getIt.registerFactory<FlightsListCubit>(
     () => FlightsListCubit(getIt<FlightRepo>()),
   );
   getIt.registerFactory<FlightImportCubit>(
-    () => FlightImportCubit(getIt<AviationStackRemoteDs>(), getIt<FlightRepo>()),
+    () => FlightImportCubit(getIt<AirLabsRemoteDs>(), getIt<FlightRepo>()),
   );
 
   // Task Details DI
@@ -343,19 +339,6 @@ Future<void> setUpDependencies() async {
       supabaseService: getIt<SupabaseService>(),
     ),
   );
-  getIt.registerLazySingleton<SupervisorAddReportRemoteDs>(
-    () => SupervisorAddReportRemoteDs(getIt<SupabaseService>()),
-  );
-  getIt.registerLazySingleton<SupervisorAddReportRepo>(
-    () => SupervisorAddReportRepoImpl(getIt<SupervisorAddReportRemoteDs>()),
-  );
-  getIt.registerFactory<SupervisorAddReportCubit>(
-    () => SupervisorAddReportCubit(
-      repo: getIt<SupervisorAddReportRepo>(),
-      userService: getIt<UserService>(),
-    ),
-  );
-
   // === ADMIN REPORTS ===
   getIt.registerFactory<AdminReportsCubit>(
     () => AdminReportsCubit(

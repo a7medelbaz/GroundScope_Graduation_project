@@ -27,6 +27,7 @@ class UserResetCubit extends Cubit<UserResetState> {
       final newPassword = CredentialsGenerator.generatePassword();
       await _repo.resetPassword(authId: user.authId!, newPassword: newPassword);
 
+      if (isClosed) return;
       emit(
         state.copyWith(
           status: UserResetStatus.success,
@@ -41,8 +42,10 @@ class UserResetCubit extends Cubit<UserResetState> {
         ),
       );
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: UserResetStatus.failure, error: e));
     } catch (_) {
+      if (isClosed) return;
       emit(
         state.copyWith(
           status: UserResetStatus.failure,

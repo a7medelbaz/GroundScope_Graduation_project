@@ -48,9 +48,7 @@ final class SupervisorReportsState extends Equatable {
         : base.where((r) => r.status == selectedFilter).toList();
   }
 
-  int get unreadInbox => inbox
-      .where((r) => r.status == ReportStatus.open)
-      .length;
+  int get unreadInbox => inbox.where((r) => r.isRead == false).length;
 
   SupervisorReportsState copyWith({
     SupervisorReportsStatus? status,

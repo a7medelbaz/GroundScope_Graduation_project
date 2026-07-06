@@ -44,4 +44,5 @@ class Routes {
 
   // ########## Shared
   static const String notificationsScreen = '/notificationsScreen';
+  static const String notificationDetailScreen = '/notificationDetailScreen';
 }

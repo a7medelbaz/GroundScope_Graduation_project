@@ -24,6 +24,7 @@ class AssignUnitCubit extends Cubit<AssignUnitState> {
     emit(state.copyWith(status: AssignUnitStatus.loading));
     try {
       final units = await _repo.getAvailableUnits(serviceTypeId);
+      if (isClosed) return;
       emit(state.copyWith(
         status: AssignUnitStatus.loaded,
         allUnits: units,
@@ -31,9 +32,11 @@ class AssignUnitCubit extends Cubit<AssignUnitState> {
         searchQuery: '',
       ));
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: AssignUnitStatus.failure, error: e));
     } catch (e, st) {
       debugPrint('AssignUnitCubit.loadAvailableUnits: $e\n$st');
+      if (isClosed) return;
       emit(state.copyWith(
           status: AssignUnitStatus.failure, error: AppError.unknown()));
     }
@@ -73,11 +76,14 @@ class AssignUnitCubit extends Cubit<AssignUnitState> {
         notes:          notes,
       );
 
+      if (isClosed) return;
       emit(state.copyWith(status: AssignUnitStatus.success));
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: AssignUnitStatus.failure, error: e));
     } catch (e, st) {
       debugPrint('AssignUnitCubit.createTask: $e\n$st');
+      if (isClosed) return;
       emit(state.copyWith(
           status: AssignUnitStatus.failure, error: AppError.unknown()));
     }

@@ -20,17 +20,20 @@ class NotificationCubit extends Cubit<NotificationState> {
       final notifications = await _repo.fetchMyNotifications();
       final unreadCount = notifications.where((n) => !n.isRead).length;
 
+      if (isClosed) return;
       emit(state.copyWith(
         status: NotificationListStatus.success,
         notifications: notifications,
         unreadCount: unreadCount,
       ));
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(
         status: NotificationListStatus.failure,
         error: e,
       ));
     } catch (_) {
+      if (isClosed) return;
       emit(state.copyWith(
         status: NotificationListStatus.failure,
         error: AppError.unknown(),
@@ -41,6 +44,7 @@ class NotificationCubit extends Cubit<NotificationState> {
   Future<void> markAsRead(String notificationId) async {
     try {
       await _repo.markAsRead(notificationId);
+      if (isClosed) return;
 
       final updated = state.notifications
           .map((n) => n.id == notificationId ? n.copyWith(isRead: true) : n)
@@ -56,6 +60,7 @@ class NotificationCubit extends Cubit<NotificationState> {
   Future<void> markAllAsRead(String userId) async {
     try {
       await _repo.markAllAsRead(userId);
+      if (isClosed) return;
 
       final updated = state.notifications
           .map((n) => n.copyWith(isRead: true))
@@ -71,7 +76,10 @@ class NotificationCubit extends Cubit<NotificationState> {
   void startUnreadWatch(String userId) {
     _unreadSubscription?.cancel();
     _unreadSubscription = _repo.watchUnreadCount(userId).listen(
-      (count) => emit(state.copyWith(unreadCount: count)),
+      (count) {
+        if (isClosed) return;
+        emit(state.copyWith(unreadCount: count));
+      },
       onError: (_) {},
     );
   }

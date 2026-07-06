@@ -44,15 +44,19 @@ class AddReportCubit extends Cubit<AddReportState> {
     emit(state.copyWith(status: AddReportStatus.loading, clearError: true));
     try {
       final user = await userService.getUser();
+      if (isClosed) return;
       if (user == null || user.unitId == null) {
         emit(state.copyWith(status: AddReportStatus.success, tasks: []));
         return;
       }
       final tasks = await taskRepo.fetchWorkerTasks(unitId: user.unitId!);
+      if (isClosed) return;
       emit(state.copyWith(status: AddReportStatus.success, tasks: tasks));
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: AddReportStatus.failure, error: e));
     } catch (_) {
+      if (isClosed) return;
       emit(state.copyWith(
           status: AddReportStatus.failure, error: AppError.unknown()));
     }
@@ -128,10 +132,13 @@ class AddReportCubit extends Cubit<AddReportState> {
         );
       }
 
+      if (isClosed) return;
       emit(state.copyWith(status: AddReportStatus.submitted));
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: AddReportStatus.failure, error: e));
     } catch (_) {
+      if (isClosed) return;
       emit(state.copyWith(
           status: AddReportStatus.failure, error: AppError.unknown()));
     }

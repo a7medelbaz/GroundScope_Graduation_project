@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ground_scope/core/error/models/app_error.dart';
@@ -12,9 +14,11 @@ class ReportsCubit extends Cubit<ReportsState> {
 
   final ReportRepo reportRepo;
   final UserService userService;
+  StreamSubscription<List<ReportModel>>? _receivedSub;
 
   Future<void> load() async {
     emit(state.copyWith(status: ReportsStatus.loading, clearError: true));
+    String? userId;
     try {
       final user = await userService.getUser();
       if (user == null) {
@@ -22,23 +26,31 @@ class ReportsCubit extends Cubit<ReportsState> {
             status: ReportsStatus.failure, error: AppError.unauthorized()));
         return;
       }
+      userId = user.id;
 
       final results = await Future.wait([
         reportRepo.fetchSentReports(user.id),
         reportRepo.fetchReceivedReports(user.id),
       ]);
 
+      if (isClosed) return;
       emit(state.copyWith(
         status: ReportsStatus.loaded,
         sent: results[0],
         received: results[1],
       ));
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: ReportsStatus.failure, error: e));
+      return;
     } catch (_) {
+      if (isClosed) return;
       emit(state.copyWith(
           status: ReportsStatus.failure, error: AppError.unknown()));
+      return;
     }
+
+    _watchReceived(userId);
   }
 
   // Keep for backward compat with any existing references
@@ -52,5 +64,26 @@ class ReportsCubit extends Cubit<ReportsState> {
     } else {
       emit(state.copyWith(selectedFilter: filter));
     }
+  }
+
+  void _watchReceived(String userId) {
+    try {
+      _receivedSub?.cancel();
+      _receivedSub = reportRepo.watchReceivedReports(userId).listen(
+        (received) {
+          if (isClosed) return;
+          emit(state.copyWith(received: received));
+        },
+        onError: (_) {},
+      );
+    } catch (_) {
+      // Real-time is best-effort — the initial load already succeeded.
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _receivedSub?.cancel();
+    return super.close();
   }
 }

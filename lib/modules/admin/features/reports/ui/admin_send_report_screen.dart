@@ -54,7 +54,9 @@ class _AdminSendReportScreenState extends State<AdminSendReportScreen> {
           .map((u) => {'id': u.id, 'name': u.fullName})
           .toList();
       if (mounted) setState(() => _supervisors = supers);
-    } catch (_) {}
+    } catch (e, st) {
+      debugPrint('[AdminSendReportScreen._loadSupervisors] failed: $e\n$st');
+    }
     if (mounted) setState(() => _loadingSupervisors = false);
   }
 
@@ -170,7 +172,7 @@ class _AdminSendReportScreenState extends State<AdminSendReportScreen> {
                       horizontalSpacing(10),
                       Expanded(
                         child: Text(
-                          'reports.actions.broadcast_warning'.tr(),
+                          'reports.actions.admin_broadcast_warning'.tr(),
                           style: AppTextStyles.font12Light
                               .copyWith(color: AppColors.red200),
                         ),

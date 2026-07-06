@@ -19,15 +19,18 @@ class SupervisorTaskDetailCubit extends Cubit<SupervisorTaskDetailState> {
     emit(state.copyWith(status: SupervisorTaskDetailStatus.loading));
     try {
       final (task, checklist) = await _repo.getTaskById(taskId);
+      if (isClosed) return;
       emit(state.copyWith(
         status: SupervisorTaskDetailStatus.loaded,
         task: task,
         checklistItems: checklist,
       ));
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: SupervisorTaskDetailStatus.failure, error: e));
     } catch (e, st) {
       debugPrint('SupervisorTaskDetailCubit.loadTask error: $e\n$st');
+      if (isClosed) return;
       emit(state.copyWith(
         status: SupervisorTaskDetailStatus.failure,
         error: AppError.unknown(),
@@ -39,6 +42,7 @@ class SupervisorTaskDetailCubit extends Cubit<SupervisorTaskDetailState> {
     emit(state.copyWith(status: SupervisorTaskDetailStatus.updating));
     try {
       await _repo.updateTaskStatus(taskId, newStatus);
+      if (isClosed) return;
       final updatedTask = state.task?.copyWith(
         status: TaskStatus.fromString(newStatus),
       );
@@ -47,9 +51,11 @@ class SupervisorTaskDetailCubit extends Cubit<SupervisorTaskDetailState> {
         task: updatedTask,
       ));
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: SupervisorTaskDetailStatus.failure, error: e));
     } catch (e, st) {
       debugPrint('SupervisorTaskDetailCubit.updateTaskStatus error: $e\n$st');
+      if (isClosed) return;
       emit(state.copyWith(
         status: SupervisorTaskDetailStatus.failure,
         error: AppError.unknown(),

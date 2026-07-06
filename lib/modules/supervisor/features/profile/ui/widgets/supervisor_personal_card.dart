@@ -299,12 +299,17 @@ class _InfoRow extends StatelessWidget {
           ),
           horizontalSpacing(12),
           Expanded(
+            flex: 2,
             child: Text(
               label,
               style: AppTextStyles.font12Light.copyWith(color: cc.textSecondary),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-          Flexible(
+          horizontalSpacing(8),
+          Expanded(
+            flex: 3,
             child: Text(
               value,
               style: AppTextStyles.font12SemiBold.copyWith(color: valueColor),

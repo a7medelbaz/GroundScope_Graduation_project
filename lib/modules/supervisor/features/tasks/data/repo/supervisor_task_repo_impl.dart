@@ -13,6 +13,10 @@ class SupervisorTaskRepoImpl implements SupervisorTaskRepo {
       _ds.fetchTasks(serviceTypeId);
 
   @override
+  Stream<List<TaskModel>> watchTasks(String serviceTypeId) =>
+      _ds.watchTasks(serviceTypeId);
+
+  @override
   Future<(TaskModel, List<TaskCheckListModel>)> getTaskById(String taskId) =>
       _ds.fetchTaskById(taskId);
 

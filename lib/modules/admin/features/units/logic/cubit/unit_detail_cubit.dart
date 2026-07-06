@@ -29,6 +29,7 @@ class UnitDetailCubit extends Cubit<UnitDetailState> {
       final unit = results[0] as UnitModel?;
       if (unit == null) throw AppError.unknown('Unit not found');
 
+      if (isClosed) return;
       emit(state.copyWith(
         status: UnitDetailStatus.success,
         unit: unit,
@@ -36,8 +37,10 @@ class UnitDetailCubit extends Cubit<UnitDetailState> {
         members: results[2] as List<UnitMemberModel>,
       ));
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: UnitDetailStatus.failure, error: e));
     } catch (_) {
+      if (isClosed) return;
       emit(state.copyWith(
           status: UnitDetailStatus.failure, error: AppError.unknown()));
     }
@@ -46,6 +49,7 @@ class UnitDetailCubit extends Cubit<UnitDetailState> {
   Future<void> refreshTasks(String unitId) async {
     try {
       final tasks = await _unitRepo.fetchUnitTasks(unitId);
+      if (isClosed) return;
       emit(state.copyWith(tasks: tasks));
     } catch (_) {}
   }
@@ -53,6 +57,7 @@ class UnitDetailCubit extends Cubit<UnitDetailState> {
   Future<void> refreshMembers(String unitId) async {
     try {
       final members = await _memberRepo.fetchUnitMembers(unitId);
+      if (isClosed) return;
       emit(state.copyWith(members: members));
     } catch (_) {}
   }
@@ -60,10 +65,13 @@ class UnitDetailCubit extends Cubit<UnitDetailState> {
   Future<void> addMember(UnitMemberModel member) async {
     try {
       final created = await _memberRepo.create(member);
+      if (isClosed) return;
       emit(state.copyWith(members: [...state.members, created]));
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(error: e));
     } catch (_) {
+      if (isClosed) return;
       emit(state.copyWith(error: AppError.unknown()));
     }
   }
@@ -71,13 +79,16 @@ class UnitDetailCubit extends Cubit<UnitDetailState> {
   Future<void> updateMember(UnitMemberModel member) async {
     try {
       final updated = await _memberRepo.update(member);
+      if (isClosed) return;
       final members = state.members
           .map((m) => m.id == updated.id ? updated : m)
           .toList();
       emit(state.copyWith(members: members));
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(error: e));
     } catch (_) {
+      if (isClosed) return;
       emit(state.copyWith(error: AppError.unknown()));
     }
   }
@@ -85,11 +96,14 @@ class UnitDetailCubit extends Cubit<UnitDetailState> {
   Future<void> deactivateMember(String memberId) async {
     try {
       await _memberRepo.deactivate(memberId);
+      if (isClosed) return;
       final members = state.members.where((m) => m.id != memberId).toList();
       emit(state.copyWith(members: members));
     } on AppError catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(error: e));
     } catch (_) {
+      if (isClosed) return;
       emit(state.copyWith(error: AppError.unknown()));
     }
   }
@@ -101,14 +115,17 @@ class UnitDetailCubit extends Cubit<UnitDetailState> {
   Future<bool> updateStatus(String unitId, UnitStatus status) async {
     try {
       await _unitRepo.updateStatus(unitId, status);
+      if (isClosed) return true;
       if (state.unit != null) {
         emit(state.copyWith(unit: state.unit!.copyWith(status: status.value)));
       }
       return true;
     } on AppError catch (e) {
+      if (isClosed) return false;
       emit(state.copyWith(error: e));
       return false;
     } catch (_) {
+      if (isClosed) return false;
       emit(state.copyWith(error: AppError.unknown()));
       return false;
     }
